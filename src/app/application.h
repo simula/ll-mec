@@ -1,6 +1,6 @@
-#ifndef __APPLICATION_HH__
-#define __APPLICATION_HH__
-#include "ControllerEvent.hh"
+#ifndef __APPLICATION_H__
+#define __APPLICATION_H__
+#include "controller_event.h"
 
 class Application {
   public:

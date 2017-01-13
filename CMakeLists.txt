@@ -103,7 +103,7 @@ set(FLUIDMSG_include_files
 #CORE/EPS
 set(EPS_DIR "${CORE_DIR}/eps")
 set(EPS_src_files
-  ${EPS_DIR}/Controller.cc
+  ${EPS_DIR}/controller.cc
   )
 set(EPS_include_files
   ${EPS_DIR}

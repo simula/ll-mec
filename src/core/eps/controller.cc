@@ -1,7 +1,7 @@
-#include "Controller.hh"
+#include "controller.h"
 
 void Controller::stop() {
-  running = false;
+  running_ = false;
   fluid_base::OFServer::stop();
 }
 void Controller::connection_callback(fluid_base::OFConnection* ofconn, fluid_base::OFConnection::Event type) {
@@ -36,21 +36,7 @@ void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type
 }
 
 void Controller::register_for_event(Application* app, int event_type) {
-  event_listeners[event_type].push_back(app);
-}
-
-inline void Controller::dispatch_event(ControllerEvent* ev) {
-  if (not this->running) {
-    delete ev;
-    return;
-  }
-  for (std::vector<Application*>::iterator it =
-      event_listeners[ev->get_type()].begin();
-      it != event_listeners[ev->get_type()].end();
-      it++) {
-    ((Application*) (*it))->event_callback(ev);
-  }
-  delete ev;
+  event_listeners_[event_type].push_back(app);
 }
 
 volatile sig_atomic_t quit=0;
