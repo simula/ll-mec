@@ -1,5 +1,19 @@
 project (LL_MEC)
 cmake_minimum_required(VERSION 2.8)
+
+
+macro(use_cxx11)
+  if (CMAKE_VERSION VERSION_LESS "3.1")
+    set (CMAKE_CXX_FLAGS "--std=c++11 ${CMAKE_CXX_FLAGS}")
+  else ()
+    set (CMAKE_CXX_STANDARD 11)
+  endif ()
+endmacro(use_cxx11)
+
+use_cxx11()
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
+
 set(LL_MEC_SRC "${PROJECT_SOURCE_DIR}/src")
 set(LL_MEC_TARGET "${PROJECT_SOURCE_DIR}/targets")
 
@@ -7,6 +21,11 @@ set(LL_MEC_TARGET "${PROJECT_SOURCE_DIR}/targets")
 set(APP_DIR "${LL_MEC_SRC}/app")
 set(CORE_DIR "${LL_MEC_SRC}/core")
 set(DRIVER_DIR "${LL_MEC_SRC}/driver")
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+
 
 #OF BASE DRIVER
 set(FLUIDBASE_DIR "${DRIVER_DIR}/fluidbase")
@@ -81,15 +100,31 @@ set(FLUIDMSG_include_files
   ${FLUIDMSG_DIR}/fluid/util
   )
 
+#CORE/EPS
+set(EPS_DIR "${CORE_DIR}/eps")
+set(EPS_src_files
+  ${EPS_DIR}/Controller.cc
+  )
+set(EPS_include_files
+  ${EPS_DIR}
+  ${APP_DIR}
+  )
+
+find_package(Event REQUIRED)
+
+
 #headers to be included
 include_directories(
   ${FLUIDBASE_include_files}
   ${FLUIDMSG_include_files}
+  ${EPS_include_files}
+  ${Event_INCLUDE_DIRS}
   )
 
 #library to be declared
 add_library(FLUIDBASE ${FLUIDBASE_src_files})
 add_library(FLUIDMSG ${FLUIDMSG_src_files})
+add_library(EPS ${EPS_src_files})
 
 #targets
 set(LL_MEC ${LL_MEC_TARGET}/ll-mec)
@@ -102,5 +137,14 @@ add_executable(ll-mecsim
   )
 
 #libraries to be linked
-target_link_libraries(ll-mec FLUIDBASE FLUIDMSG)
+target_link_libraries(ll-mec
+  FLUIDBASE
+  FLUIDMSG
+  EPS
+  event
+  pthread
+  ssl
+  crypto
+  event_openssl
+  event_pthreads)
 target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)
