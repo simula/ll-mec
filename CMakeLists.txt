@@ -112,12 +112,24 @@ set(EPS_include_files
 
 find_package(Event REQUIRED)
 
+#APP/SGWC
+
+set(SGWC_DIR "${APP_DIR}/sgwc")
+set(SGWC_src_files
+  ${SGWC_DIR}/sgwc.cc
+  )
+set(SGWC_include_files
+  ${EPS_DIR}
+  ${APP_DIR}
+  ${SGWC_DIR}
+  )
 
 #headers to be included
 include_directories(
   ${FLUIDBASE_include_files}
   ${FLUIDMSG_include_files}
   ${EPS_include_files}
+  ${SGWC_include_files}
   ${Event_INCLUDE_DIRS}
   )
 
@@ -125,6 +137,7 @@ include_directories(
 add_library(FLUIDBASE ${FLUIDBASE_src_files})
 add_library(FLUIDMSG ${FLUIDMSG_src_files})
 add_library(EPS ${EPS_src_files})
+add_library(SGWC ${SGWC_src_files})
 
 #targets
 set(LL_MEC ${LL_MEC_TARGET}/ll-mec)
@@ -141,6 +154,7 @@ target_link_libraries(ll-mec
   FLUIDBASE
   FLUIDMSG
   EPS
+  SGWC
   event
   pthread
   ssl

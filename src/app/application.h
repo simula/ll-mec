@@ -4,7 +4,7 @@
 
 class Application {
   public:
-    virtual void event_callback(ControllerEvent* ev);
+    virtual void event_callback(ControllerEvent* ev)=0;
 };
 
 #endif
