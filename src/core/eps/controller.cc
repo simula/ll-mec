@@ -39,7 +39,7 @@ void Controller::register_for_event(Application* app, int event_type) {
   event_listeners_[event_type].push_back(app);
 }
 
-volatile sig_atomic_t quit=0;
+/*volatile sig_atomic_t quit=0;
 void sigint_handler(int s) {
   quit = 1;
 }
@@ -55,5 +55,5 @@ void wait_for_sigint() {
     if (quit) break;
     sleep(1000);
   }
-}
+}*/
 
