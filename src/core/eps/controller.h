@@ -12,11 +12,11 @@
 
 #include "application.h"
 
-extern volatile sig_atomic_t quit;
+/*extern volatile sig_atomic_t quit;
 void sigint_handler(int s);
 
 
-void wait_for_sigint();
+void wait_for_sigint();*/
 
 
 class Controller : public fluid_base::OFServer {

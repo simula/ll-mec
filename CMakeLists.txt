@@ -29,68 +29,25 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 #OF BASE DRIVER
 set(FLUIDBASE_DIR "${DRIVER_DIR}/fluidbase")
-set(FLUIDBASE_src_files
-  ${FLUIDBASE_DIR}/fluid/base/EventLoop.hh
-  ${FLUIDBASE_DIR}/fluid/base/EventLoop.cc
-  ${FLUIDBASE_DIR}/fluid/base/BaseOFConnection.hh
-  ${FLUIDBASE_DIR}/fluid/base/BaseOFConnection.cc
-  ${FLUIDBASE_DIR}/fluid/base/BaseOFServer.hh
-  ${FLUIDBASE_DIR}/fluid/base/BaseOFServer.cc
-  ${FLUIDBASE_DIR}/fluid/base/of.hh
-  ${FLUIDBASE_DIR}/fluid/OFConnection.hh
-  ${FLUIDBASE_DIR}/fluid/OFConnection.cc
-  ${FLUIDBASE_DIR}/fluid/OFServerSettings.hh
-  ${FLUIDBASE_DIR}/fluid/OFServerSettings.cc
-  ${FLUIDBASE_DIR}/fluid/OFServer.hh
-  ${FLUIDBASE_DIR}/fluid/OFServer.cc
-  ${FLUIDBASE_DIR}/fluid/TLS.hh
-  ${FLUIDBASE_DIR}/fluid/TLS.cc
-  )
 set(FLUIDBASE_include_files
   "${FLUIDBASE_DIR}"
   "${FLUIDBASE_DIR}/fluid"
   "${FLUIDBASE_DIR}/fluid/base"
   )
+set(FLUIDBASE_src_files
+  ${FLUIDBASE_DIR}/fluid/base/EventLoop.cc
+  ${FLUIDBASE_DIR}/fluid/base/BaseOFConnection.cc
+  ${FLUIDBASE_DIR}/fluid/base/BaseOFServer.cc
+  ${FLUIDBASE_DIR}/fluid/OFConnection.cc
+  ${FLUIDBASE_DIR}/fluid/OFServerSettings.cc
+  ${FLUIDBASE_DIR}/fluid/OFServer.cc
+  ${FLUIDBASE_DIR}/fluid/TLS.cc
+  )
+
+add_library(FLUIDBASE ${FLUIDBASE_src_files})
 
 #OF MSG DRIVER
-
 set(FLUIDMSG_DIR "${DRIVER_DIR}/fluidmsg")
-set(FLUIDMSG_src_files
-  ${FLUIDMSG_DIR}/fluid/util/ethaddr.hh
-  ${FLUIDMSG_DIR}/fluid/util/ethaddr.cc
-  ${FLUIDMSG_DIR}/fluid/util/ipaddr.hh
-  ${FLUIDMSG_DIR}/fluid/util/ipaddr.cc
-  ${FLUIDMSG_DIR}/fluid/util/util.h
-  ${FLUIDMSG_DIR}/fluid/ofcommon/msg.hh
-  ${FLUIDMSG_DIR}/fluid/ofcommon/msg.cc
-  ${FLUIDMSG_DIR}/fluid/ofcommon/action.hh
-  ${FLUIDMSG_DIR}/fluid/ofcommon/action.cc
-  ${FLUIDMSG_DIR}/fluid/ofcommon/common.hh
-  ${FLUIDMSG_DIR}/fluid/ofcommon/common.cc
-  ${FLUIDMSG_DIR}/fluid/ofcommon/openflow-common.hh
-  ${FLUIDMSG_DIR}/fluid/of10/of10action.hh
-  ${FLUIDMSG_DIR}/fluid/of10/of10action.cc
-  ${FLUIDMSG_DIR}/fluid/of10/of10common.hh
-  ${FLUIDMSG_DIR}/fluid/of10/of10common.cc
-  ${FLUIDMSG_DIR}/fluid/of10/of10match.hh
-  ${FLUIDMSG_DIR}/fluid/of10/of10match.cc
-  ${FLUIDMSG_DIR}/fluid/of10/openflow-10.h
-  ${FLUIDMSG_DIR}/fluid/of13/of13instruction.hh
-  ${FLUIDMSG_DIR}/fluid/of13/of13instruction.cc
-  ${FLUIDMSG_DIR}/fluid/of13/of13action.hh
-  ${FLUIDMSG_DIR}/fluid/of13/of13action.cc
-  ${FLUIDMSG_DIR}/fluid/of13/of13meter.hh
-  ${FLUIDMSG_DIR}/fluid/of13/of13meter.cc
-  ${FLUIDMSG_DIR}/fluid/of13/of13common.hh
-  ${FLUIDMSG_DIR}/fluid/of13/of13common.cc
-  ${FLUIDMSG_DIR}/fluid/of13/of13match.hh
-  ${FLUIDMSG_DIR}/fluid/of13/of13match.cc
-  ${FLUIDMSG_DIR}/fluid/of13/openflow-13.h
-  ${FLUIDMSG_DIR}/fluid/of10msg.hh
-  ${FLUIDMSG_DIR}/fluid/of10msg.cc
-  ${FLUIDMSG_DIR}/fluid/of13msg.hh
-  ${FLUIDMSG_DIR}/fluid/of13msg.cc
-  )
 set(FLUIDMSG_include_files
   ${FLUIDMSG_DIR}
   ${FLUIDMSG_DIR}/fluid
@@ -99,11 +56,31 @@ set(FLUIDMSG_include_files
   ${FLUIDMSG_DIR}/fluid/of13
   ${FLUIDMSG_DIR}/fluid/util
   )
+set(FLUIDMSG_src_files
+  ${FLUIDMSG_DIR}/fluid/util/ethaddr.cc
+  ${FLUIDMSG_DIR}/fluid/util/ipaddr.cc
+  ${FLUIDMSG_DIR}/fluid/ofcommon/msg.cc
+  ${FLUIDMSG_DIR}/fluid/ofcommon/action.cc
+  ${FLUIDMSG_DIR}/fluid/ofcommon/common.cc
+  ${FLUIDMSG_DIR}/fluid/of10/of10action.cc
+  ${FLUIDMSG_DIR}/fluid/of10/of10common.cc
+  ${FLUIDMSG_DIR}/fluid/of10/of10match.cc
+  ${FLUIDMSG_DIR}/fluid/of13/of13instruction.cc
+  ${FLUIDMSG_DIR}/fluid/of13/of13action.cc
+  ${FLUIDMSG_DIR}/fluid/of13/of13meter.cc
+  ${FLUIDMSG_DIR}/fluid/of13/of13common.cc
+  ${FLUIDMSG_DIR}/fluid/of13/of13match.cc
+  ${FLUIDMSG_DIR}/fluid/of10msg.cc
+  ${FLUIDMSG_DIR}/fluid/of13msg.cc
+  )
+
+add_library(FLUIDMSG ${FLUIDMSG_src_files})
 
 #CORE/EPS
 set(EPS_DIR "${CORE_DIR}/eps")
 set(EPS_src_files
   ${EPS_DIR}/controller.cc
+  ${EPS_DIR}/of_interface.cc
   )
 set(EPS_include_files
   ${EPS_DIR}
@@ -111,33 +88,35 @@ set(EPS_include_files
   )
 
 find_package(Event REQUIRED)
+add_library(EPS ${EPS_src_files})
+target_link_libraries(EPS FLUIDBASE FLUIDMSG)
 
-#APP/SGWC
+#APP
 
 set(SGWC_DIR "${APP_DIR}/sgwc")
-set(SGWC_src_files
+set(SWITCH_DIR "${APP_DIR}/switch")
+set(APP_src_files
   ${SGWC_DIR}/sgwc.cc
+  ${SWITCH_DIR}/switch.cc
   )
-set(SGWC_include_files
+set(APP_include_files
   ${EPS_DIR}
   ${APP_DIR}
   ${SGWC_DIR}
+  ${SWITCH_DIR}
   )
+add_library(APP ${APP_src_files})
+target_link_libraries(APP EPS)
 
 #headers to be included
 include_directories(
   ${FLUIDBASE_include_files}
   ${FLUIDMSG_include_files}
   ${EPS_include_files}
-  ${SGWC_include_files}
+  ${APP_include_files}
   ${Event_INCLUDE_DIRS}
   )
 
-#library to be declared
-add_library(FLUIDBASE ${FLUIDBASE_src_files})
-add_library(FLUIDMSG ${FLUIDMSG_src_files})
-add_library(EPS ${EPS_src_files})
-add_library(SGWC ${SGWC_src_files})
 
 #targets
 set(LL_MEC ${LL_MEC_TARGET}/ll-mec)
@@ -154,7 +133,7 @@ target_link_libraries(ll-mec
   FLUIDBASE
   FLUIDMSG
   EPS
-  SGWC
+  APP
   event
   pthread
   ssl
