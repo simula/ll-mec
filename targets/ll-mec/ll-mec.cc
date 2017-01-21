@@ -4,6 +4,7 @@
 #include "switch.h"
 #include "of_interface.h"
 #include "controller_event.h"
+#include <thread>
 
 int main(){
   Controller ctrl("0.0.0.0", 6653, 2);
@@ -19,6 +20,9 @@ int main(){
   //Register event for application
   ctrl.register_for_event(&sgwc, EVENT_PACKET_IN);
   ctrl.register_for_event(&swt, EVENT_PACKET_IN);
+
+  std::thread sgwc_app(&SGWC::run, &sgwc);
+  std::thread swt_app(&Switch::run, &swt);
 
   //Controller start
   ctrl.start(true);
