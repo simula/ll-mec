@@ -33,3 +33,10 @@ build/*
 *.exe
 *.out
 *.app
+
+.codelite/
+Makefile
+cmake-build-Debug/
+ll-mec.mk
+ll-mec.project
+ll-mec.workspace
