@@ -5,7 +5,7 @@ void Switch::event_callback(ControllerEvent* ev) {
       this->of_interface.install_default_flow(ev->of_conn_);
   }
 }
-void Switch::run() {
+void Switch::start() {
   while(true){
     //std::cout<<"Switch"<<std::endl;
   }

@@ -45,6 +45,14 @@ set(FLUIDBASE_src_files
   )
 
 add_library(FLUIDBASE ${FLUIDBASE_src_files})
+target_link_libraries(FLUIDBASE
+  event
+  pthread
+  ssl
+  crypto
+  event_openssl
+  event_pthreads
+  )
 
 #OF MSG DRIVER
 set(FLUIDMSG_DIR "${DRIVER_DIR}/fluidmsg")
@@ -91,6 +99,18 @@ find_package(Event REQUIRED)
 add_library(EPS ${EPS_src_files})
 target_link_libraries(EPS FLUIDBASE FLUIDMSG)
 
+#CORE
+set(CORE_src_files
+  ${CORE_DIR}/task.cc
+  ${CORE_DIR}/rt_wrapper.cc
+  )
+set(CORE_include_files
+  ${CORE_DIR}
+  )
+add_library(CORE ${CORE_src_files})
+target_link_libraries(CORE EPS)
+
+
 #APP
 
 set(SGWC_DIR "${APP_DIR}/sgwc")
@@ -101,12 +121,13 @@ set(APP_src_files
   )
 set(APP_include_files
   ${EPS_DIR}
+  ${CORE_DIR}
   ${APP_DIR}
   ${SGWC_DIR}
   ${SWITCH_DIR}
   )
 add_library(APP ${APP_src_files})
-target_link_libraries(APP EPS)
+target_link_libraries(APP CORE)
 
 #headers to be included
 include_directories(
@@ -130,14 +151,7 @@ add_executable(ll-mecsim
 
 #libraries to be linked
 target_link_libraries(ll-mec
-  FLUIDBASE
-  FLUIDMSG
-  EPS
+  CORE
   APP
-  event
-  pthread
-  ssl
-  crypto
-  event_openssl
-  event_pthreads)
+  )
 target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)
