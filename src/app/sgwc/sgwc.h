@@ -1,11 +1,11 @@
 #ifndef __SGWC_H__
 #define __SGWC_H__
 
-#include "application.h"
+#include "app.h"
 
-class SGWC : public Application {
+class SGWC : public App {
 public:
-  SGWC(OFInterface &of_interface) : Application(of_interface) {}
+  SGWC(OFInterface &of_interface) : App(of_interface) {}
   void event_callback(ControllerEvent* ev);
   void start() override;
 };

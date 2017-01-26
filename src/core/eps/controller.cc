@@ -35,7 +35,7 @@ void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type
   }
 }
 
-void Controller::register_for_event(Application* app, int event_type) {
+void Controller::register_for_event(App* app, int event_type) {
   event_listeners_[event_type].push_back(app);
 }
 
