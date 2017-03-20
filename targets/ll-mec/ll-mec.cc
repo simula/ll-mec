@@ -14,14 +14,14 @@ int main(){
 
   //TODO Application manager and low latency scheduler
   //Initialize application
-  SGWC sgwc(of_interface);
+  //SGWC sgwc(of_interface);
   Switch swt(of_interface);
 
   //Register event for application
-  ctrl.register_for_event(&sgwc, EVENT_PACKET_IN);
-  ctrl.register_for_event(&swt, EVENT_PACKET_IN);
+  //ctrl.register_for_event(&sgwc, EVENT_PACKET_IN);
+  ctrl.register_for_event(&swt, EVENT_SWITCH_UP);
 
-  std::thread sgwc_app(&SGWC::run, &sgwc);
+  //std::thread sgwc_app(&SGWC::run, &sgwc);
   std::thread swt_app(&Switch::run, &swt);
 
   //Controller start

@@ -71,7 +71,7 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
   uint8_t* buffer;
   fluid_msg::of13::FlowMod fm(42, 0, 0xffffffffffffffff, 0, fluid_msg::of13::OFPFC_ADD, 0, 0, 0,
       0xffffffff, 0, 0, 0);
-  fluid_msg::of13::OutputAction *act = new fluid_msg::of13::OutputAction(fluid_msg::of13::OFPP_CONTROLLER,
+  fluid_msg::of13::OutputAction *act = new fluid_msg::of13::OutputAction(fluid_msg::of13::OFPP_NORMAL,
       fluid_msg::of13::OFPCML_NO_BUFFER);
   fluid_msg::of13::ApplyActions *inst = new fluid_msg::of13::ApplyActions();
   inst->add_action(act);
