@@ -1,5 +1,9 @@
 #include "of_interface.h"
 
+namespace llmec {
+namespace core {
+namespace eps {
+
 //TODO OpenFlow message field wrapper specifically for LL-MEC
 void OFInterface::install_flow_mod(fluid_msg::of10::PacketIn &pi, fluid_base::OFConnection* ofconn,
     uint64_t src, uint64_t dst, uint16_t out_port) {
@@ -80,3 +84,7 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
   of_conn->send(buffer, fm.length());
   fluid_msg::OFMsg::free_buffer(buffer);
 }
+
+} // namespace eps
+} // namespace core
+} // namespace llmec

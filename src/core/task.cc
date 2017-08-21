@@ -1,11 +1,11 @@
 #include "task.h"
 #include <iostream>
 
-int Task::apply_scheduling_policy() {
+int llmec::core::rt::Task::apply_scheduling_policy() {
   return sched_setattr(0, &sched_attr_, 0);
 }
 
-void Task::set_scheduling_policy(Policy pol) {
+void llmec::core::rt::Task::set_scheduling_policy(Policy pol) {
   __u32 sched_policy;
 
   if(pol == Policy::RR) {

@@ -5,11 +5,14 @@
 #include "task.h"
 #include <iostream>
 
-class App : public Task {
+namespace llmec {
+namespace app {
+
+class App : public llmec::core::rt::Task {
   public:
-    App(OFInterface &of_interface):Task(Policy::DEADLINE), of_interface(of_interface) {
+    App(llmec::core::eps::OFInterface &of_interface):llmec::core::rt::Task(llmec::core::rt::Policy::DEADLINE), of_interface(of_interface) {
     }
-    virtual void event_callback(ControllerEvent* ev)=0;
+    virtual void event_callback(llmec::core::eps::ControllerEvent* ev)=0;
     void run() {
       if (apply_scheduling_policy() < 0) {
         std::cout << "sched_setattr failed" << std::endl;
@@ -18,7 +21,9 @@ class App : public Task {
     }
     virtual void start() =0;
   protected:
-    OFInterface &of_interface;
+    llmec::core::eps::OFInterface &of_interface;
 };
 
+} // namespace app
+} // namespace llmec
 #endif

@@ -3,6 +3,10 @@
 
 #include <fluid/OFServer.hh>
 
+namespace llmec {
+namespace core {
+namespace eps {
+
 typedef enum {
   EVENT_PACKET_IN = 0,
   EVENT_SWITCH_DOWN = 1,
@@ -69,4 +73,7 @@ class SwitchDownEvent : public ControllerEvent {
       ControllerEvent(of_conn, EVENT_SWITCH_DOWN) {}
 };
 
+} // namespace eps
+} // namespace core
+} // namespace llmec
 #endif

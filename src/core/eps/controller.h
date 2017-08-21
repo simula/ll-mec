@@ -13,15 +13,18 @@
 #include "app.h"
 
 /*extern volatile sig_atomic_t quit;
-void sigint_handler(int s);
+  void sigint_handler(int s);
 
 
-void wait_for_sigint();*/
+  void wait_for_sigint();*/
 
+namespace llmec {
+namespace core {
+namespace eps {
 
 class Controller : public fluid_base::OFServer {
   public:
-    std::unordered_map<int, std::vector<App*> > event_listeners_;
+    std::unordered_map<int, std::vector<llmec::app::App*> > event_listeners_;
     // Non-lock map for now
     bool running_;
 
@@ -41,7 +44,7 @@ class Controller : public fluid_base::OFServer {
 
     virtual void connection_callback(fluid_base::OFConnection* of_conn, fluid_base::OFConnection::Event type);
     virtual void message_callback(fluid_base::OFConnection* of_conn, uint8_t type, void* data, size_t len);
-    void register_for_event(App* app, int event_type);
+    void register_for_event(llmec::app::App* app, int event_type);
 
     void stop();
 
@@ -50,15 +53,18 @@ class Controller : public fluid_base::OFServer {
         delete ev;
         return;
       }
-      for (std::vector<App*>::iterator it =
+      for (std::vector<llmec::app::App*>::iterator it =
           event_listeners_[ev->get_type()].begin();
           it != event_listeners_[ev->get_type()].end();
           it++) {
-        ((App*) (*it))->event_callback(ev);
+        ((llmec::app::App*) (*it))->event_callback(ev);
       }
       delete ev;
 
     }
 };
 
+} // namespace eps
+} // namespace core
+} // namespace llmec
 #endif

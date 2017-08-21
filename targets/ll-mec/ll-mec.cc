@@ -7,22 +7,22 @@
 #include <thread>
 
 int main(){
-  Controller ctrl("0.0.0.0", 6653, 2);
+  llmec::core::eps::Controller ctrl("0.0.0.0", 6653, 2);
 
   //OpenFlow driver interface init
-  OFInterface of_interface;
+  llmec::core::eps::OFInterface of_interface;
 
   //TODO Application manager and low latency scheduler
   //Initialize application
   //SGWC sgwc(of_interface);
-  Switch swt(of_interface);
+  llmec::app::_switch::Switch swt(of_interface);
 
   //Register event for application
   //ctrl.register_for_event(&sgwc, EVENT_PACKET_IN);
-  ctrl.register_for_event(&swt, EVENT_SWITCH_UP);
+  ctrl.register_for_event(&swt, llmec::core::eps::EVENT_SWITCH_UP);
 
   //std::thread sgwc_app(&SGWC::run, &sgwc);
-  std::thread swt_app(&Switch::run, &swt);
+  std::thread swt_app(&llmec::app::_switch::Switch::run, &swt);
 
   //Controller start
   ctrl.start(true);
