@@ -114,10 +114,10 @@ target_link_libraries(CORE EPS)
 #APP
 
 set(SGWC_DIR "${APP_DIR}/sgwc")
-set(SWITCH_DIR "${APP_DIR}/switch")
+set(SWITCH_DIR "${APP_DIR}/basic_switch")
 set(APP_src_files
   ${SGWC_DIR}/sgwc.cc
-  ${SWITCH_DIR}/switch.cc
+  ${SWITCH_DIR}/basic_switch.cc
   )
 set(APP_include_files
   ${EPS_DIR}
