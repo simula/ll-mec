@@ -1,10 +1,13 @@
 #include <iostream>
+#include <thread>
+#include <memory>
+
 #include "controller.h"
 #include "sgwc.h"
 #include "basic_switch.h"
+#include "stats_manager.h"
 #include "of_interface.h"
 #include "controller_event.h"
-#include <thread>
 
 int main(){
   llmec::core::eps::Controller ctrl("0.0.0.0", 6653, 2);
@@ -15,14 +18,18 @@ int main(){
   //TODO Application manager and low latency scheduler
   //Initialize application
   //SGWC sgwc(of_interface);
-  llmec::app::basic_switch::Basic_switch swt(of_interface);
+  //llmec::app::basic_switch::Basic_switch swt(of_interface);
+  auto basic_switch = std::make_shared<llmec::app::basic_switch::Basic_switch>(of_interface);
+  auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
 
   //Register event for application
   //ctrl.register_for_event(&sgwc, EVENT_PACKET_IN);
-  ctrl.register_for_event(&swt, llmec::core::eps::EVENT_SWITCH_UP);
+  ctrl.register_for_event(basic_switch, llmec::core::eps::EVENT_SWITCH_UP);
+  ctrl.register_for_event(stats_manager, llmec::core::eps::EVENT_SWITCH_UP);
 
   //std::thread sgwc_app(&SGWC::run, &sgwc);
-  std::thread swt_app(&llmec::app::basic_switch::Basic_switch::run, &swt);
+  std::thread swt_app(&llmec::app::basic_switch::Basic_switch::run, basic_switch);
+  std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
   //Controller start
   ctrl.start(true);

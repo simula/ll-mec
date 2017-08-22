@@ -7,6 +7,7 @@
 #include <list>
 #include <signal.h>
 #include <unistd.h>
+#include <memory>
 
 #include <fluid/OFServer.hh>
 
@@ -24,7 +25,7 @@ namespace eps {
 
 class Controller : public fluid_base::OFServer {
   public:
-    std::unordered_map<int, std::vector<llmec::app::App*> > event_listeners_;
+    std::unordered_map<int, std::vector<std::shared_ptr<llmec::app::App>> > event_listeners_;
     // Non-lock map for now
     bool running_;
 
@@ -44,7 +45,7 @@ class Controller : public fluid_base::OFServer {
 
     virtual void connection_callback(fluid_base::OFConnection* of_conn, fluid_base::OFConnection::Event type);
     virtual void message_callback(fluid_base::OFConnection* of_conn, uint8_t type, void* data, size_t len);
-    void register_for_event(llmec::app::App* app, int event_type);
+    void register_for_event(const std::shared_ptr<llmec::app::App>& app, int event_type);
 
     void stop();
 
@@ -53,12 +54,15 @@ class Controller : public fluid_base::OFServer {
         delete ev;
         return;
       }
-      for (std::vector<llmec::app::App*>::iterator it =
+      for (auto app : event_listeners_[ev->get_type()]) {
+        app->event_callback(ev);
+      }
+      /*for (std::vector<std::shared_ptr<llmec::app::App>>::iterator it =
           event_listeners_[ev->get_type()].begin();
           it != event_listeners_[ev->get_type()].end();
           it++) {
-        ((llmec::app::App*) (*it))->event_callback(ev);
-      }
+        ((std::shared_ptr<llmec::app::App>) (it))->event_callback(ev);
+      }*/
       delete ev;
 
     }
