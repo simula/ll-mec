@@ -142,6 +142,11 @@ set(APP_include_files
 add_library(APP ${APP_src_files})
 target_link_libraries(APP CORE)
 
+#Pistache
+add_library(PISTACHE STATIC IMPORTED)
+set_target_properties(PISTACHE PROPERTIES IMPORTED_LOCATION /usr/local/lib/libpistache.a)
+set(PISTACHE_include_files /usr/local/include/pistache)
+
 #NORTH_API
 
 set(NORTH_API_DIR "${LL_MEC_SRC}/north_api")
@@ -154,20 +159,13 @@ set(NORTH_API_include_files
   )
 add_library(NORTH_API ${NORTH_API_src_files})
 
-#Pistache
-find_package(Pistache REQUIRED)
-  if(Pistache_FOUND)
-    set(PISTACHE_include_files /usr/local/include/pistache)
-    add_library(PISTACHE /usr/local/lib/libpistache.a)
-endif()
-set_target_properties(PISTACHE PROPERTIES LINKER_LANGUAGE CXX)
-
 #headers to be included
 include_directories(
   ${FLUIDBASE_include_files}
   ${FLUIDMSG_include_files}
   ${EPS_include_files}
   ${APP_include_files}
+  ${NORTH_API_include_files}
   ${JSON_include_files}
   ${PISTACHE_include_files}
   ${Event_INCLUDE_DIRS}
@@ -183,7 +181,6 @@ add_executable(ll-mec
 add_executable(ll-mecsim
   ${LL_MECSIM}/ll-mecsim.cc
   )
-
 #libraries to be linked
 target_link_libraries(ll-mec
   CORE

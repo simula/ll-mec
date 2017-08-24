@@ -1,6 +1,7 @@
 #include <iostream>
 #include <thread>
 #include <memory>
+#include <pistache/endpoint.h>
 
 #include "controller.h"
 #include "sgwc.h"
@@ -8,6 +9,8 @@
 #include "stats_manager.h"
 #include "of_interface.h"
 #include "controller_event.h"
+#include "rest_manager.h"
+#include "stats_rest_calls.h"
 
 int main(){
   llmec::core::eps::Controller ctrl("0.0.0.0", 6653, 2);
@@ -30,6 +33,20 @@ int main(){
   //std::thread sgwc_app(&SGWC::run, &sgwc);
   std::thread swt_app(&llmec::app::basic_switch::Basic_switch::run, basic_switch);
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
+
+  //northbound api initial
+  Pistache::Port port(9999);
+  Pistache::Address addr(Pistache::Ipv4::any(), port);
+  llmec::north_api::Rest_manager rest_manager(addr);
+
+  //rest calls setup
+  llmec::north_api::Stats_rest_calls stats_rest_calls(std::dynamic_pointer_cast<llmec::app::stats::Stats_manager>(stats_manager));
+
+  //calls register
+  rest_manager.register_calls(stats_rest_calls);
+
+  rest_manager.init(1);
+  std::thread rest_manager_app(&llmec::north_api::Rest_manager::start, rest_manager);
 
   //Controller start
   ctrl.start(true);
