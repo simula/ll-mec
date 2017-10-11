@@ -7,10 +7,12 @@
 #include "sgwc.h"
 #include "basic_switch.h"
 #include "stats_manager.h"
+#include "ue_manager.h"
 #include "of_interface.h"
 #include "controller_event.h"
 #include "rest_manager.h"
 #include "stats_rest_calls.h"
+#include "ue_rest_calls.h"
 
 int main(){
   llmec::core::eps::Controller ctrl("0.0.0.0", 6653, 4);
@@ -44,9 +46,11 @@ int main(){
 
   //rest calls setup
   llmec::north_api::Stats_rest_calls stats_rest_calls(std::dynamic_pointer_cast<llmec::app::stats::Stats_manager>(stats_manager));
+  llmec::north_api::Ue_rest_calls ue_rest_calls(std::dynamic_pointer_cast<llmec::app::uplane::Ue_manager>(ue_manager));
 
   //calls register
   rest_manager.register_calls(stats_rest_calls);
+  rest_manager.register_calls(ue_rest_calls);
 
   rest_manager.init(1);
   std::thread rest_manager_app(&llmec::north_api::Rest_manager::start, rest_manager);

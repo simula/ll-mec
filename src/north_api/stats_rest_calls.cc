@@ -3,7 +3,7 @@
 #include <fluid/of13/openflow-13.h>
 #include <string>
 #include "stats_rest_calls.h"
-#include "json.hpp"
+#include "json.h"
 
 using json = nlohmann::json;
 

@@ -26,6 +26,9 @@ namespace eps {
 class Controller : public fluid_base::OFServer {
   public:
     std::unordered_map<int, std::vector<std::shared_ptr<llmec::app::App>> > event_listeners_;
+    // TODO Need to be refactor for multiple switch
+    // Assume only one switch for now
+    int conn_id;
     // Non-lock map for now
     bool running_;
 

@@ -14,6 +14,7 @@ void Controller::connection_callback(fluid_base::OFConnection* ofconn, fluid_bas
 
   else if (type == fluid_base::OFConnection::EVENT_ESTABLISHED) {
     printf("Connection id=%d established\n", ofconn->get_id());
+    this->conn_id = ofconn->get_id();
   }
 
   else if (type == fluid_base::OFConnection::EVENT_FAILED_NEGOTIATION)
