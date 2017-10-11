@@ -13,6 +13,7 @@ namespace north_api {
     Pistache::Rest::Routes::Post(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_ue, this));
     Pistache::Rest::Routes::Get(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue, this));
     Pistache::Rest::Routes::Get(router, "/ue/all", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
+    Pistache::Rest::Routes::Post(router, "/ue/redirect", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::redirect_ue, this));
   }
 
   void Ue_rest_calls::add_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -35,6 +36,31 @@ namespace north_api {
       std::string resp = "OK";
       response.send(Pistache::Http::Code::Ok, resp);
       }
+    else {
+      resp = "Format error.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+    }
+  }
+  void Ue_rest_calls::redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    std::string resp;
+    json payload = json::parse(request.body());
+    if ( (!payload["s1_ul_teid"].empty() && payload["s1_ul_teid"].is_string())
+        && (!payload["s1_dl_teid"].empty() && payload["s1_dl_teid"].is_string())
+        && (!payload["ue_ip"].empty() && payload["ue_ip"].is_string())
+        && (!payload["enb_ip"].empty() && payload["enb_ip"].is_string())
+        && (!payload["from"].empty() && payload["from"].is_string())
+        && (!payload["to"].empty() && payload["to"].is_string())
+        ) {
+      uint64_t s1_ul_teid = std::stoul(payload["s1_ul_teid"].dump(), nullptr, 16);
+      uint64_t s1_dl_teid = std::stoul(payload["s1_dl_teid"].dump(), nullptr, 16);
+      std::string ue_ip = payload["ue_ip"];
+      std::string enb_ip = payload["enb_ip"];
+      std::string from = payload["from"];
+      std::string to = payload["to"];
+      this->ue_manager->redirect_ue(s1_ul_teid, s1_dl_teid, ue_ip, enb_ip, from, to);
+      std::string resp = "OK";
+      response.send(Pistache::Http::Code::Ok, resp);
+    }
     else {
       resp = "Format error.";
       response.send(Pistache::Http::Code::Bad_Request, resp);

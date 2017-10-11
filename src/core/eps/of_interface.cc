@@ -163,6 +163,7 @@ void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, 
   of_conn->send(buffer, fm.length());
   fluid_msg::OFMsg::free_buffer(buffer);
 }
+
 void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel, std::string from, std::string to) {
   uint8_t* buffer;
   fluid_msg::of13::Match m;
@@ -248,6 +249,7 @@ void OFInterface::redirect_edge_service_dl_flow(fluid_base::OFConnection* of_con
   of_conn->send(buffer, fm.length());
   fluid_msg::OFMsg::free_buffer(buffer);
 }
+
 
 void OFInterface::get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid, uint8_t table_id, uint64_t cookie, uint64_t cookie_mask, uint32_t out_port) {
   uint8_t* buffer;
