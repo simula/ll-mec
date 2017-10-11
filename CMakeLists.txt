@@ -122,10 +122,12 @@ target_link_libraries(CORE EPS)
 set(SGWC_DIR "${APP_DIR}/sgwc")
 set(SWITCH_DIR "${APP_DIR}/basic_switch")
 set(STATS_DIR "${APP_DIR}/stats")
+set(UPLANE_DIR "${APP_DIR}/uplane")
 set(APP_src_files
   ${SGWC_DIR}/sgwc.cc
   ${SWITCH_DIR}/basic_switch.cc
   ${STATS_DIR}/stats_manager.cc
+  ${UPLANE_DIR}/ue_manager.cc
   )
 set(APP_include_files
   ${EPS_DIR}
@@ -134,6 +136,7 @@ set(APP_include_files
   ${SGWC_DIR}
   ${SWITCH_DIR}
   ${STATS_DIR}
+  ${UPLANE_DIR}
   )
 add_library(APP ${APP_src_files})
 target_link_libraries(APP CORE)
@@ -148,6 +151,7 @@ set(PISTACHE_include_files /usr/local/include/pistache)
 set(NORTH_API_DIR "${LL_MEC_SRC}/north_api")
 set(NORTH_API_src_files
   ${NORTH_API_DIR}/stats_rest_calls.cc
+  ${NORTH_API_DIR}/ue_rest_calls.cc
   ${NORTH_API_DIR}/rest_manager.cc
   )
 set(NORTH_API_include_files
