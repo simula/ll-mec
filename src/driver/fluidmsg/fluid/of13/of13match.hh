@@ -1115,6 +1115,38 @@ public:
     }
 };
 
+class TUNNELDst: public OXMTLV {
+private:
+    IPAddress value_;
+    IPAddress mask_;
+public:
+    TUNNELDst();
+    TUNNELDst(IPAddress value);
+    TUNNELDst(IPAddress value, IPAddress mask);
+    ~TUNNELDst() {
+    }
+    virtual bool equals(const OXMTLV & other);
+    OXMTLV& operator=(const OXMTLV& field);
+    virtual TUNNELDst* clone() const {
+        return new TUNNELDst(*this);
+    }
+    size_t pack(uint8_t *buffer);
+    of_error unpack(uint8_t *buffer);
+    IPAddress value() const {
+        return this->value_;
+    }
+    IPAddress mask() const {
+        return this->mask_;
+    }
+    void value(IPAddress value) {
+        this->value_ = value;
+    }
+    void mask(IPAddress mask) {
+        this->mask_ = mask;
+    }
+};
+
+
 class IPv6Exthdr: public OXMTLV {
 private:
     uint16_t value_;
@@ -1208,6 +1240,7 @@ public:
     MPLSBOS* mpls_bos();
     PBBIsid* pbb_isid();
     TUNNELId* tunnel_id();
+    TUNNELDst* tunnel_dst();
     IPv6Exthdr* ipv6_exthdr();
 };
 

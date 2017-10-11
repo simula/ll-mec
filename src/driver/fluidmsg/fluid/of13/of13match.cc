@@ -2193,6 +2193,80 @@ of_error TUNNELId::unpack(uint8_t *buffer) {
     return 0;
 }
 
+TUNNELDst::TUNNELDst()
+    : OXMTLV(of13::OFPXMC_NXM_1, 32, false,
+            of13::OFP_OXM_IPV4_LEN),
+    value_((uint32_t) 0),
+    mask_((uint32_t) 0) {
+        create_oxm_req(0x0800, 0, 0, 0);
+    }
+
+TUNNELDst::TUNNELDst(IPAddress value)
+    : OXMTLV(of13::OFPXMC_NXM_1, 32, false,
+            of13::OFP_OXM_IPV4_LEN),
+    value_(value),
+    mask_((uint32_t) 0) {
+        // this->value_  = value;
+        create_oxm_req(0x0800, 0, 0, 0);
+    }
+
+TUNNELDst::TUNNELDst(IPAddress value, IPAddress mask)
+    : OXMTLV(of13::OFPXMC_NXM_1, 32, true,
+            of13::OFP_OXM_IPV4_LEN),
+    value_(value),
+    mask_(mask) {
+        // this->value_  = value;
+        // this->mask_  = mask;
+        create_oxm_req(0x0800, 0, 0, 0);
+    }
+
+bool TUNNELDst::equals(const OXMTLV &other) {
+
+    if (const TUNNELDst * field = dynamic_cast<const TUNNELDst *>(&other)) {
+        return ((OXMTLV::equals(other)) && (this->value_ == field->value_)
+                && (this->has_mask_ ? this->mask_ == field->mask_ : true));
+    }
+    else {
+        return false;
+    }
+}
+
+OXMTLV& TUNNELDst::operator=(const OXMTLV& field) {
+    const TUNNELDst& dst = dynamic_cast<const TUNNELDst&>(field);
+    OXMTLV::operator=(field);
+    this->value_ = dst.value_;
+    this->mask_ = dst.mask_;
+    return *this;
+}
+;
+
+size_t TUNNELDst::pack(uint8_t *buffer) {
+    OXMTLV::pack(buffer);
+    size_t len = this->length_;
+    if (this->has_mask_) {
+        len = this->length_ / 2;
+        uint32_t ip_mask = this->mask_.getIPv4();
+        memcpy(buffer + (of13::OFP_OXM_HEADER_LEN + len), &ip_mask, len);
+    }
+    uint32_t ip = this->value_.getIPv4();
+    memcpy(buffer + of13::OFP_OXM_HEADER_LEN, &ip, len);
+    return 0;
+}
+
+of_error TUNNELDst::unpack(uint8_t *buffer) {
+    uint32_t ip = *((uint32_t*) (buffer + of13::OFP_OXM_HEADER_LEN));
+    OXMTLV::unpack(buffer);
+    this->value_ = IPAddress(ip);
+    if (this->has_mask_) {
+        size_t len = this->length_ / 2;
+        uint32_t ip_mask = *((uint32_t*) (buffer + of13::OFP_OXM_HEADER_LEN
+                    + len));
+        this->mask_ = IPAddress(ip_mask);
+    }
+    return 0;
+}
+
+
 IPv6Exthdr::IPv6Exthdr()
     : mask_(0),
       OXMTLV(of13::OFPXMC_OPENFLOW_BASIC, of13::OFPXMT_OFB_IPV6_EXTHDR, false,
