@@ -13,7 +13,7 @@ class Stats_rest_calls : public Rest_calls {
   public:
     Stats_rest_calls(std::shared_ptr<llmec::app::stats::Stats_manager> stats_manager) : stats_manager(stats_manager) { }
     void register_calls(Pistache::Rest::Router& router);
-    void get_switches_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void get_flow_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     //void obtain_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
   private:
     std::shared_ptr<llmec::app::stats::Stats_manager> stats_manager;

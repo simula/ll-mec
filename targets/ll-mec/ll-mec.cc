@@ -13,7 +13,7 @@
 #include "stats_rest_calls.h"
 
 int main(){
-  llmec::core::eps::Controller ctrl("0.0.0.0", 6653, 2);
+  llmec::core::eps::Controller ctrl("0.0.0.0", 6653, 4);
 
   //OpenFlow driver interface init
   llmec::core::eps::OFInterface of_interface;
@@ -23,15 +23,18 @@ int main(){
   //SGWC sgwc(of_interface);
   //llmec::app::basic_switch::Basic_switch swt(of_interface);
   auto basic_switch = std::make_shared<llmec::app::basic_switch::Basic_switch>(of_interface);
-  auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
+  auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface, ctrl);
+  // TODO Need to handle this better (connection id)
+  auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface, ctrl);
 
   //Register event for application
   //ctrl.register_for_event(&sgwc, EVENT_PACKET_IN);
   ctrl.register_for_event(basic_switch, llmec::core::eps::EVENT_SWITCH_UP);
-  ctrl.register_for_event(stats_manager, llmec::core::eps::EVENT_SWITCH_UP);
+  ctrl.register_for_event(stats_manager, llmec::core::eps::EVENT_MULTIPART_REPLY);
+  //ctrl.register_for_event(stats_manager, llmec::core::eps::EVENT_SWITCH_UP);
 
   //std::thread sgwc_app(&SGWC::run, &sgwc);
-  std::thread swt_app(&llmec::app::basic_switch::Basic_switch::run, basic_switch);
+  //std::thread swt_app(&llmec::app::basic_switch::Basic_switch::run, basic_switch);
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
   //northbound api initial

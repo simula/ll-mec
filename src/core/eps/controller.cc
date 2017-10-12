@@ -37,6 +37,9 @@ void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type
   else if (type == 6) { // OFPT_FEATURES_REPLY
     dispatch_event(new SwitchUpEvent(ofconn, this, data, len));
   }
+  else if (type == 19) { //OFPT_MULTIPART_REPLY
+    dispatch_event(new MultipartReplyEvent(ofconn, this, data, len));
+  }
 }
 
 void Controller::register_for_event(const std::shared_ptr<llmec::app::App>& app, int event_type) {

@@ -11,6 +11,7 @@ typedef enum {
   EVENT_PACKET_IN = 0,
   EVENT_SWITCH_DOWN = 1,
   EVENT_SWITCH_UP = 2,
+  EVENT_MULTIPART_REPLY = 3,
 } EventType;
 
 class ControllerEvent {
@@ -71,6 +72,24 @@ class SwitchDownEvent : public ControllerEvent {
   public:
     SwitchDownEvent(fluid_base::OFConnection* of_conn) :
       ControllerEvent(of_conn, EVENT_SWITCH_DOWN) {}
+};
+
+class MultipartReplyEvent : public ControllerEvent {
+  public:
+    MultipartReplyEvent(fluid_base::OFConnection* of_conn, fluid_base::OFHandler* of_handler, void* data, size_t len) :
+      ControllerEvent(of_conn, EVENT_MULTIPART_REPLY) {
+        this->data_ = (uint8_t*) data;
+        this->len_ = len;
+        this->of_handler_ = of_handler;
+      }
+
+    virtual ~MultipartReplyEvent() {
+      this->of_handler_->free_data(this->data_);
+    }
+
+    fluid_base::OFHandler* of_handler_;
+    uint8_t* data_;
+    size_t len_;
 };
 
 } // namespace eps

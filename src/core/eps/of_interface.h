@@ -17,6 +17,9 @@ class OFInterface {
     void install_default_flow(fluid_base::OFConnection* of_conn);
     void install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel_id);
     void install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, std::string UE_ip, uint64_t dl_tunnel_id, std::string ENB_ip);
+    void redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel_id, std::string from, std::string to);
+    void redirect_edge_service_dl_flow(fluid_base::OFConnection* of_conn, std::string UE_ip, uint64_t dl_tunnel_id, std::string ENB_ip, std::string from, std::string to);
+    void get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid, uint8_t table_id, uint64_t cookie, uint64_t cookie_mask, uint32_t out_port);
 };
 
 } // namespace eps
