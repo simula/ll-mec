@@ -14,6 +14,8 @@ namespace north_api {
     Pistache::Rest::Routes::Get(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue, this));
     Pistache::Rest::Routes::Get(router, "/ue/all", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
     Pistache::Rest::Routes::Post(router, "/ue/redirect", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::redirect_ue, this));
+    // TODO Move flush_flow to another rest call
+    Pistache::Rest::Routes::Post(router, "/flow/flush", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::flush_flow, this));
   }
 
   void Ue_rest_calls::add_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -72,6 +74,13 @@ namespace north_api {
   }
   void Ue_rest_calls::get_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     std::string resp = "Not implemented yet";
+    response.send(Pistache::Http::Code::Ok, resp);
+  }
+  // TODO Move this to another rest call
+  void Ue_rest_calls::flush_flow(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    this->ue_manager->flush_flow(1);
+    //this->ue_manager->flush_flow(0);
+    std::string resp = "OK";
     response.send(Pistache::Http::Code::Ok, resp);
   }
 

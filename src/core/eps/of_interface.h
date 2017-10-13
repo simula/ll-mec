@@ -20,6 +20,7 @@ class OFInterface {
     void redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel_id, std::string from, std::string to);
     void redirect_edge_service_dl_flow(fluid_base::OFConnection* of_conn, std::string UE_ip, uint64_t dl_tunnel_id, std::string ENB_ip, std::string from, std::string to);
     void get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid, uint8_t table_id, uint64_t cookie, uint64_t cookie_mask, uint32_t out_port);
+    void flush_flow(fluid_base::OFConnection* of_conn, uint64_t cookie);
 };
 
 } // namespace eps

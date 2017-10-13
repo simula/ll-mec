@@ -15,6 +15,7 @@ class Ue_manager : public llmec::app::App {
     void start() override;
     void add_ue(uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip);
     void redirect_ue(uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip, std::string from, std::string to);
+    void flush_flow(uint64_t cookie);
   protected:
     llmec::core::eps::Controller &ctrl;
 };

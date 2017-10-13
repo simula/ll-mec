@@ -21,6 +21,10 @@ void Ue_manager::redirect_ue(uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::stri
   this->of_interface.redirect_edge_service_ul_flow(of_conn_, s1_ul_teid, from, to);
   this->of_interface.redirect_edge_service_dl_flow(of_conn_, ue_ip, s1_dl_teid, enb_ip, from, to);
 }
+void Ue_manager::flush_flow(uint64_t cookie) {
+  fluid_base::OFConnection *of_conn_ = (this->ctrl).get_ofconnection((this->ctrl).conn_id);
+  this->of_interface.flush_flow(of_conn_, cookie);
+}
 
 } // namespace uplane
 } // namespace app

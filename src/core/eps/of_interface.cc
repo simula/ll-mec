@@ -259,6 +259,35 @@ void OFInterface::get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
+void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t cookie) { // Currently assume cookie =1 for those rules added by ll-mec
+  uint8_t* buffer;
+  fluid_msg::of13::Match m;
+  // TODO configuration file for s1u port number
+  //fluid_msg::of13::InPort in_port(2);
+  //m.add_oxm_field(in_port);
+  // Default value for fields below
+  fluid_msg::of13::FlowMod fm;
+  fm.xid(43);
+  // Set cookie to 1 in order to flush flows easily
+  fm.cookie(cookie);
+  fm.cookie_mask(0xffffffffffffffff);
+  //fm.table_id(fluid_msg::of13::OFPTT_ALL);
+  fm.table_id(0);
+  fm.command(fluid_msg::of13::OFPFC_DELETE);
+  fm.idle_timeout(0);
+  fm.hard_timeout(0);
+  fm.priority(2);
+  fm.buffer_id(0xffffffff);
+  fm.out_port(fluid_msg::of13::OFPP_ANY);
+  fm.out_group(fluid_msg::of13::OFPG_ANY);
+  fm.flags(0);
+  //fm.match(m);
+
+  buffer = fm.pack();
+  of_conn->send(buffer, fm.length());
+
+}
+
 } // namespace eps
 } // namespace core
 } // namespace llmec
