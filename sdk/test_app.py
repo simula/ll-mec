@@ -91,7 +91,7 @@ if __name__ == '__main__':
                         required=False, default='9999', 
                         help='set the FlexRAN RTC port: 9999 (default)')
     parser.add_argument('--op-mode', metavar='[option]', action='store', type=str,
-                        required=False, default='test', 
+                        required=False, default='sdk', 
                         help='Test SDK with already generated json files: test (default), sdk')
     parser.add_argument('--log',  metavar='[level]', action='store', type=str,
                         required=False, default='info', 
@@ -120,14 +120,14 @@ if __name__ == '__main__':
         fm.flow_status()
         
 
-        print 'num rules' + str (json.dumps(fm.get_num_rules(), indent=2))
-        print 'num UEs :' + str (json.dumps(fm.get_num_ues(), indent=2))
+    print 'num rules' + str (json.dumps(fm.get_num_rules(), indent=2))
+    print 'num UEs :' + str (json.dumps(fm.get_num_ues(), indent=2))
     
-        for ue_id in range(0, fm.get_num_ues()) :
-            fm.get_num_bytes(ue_id)
-            fm.get_num_bytes(ue_id,dir='dl')
-            fm.get_num_packets(ue_id)
-            fm.get_num_packets(ue_id,dir='dl') 
+    for ue_id in range(0, fm.get_num_ues()) :
+        fm.get_num_bytes(ue_id)
+        fm.get_num_bytes(ue_id,dir='dl')
+        fm.get_num_packets(ue_id)
+        fm.get_num_packets(ue_id,dir='dl') 
     
     
    
