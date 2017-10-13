@@ -86,10 +86,10 @@ if __name__ == '__main__':
     
     parser.add_argument('--url', metavar='[option]', action='store', type=str,
                         required=False, default='http://localhost', 
-                        help='set the FlexRAN RTC URL: loalhost (default)')
+                        help='set the LLMEC URL: loalhost (default)')
     parser.add_argument('--port', metavar='[option]', action='store', type=str,
                         required=False, default='9999', 
-                        help='set the FlexRAN RTC port: 9999 (default)')
+                        help='set the LLMEC port: 9999 (default)')
     parser.add_argument('--op-mode', metavar='[option]', action='store', type=str,
                         required=False, default='sdk', 
                         help='Test SDK with already generated json files: test (default), sdk')
@@ -116,8 +116,7 @@ if __name__ == '__main__':
     #t = Timer(5, test_app.run,kwargs=dict(fm=fm))
     #t.start()
 
-    if args.op_mode == 'test' :
-        fm.flow_status()
+    fm.flow_status()
         
 
     print 'num rules' + str (json.dumps(fm.get_num_rules(), indent=2))

@@ -77,7 +77,7 @@ class llmec_rest_api(object):
 
     flow_flush='/flow/flush'
 
-    flow_stats='/stats/flow'
+    flow_stats='/stats/flows'
 
 class ue_manager(object):
     def __init__(self, log, url='http://localhost', port='9999', op_mode='test'):
@@ -191,7 +191,7 @@ class flow_manager(object):
     def flow_status(self):
        
         url = self.url+self.flow_stats
-        self.log.debug('POST ' + str(url))
+        self.log.debug('GET ' + str(url))
         
         file = ''
 

@@ -60,7 +60,7 @@ class logger(object):
         # add the handler to the root logger
         
         logging.getLogger('').addHandler(self.console)
-        self.log = logging.getLogger('flexran_sdk')
+        self.log = logging.getLogger('llmec_sdk')
         
         if self.log_level == 'debug':
             self.console.setLevel(logging.DEBUG)
