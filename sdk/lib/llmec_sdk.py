@@ -89,7 +89,7 @@ class ue_manager(object):
         self.log = log
 
         self.add_ue_api=llmec_rest_api.add_ue
-        self.redict_ue_api=llmec_rest_api.redirect_ue
+        self.redirect_ue_api=llmec_rest_api.redirect_ue
 
        
     # data: {"s1_ul_teid":"0x01", "s1_dl_teid":"0x8d3ded37","ue_ip":"172.16.0.2","enb_ip":"192.168.12.79"}
@@ -120,7 +120,7 @@ class ue_manager(object):
         else :
             self.log.warn('Unknown operation mode ' + op_mode )       
 
-    def redirect_ue_rule(self, ul_teid='0x01', dl_teid='0x8d3ded37',ue_ip='172.16.0.2',enb_id='192.168.12.79', remote_ip='193.55.113.118', local_ip=''):
+    def redirect_ue_rule(self, ul_teid='0x01', dl_teid='0x8d3ded37',ue_ip='172.16.0.2',enb_ip='192.168.12.79', remote_ip='193.55.113.118', local_ip=''):
 
         url = self.url+self.redirect_ue_api 
         data= {'s1_ul_teid': ul_teid, 's1_dl_teid' : dl_teid, 'ue_ip': ue_ip, 'enb_ip' : enb_ip,'from':remote_ip, 'to': local_ip}
@@ -131,7 +131,6 @@ class ue_manager(object):
 
         elif self.op_mode == 'sdk' : 
             try :
-                self.log.debug('POST ' + str(url))
                 self.log.debug('POST ' + str(url))
                 self.log.debug('Data ' + str(data))
                
@@ -165,12 +164,11 @@ class flow_manager(object):
        
         self.fs_file = llmec_rest_api.fs_all
  
-    def flow_flush(self):
+    def flush_flows(self):
        
         url = self.url+self.flow_flush
-
         if self.op_mode == 'test' :
-            self.log.info('POST ' + str(url))
+            self.log.info('POST ' + url)
 
         elif self.op_mode == 'sdk' : 
             try :
@@ -182,7 +180,7 @@ class flow_manager(object):
                     self.status='disconnected'
                 self.log.error('Request error code : ' + req.status_code)
             except :
-                self.log.error('Failed to delegate the DL schedling to the agent' )
+                self.log.error('Failed to flush the rules' )
 
         else :
             self.log.warn('Unknown operation mode ' + op_mode )                 
@@ -217,7 +215,7 @@ class flow_manager(object):
                     self.status='connected'
                 else :
                     self.status='disconnected'
-                self.log.error('Request error code : ' + req.status_code)
+                    self.log.error('Request error code : ' + req.status_code)
             except :
                 self.log.error('Failed to get the flow status' )
 
@@ -244,7 +242,7 @@ class flow_manager(object):
         if dir == 'ul' or dir == 'UL' :
             index=2*ue_id
 
-        self.log.info('UE id ' + str(ue_id) + ' in ' + flow_dir + ' byte count: ' + str(self.stats_data[index]['byte_count']))    
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' byte count: ' + str(self.stats_data[index]['byte_count']))    
 
         return self.stats_data[index]['byte_count']
 
@@ -257,7 +255,7 @@ class flow_manager(object):
         if dir == 'ul' or dir == 'UL' :
             index=2*ue_id
             
-        self.log.info('UE id ' + str(ue_id) + ' in ' + flow_dir + ' packet count: ' + str(self.stats_data[index]['packet_count']))    
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' packet count: ' + str(self.stats_data[index]['packet_count']))    
         return self.stats_data[index]['packet_count']
 
     def get_flow_life_time(self, ue_id=0, dir='UL'):
@@ -269,7 +267,7 @@ class flow_manager(object):
         if dir == 'ul' or dir == 'UL' :
             index=2*ue_id
             
-        self.log.info('UE id ' + str(ue_id) + ' in ' + flow_dir + ' flow lifetime: ' + str(self.stats_data[index]['duration_sec']))    
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow lifetime: ' + str(self.stats_data[index]['duration_sec']))    
         return self.stats_data[index]['duration_sec']
 
     def get_flow_priority(self, ue_id=0, dir='UL'):
@@ -281,7 +279,7 @@ class flow_manager(object):
         if dir == 'ul' or dir == 'UL' :
             index=2*ue_id
 
-        self.log.info('UE id ' + str(ue_id) + ' in ' + flow_dir + ' flow priority: ' + str(self.stats_data[index]['priority']))    
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow priority: ' + str(self.stats_data[index]['priority']))    
         return self.stats_data[index]['priority']
 
     def get_flow_in_port(self, ue_id=0, dir='UL'):
@@ -293,6 +291,7 @@ class flow_manager(object):
         if dir == 'ul' or dir == 'UL' :
             index=2*ue_id
 
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow in port: ' + str(self.stats_data[index]['in_port']))    
         return self.stats_data[index]['in_port']
 
     def get_flow_table_id(self, ue_id=0, dir='UL'):
@@ -304,5 +303,6 @@ class flow_manager(object):
         if dir == 'ul' or dir == 'UL' :
             index=2*ue_id
 
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow table id: ' + str(self.stats_data[index]['flow_table_id']))    
         return self.stats_data[index]['flow_table_id']
 

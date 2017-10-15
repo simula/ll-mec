@@ -41,44 +41,118 @@ import logging
 import argparse
 import os
 import pprint
+import sys 
+from sys import *
 
-from lib import llmec_sdk 
-from lib import logger 
-
+from array import *
 from threading import Timer
 from time import sleep
+
+
+from lib import llmec_sdk 
+from lib import logger
+
+import signal
+
+import ipcalc
+
+
+def sigint_handler(signum,frame):
+    print 'Exiting, wait for the timer to expire... Bye'
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, sigint_handler)
 
 class test_app(object):
     """test test app that makes use of llmec SDK
     """
 
-    def __init__(self, url='http://localhost',port='9999',log_level='info', op_mode='test'):
+    def __init__(self, log, url='http://localhost',port='9999',log_level='info', op_mode='test'):
         super(test_app, self).__init__()
         
         self.url = url+port
+        self.log = log
         self.log_level = log_level
         self.status = 0
         self.op_mode = op_mode
+        
+        self.ul_teid=1
+        self.dl_teid = 0x8d3ded37
+        self.ue_ip = '172.16.0.0/27'
+        self.enb_ip = '192.168.12.79'
+        self.remote_ip= '193.55.113.118'
+        self.local_ip= '192.168.12.200'
+        self.py3_flag = version_info[0] > 2 
 
-    def run(self, fm):
-        log.info('2. Reading the status of the underlying flows')
+    def get_status(self,fm):
+        fm.flow_status()
 
-        if args.op_mode == 'test' :
-            fm.flow_status()
-
-
-        print 'num rules' + str (json.dumps(fm.get_num_rules(), indent=2))
-        print 'num UEs :' + str (json.dumps(fm.get_num_ues(), indent=2))
+        self.log.info('Total number of applied UEs ' + str(fm.get_num_ues()))
+        self.log.info('Total number of applied rules ' + str(fm.get_num_rules()))
+        print '-----------------------------------------------------------------------------------------'
     
         for ue_id in range(0, fm.get_num_ues()) :
             fm.get_num_bytes(ue_id)
             fm.get_num_bytes(ue_id,dir='dl')
             fm.get_num_packets(ue_id)
             fm.get_num_packets(ue_id,dir='dl')
+            print '-----------------------------------------------------------------------------------------'
+            
         
+    def cmd(self, um, fm):
+        user_in=''
+        try:
+            if self.py3_flag:
+                user_in = input("************ Enter the command to execut(flush,redirect):  ************")
+            else:
+                user_in = raw_input("************ Enter the command to execut(flush,redirect): ************")
+                
+        except ValueError:
+            self.log.warning('Please enter a string!')
+
         
-        t = Timer(5, self.run,kwargs=dict(fm=fm))
-        t.start()        
+        if user_in == 'flush' :
+            self.log.info('flusing the rules')
+            fm.flush_flows()
+
+        elif user_in == 'redirect' :
+            network = ipcalc.Network(self.ue_ip)
+            host_first = network.host_first()
+            addresses = (host_first + i for i in range(network.size()-2))
+            next(addresses) # skip the  even numbers
+            # redirect all UEs to the local video server
+            self.log.info('redirecting flows towards MEC apps for ' + str(network.size()-2) + ' UEs' )
+            for i in range(0, network.size()-2) :
+                
+                um.redirect_ue_rule(ul_teid=str(self.ul_teid), dl_teid=str(self.dl_teid),ue_ip=str(next(addresses)),enb_ip=self.enb_ip, remote_ip=self.remote_ip, local_ip=self.local_ip)
+                self.ul_teid+=1
+                self.dl_teid+=1
+                if  2* i + 2 < network.size()-2 : 
+                    next(addresses) # skip the  even numbers
+                else :
+                    break;
+        
+        elif user_in != ' ' :
+            self.log.info('unknow command ' + str(user_in))
+        else :
+          self.log.debug('no command entered')
+        
+        t2 = Timer(5, self.cmd,kwargs=dict(um=um,fm=fm))
+        t2.start()        
+
+      
+        #for 
+        #data= {'s1_ul_teid': ul_teid, 's1_dl_teid' : dl_teid, 'ue_ip': ue_ip, 'enb_ip' : enb_ip,'from':remote_ip, 'to': local_ip}
+        
+     
+        
+    def run(self, um, fm):
+        log.info('2. Reading the status of the underlying flows')
+        
+        test_app.get_status(fm)
+        
+        t1 = Timer(3, self.run,kwargs=dict(um=um, fm=fm))
+        t1.start()        
                   
    
 if __name__ == '__main__':
@@ -100,34 +174,29 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    app = test_app(url=args.url,
+    log=llmec_sdk.logger(log_level=args.log).init_logger()
+    
+    test_app = test_app(log=log,
+                   url=args.url,
                    port=args.port,
                    log_level=args.log,
                    op_mode=args.op_mode)
     
-    log=llmec_sdk.logger(log_level=args.log).init_logger()
-    log.info('test')
     
     fm = llmec_sdk.flow_manager(log=log,
                                 url=args.url,
                                 port=args.port,
                                 op_mode=args.op_mode)
-
-    #t = Timer(5, test_app.run,kwargs=dict(fm=fm))
-    #t.start()
-
+    
     fm.flow_status()
-        
+    um = llmec_sdk.ue_manager(log=log,
+                              url=args.url,
+                              port=args.port,
+                              op_mode=args.op_mode)
 
-    print 'num rules' + str (json.dumps(fm.get_num_rules(), indent=2))
-    print 'num UEs :' + str (json.dumps(fm.get_num_ues(), indent=2))
-    
-    for ue_id in range(0, fm.get_num_ues()) :
-        fm.get_num_bytes(ue_id)
-        fm.get_num_bytes(ue_id,dir='dl')
-        fm.get_num_packets(ue_id)
-        fm.get_num_packets(ue_id,dir='dl') 
-    
-    
-   
-        
+    t1 = Timer(3, test_app.run,kwargs=dict(um=um, fm=fm))
+    t1.start()
+
+    t2 = Timer(5, test_app.cmd,kwargs=dict(um=um, fm=fm))
+    t2.start()
+
