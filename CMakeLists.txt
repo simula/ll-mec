@@ -84,6 +84,12 @@ set(FLUIDMSG_src_files
 
 add_library(FLUIDMSG ${FLUIDMSG_src_files})
 
+#JSON driver
+set(JSON_DIR "${DRIVER_DIR}/json")
+set(JSON_include_files
+  ${JSON_DIR}
+  )
+
 #CORE/EPS
 set(EPS_DIR "${CORE_DIR}/eps")
 set(EPS_src_files
@@ -153,6 +159,7 @@ add_library(NORTH_API ${NORTH_API_src_files})
 include_directories(
   ${FLUIDBASE_include_files}
   ${FLUIDMSG_include_files}
+  ${JSON_include_files}
   ${EPS_include_files}
   ${APP_include_files}
   ${NORTH_API_include_files}
