@@ -1,5 +1,5 @@
 project (LL_MEC)
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 
 macro(use_cxx11)
@@ -84,16 +84,6 @@ set(FLUIDMSG_src_files
 
 add_library(FLUIDMSG ${FLUIDMSG_src_files})
 
-#JSON driver
-set(JSON_DIR "${DRIVER_DIR}/json")
-set (JSON_src_files
-  ${JSON_DIR}/json11.cc
-  )
-set(JSON_include_files
-  ${JSON_DIR}
-  )
-add_library(JSON ${JSON_src_files})
-
 #CORE/EPS
 set(EPS_DIR "${CORE_DIR}/eps")
 set(EPS_src_files
@@ -166,7 +156,6 @@ include_directories(
   ${EPS_include_files}
   ${APP_include_files}
   ${NORTH_API_include_files}
-  ${JSON_include_files}
   ${PISTACHE_include_files}
   ${Event_INCLUDE_DIRS}
   )
