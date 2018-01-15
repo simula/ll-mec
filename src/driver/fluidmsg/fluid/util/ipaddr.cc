@@ -127,4 +127,22 @@ struct in6_addr IPAddress::IPv6from_string(const std::string &address){
     return n6;
 }
 
+std::string IPAddress::to_string(){
+    if(this->version == IPV4){
+        struct in_addr ip_addr;
+        char ip_str[INET_ADDRSTRLEN];
+        memcpy(&ip_addr, &this->ipv4, 4);
+        inet_ntop(AF_INET, &ip_addr, ip_str, INET_ADDRSTRLEN);
+        return std::string(ip_str);
+    }
+    else if(this->version == IPV6){
+        struct in6_addr ip_addr;
+        char ip_str[INET6_ADDRSTRLEN];
+        memcpy(&ip_addr, &this->ipv6, 16);
+        inet_ntop(AF_INET6, &ip_addr, ip_str, INET6_ADDRSTRLEN);
+        return std::string(ip_str);
+    }
+    return "";
+}
+
 }

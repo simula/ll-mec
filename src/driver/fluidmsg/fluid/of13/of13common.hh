@@ -249,9 +249,16 @@ public:
     of13::Match match() {
         return this->match_;
     }
+    InstructionSet instructions() {
+        return this->instructions_;
+    }
+    bool empty() {
+        return this->instructions_.length()!=0;
+    }
     OXMTLV * get_oxm_field(uint8_t field);
     void instructions(InstructionSet instructions);
     void add_instruction(Instruction* inst);
+
 };
 
 class TableStats: public TableStatsCommon {

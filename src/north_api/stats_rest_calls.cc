@@ -1,20 +1,17 @@
 #include <pistache/http.h>
-<<<<<<< HEAD
 #include "stats_rest_calls.h"
-=======
 #include <fluid/of13/openflow-13.h>
 #include <string>
 #include "stats_rest_calls.h"
 #include "json.hpp"
 
 using json = nlohmann::json;
->>>>>>> 131f1c7... Added preliminary form of flow stats
 
 namespace llmec {
 namespace north_api {
 
   void Stats_rest_calls::register_calls(Pistache::Rest::Router& router) {
-    Pistache::Rest::Routes::Get(router, "/switch/all", Pistache::Rest::Routes::bind(&llmec::north_api::Stats_rest_calls::get_switches_stats, this));
+    Pistache::Rest::Routes::Get(router, "/stats/flows", Pistache::Rest::Routes::bind(&llmec::north_api::Stats_rest_calls::get_flow_stats, this));
   }
 
   void Stats_rest_calls::get_flow_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {

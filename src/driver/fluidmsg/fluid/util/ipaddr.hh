@@ -33,6 +33,7 @@ class IPAddress {
         uint8_t * getIPv6();
         static uint32_t IPv4from_string(const std::string &address);
         static struct in6_addr IPv6from_string(const std::string &address);
+        std::string to_string();
 
     private:
         int version;
