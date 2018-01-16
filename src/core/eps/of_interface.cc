@@ -85,6 +85,84 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
+void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel) {
+  uint8_t* buffer;
+  fluid_msg::of13::Match m;
+  // TODO configuration file for s1u port number
+  fluid_msg::of13::InPort in_port(2);
+  fluid_msg::of13::TUNNELId ul_tunnel_id(ul_tunnel);
+  m.add_oxm_field(in_port);
+  m.add_oxm_field(ul_tunnel_id);
+
+  fluid_msg::of13::FlowMod fm;
+  fm.xid(43);
+  fm.cookie(1);
+  fm.cookie_mask(0xffffffffffffffff);
+  fm.table_id(0);
+  fm.command(fluid_msg::of13::OFPFC_ADD);
+  fm.idle_timeout(0);
+  fm.hard_timeout(0);
+  fm.priority(1);
+  fm.buffer_id(0xffffffff);
+  fm.out_port(1);
+  fm.out_group(0);
+  fm.flags(0);
+  fm.match(m);
+
+  // TODO configuration file for gateway mac
+  auto out = fluid_msg::EthAddress("c8:d3:a3:02:dc:54");
+  fluid_msg::of13::ApplyActions act;
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::EthDst(out)));
+  // TODO configuration file for external port number
+  act.add_action(new fluid_msg::of13::OutputAction(1, 1024));
+  fm.add_instruction(act);
+  buffer = fm.pack();
+  of_conn->send(buffer, fm.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+}
+
+void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip) {
+  uint8_t* buffer;
+  fluid_msg::of13::Match m;
+  // By default, allow IP traffic
+  fluid_msg::of13::EthType eth_type(0x0800);
+  fluid_msg::IPAddress ue_ip_addr(UE_ip);
+  fluid_msg::of13::IPv4Dst ip_dst(ue_ip_addr);
+  m.add_oxm_field(eth_type);
+  m.add_oxm_field(ip_dst);
+
+  // Default value for fields below
+  fluid_msg::of13::FlowMod fm;
+  fm.xid(43);
+  // Set cookie to 1 in order to flush flows easily
+  fm.cookie(1);
+  fm.cookie_mask(0xffffffffffffffff);
+  fm.table_id(0);
+  fm.command(fluid_msg::of13::OFPFC_ADD);
+  fm.idle_timeout(0);
+  fm.hard_timeout(0);
+  fm.priority(1);
+  fm.buffer_id(0xffffffff);
+  fm.out_port(1);
+  fm.out_group(0);
+  fm.flags(0);
+  fm.match(m);
+
+  // TODO configuration file for gateway mac
+  auto out = fluid_msg::EthAddress("c8:d3:a3:02:dc:54");
+  fluid_msg::of13::ApplyActions act;
+  fluid_msg::of13::TUNNELId dl_tunnel_id(dl_tunnel);
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELId(dl_tunnel_id)));
+  fluid_msg::IPAddress enb_ip_addr(ENB_ip);
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELDst(enb_ip_addr)));
+  // TODO configuration file for external port number
+  act.add_action(new fluid_msg::of13::OutputAction(2, 1024));
+  fm.add_instruction(act);
+  buffer = fm.pack();
+  of_conn->send(buffer, fm.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+}
+
 } // namespace eps
 } // namespace core
 } // namespace llmec
