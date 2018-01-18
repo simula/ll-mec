@@ -1,10 +1,10 @@
 #include "of_interface.h"
+#include "conf.h"
 
 namespace llmec {
 namespace core {
 namespace eps {
 
-#define GATEWAY_MAC "00:24:9b:23:33:a6"
 //TODO OpenFlow message field wrapper specifically for LL-MEC
 void OFInterface::install_flow_mod(fluid_msg::of10::PacketIn &pi, fluid_base::OFConnection* ofconn,
     uint64_t src, uint64_t dst, uint16_t out_port) {
@@ -87,10 +87,10 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
 }
 
 void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel) {
+  Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
-  // TODO configuration file for s1u port number
-  fluid_msg::of13::InPort in_port(2);
+  fluid_msg::of13::InPort in_port(llmec_config->X["ovs_switch"]["s1u_port"].get<int>());
   fluid_msg::of13::TUNNELId ul_tunnel_id(ul_tunnel);
   m.add_oxm_field(in_port);
   m.add_oxm_field(ul_tunnel_id);
@@ -110,12 +110,10 @@ void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, 
   fm.flags(0);
   fm.match(m);
 
-  // TODO configuration file for gateway mac
-  auto out = fluid_msg::EthAddress(GATEWAY_MAC);
+  auto out = fluid_msg::EthAddress(llmec_config->X["gateway"]["mac"].get<std::string>());
   fluid_msg::of13::ApplyActions act;
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::EthDst(out)));
-  // TODO configuration file for external port number
-  act.add_action(new fluid_msg::of13::OutputAction(1, 1024));
+  act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["external_port"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();
   of_conn->send(buffer, fm.length());
@@ -123,6 +121,7 @@ void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, 
 }
 
 void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip) {
+  Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
   // By default, allow IP traffic
@@ -149,15 +148,13 @@ void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, 
   fm.flags(0);
   fm.match(m);
 
-  // TODO configuration file for gateway mac
-  auto out = fluid_msg::EthAddress(GATEWAY_MAC);
+  auto out = fluid_msg::EthAddress(llmec_config->X["gateway"]["mac"].get<std::string>());
   fluid_msg::of13::ApplyActions act;
   fluid_msg::of13::TUNNELId dl_tunnel_id(dl_tunnel);
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELId(dl_tunnel_id)));
   fluid_msg::IPAddress enb_ip_addr(ENB_ip);
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELDst(enb_ip_addr)));
-  // TODO configuration file for external port number
-  act.add_action(new fluid_msg::of13::OutputAction(2, 1024));
+  act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["s1u_port"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();
   of_conn->send(buffer, fm.length());
@@ -165,10 +162,10 @@ void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, 
 }
 
 void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel, std::string from, std::string to) {
+  Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
-  // TODO configuration file for s1u port number
-  fluid_msg::of13::InPort in_port(2);
+  fluid_msg::of13::InPort in_port(llmec_config->X["ovs_switch"]["s1u_port"].get<int>());
   fluid_msg::of13::EthType eth_type(0x0800);
   fluid_msg::of13::TUNNELId ul_tunnel_id(ul_tunnel);
   fluid_msg::of13::IPv4Dst ip_dst(from);
@@ -192,13 +189,12 @@ void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_con
   fm.flags(0);
   fm.match(m);
 
-  // TODO configuration file for gateway mac
-  auto out = fluid_msg::EthAddress(GATEWAY_MAC);
+
+  auto out = fluid_msg::EthAddress(llmec_config->X["gateway"]["mac"].get<std::string>());
   fluid_msg::of13::ApplyActions act;
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::EthDst(out)));
-  // TODO configuration file for external port number
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPv4Dst(to)));
-  act.add_action(new fluid_msg::of13::OutputAction(1, 1024));
+  act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["external_port"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();
   of_conn->send(buffer, fm.length());
@@ -206,6 +202,7 @@ void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_con
 }
 
 void OFInterface::redirect_edge_service_dl_flow(fluid_base::OFConnection* of_conn, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip, std::string from, std::string to) {
+  Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
   // By default, allow IP traffic
@@ -234,16 +231,14 @@ void OFInterface::redirect_edge_service_dl_flow(fluid_base::OFConnection* of_con
   fm.flags(0);
   fm.match(m);
 
-  // TODO configuration file for gateway mac
-  auto out = fluid_msg::EthAddress(GATEWAY_MAC);
+  auto out = fluid_msg::EthAddress(llmec_config->X["gateway"]["mac"].get<std::string>());
   fluid_msg::of13::ApplyActions act;
   fluid_msg::of13::TUNNELId dl_tunnel_id(dl_tunnel);
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELId(dl_tunnel_id)));
   fluid_msg::IPAddress enb_ip_addr(ENB_ip);
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELDst(enb_ip_addr)));
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPv4Src(from)));
-  // TODO configuration file for external port number
-  act.add_action(new fluid_msg::of13::OutputAction(2, 1024));
+  act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["s1u"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();
   of_conn->send(buffer, fm.length());
@@ -262,9 +257,7 @@ void OFInterface::get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid
 void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t cookie) { // Currently assume cookie =1 for those rules added by ll-mec
   uint8_t* buffer;
   fluid_msg::of13::Match m;
-  // TODO configuration file for s1u port number
-  //fluid_msg::of13::InPort in_port(2);
-  //m.add_oxm_field(in_port);
+  
   // Default value for fields below
   fluid_msg::of13::FlowMod fm;
   fm.xid(43);

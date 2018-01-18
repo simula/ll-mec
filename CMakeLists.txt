@@ -21,6 +21,7 @@ set(LL_MEC_TARGET "${PROJECT_SOURCE_DIR}/targets")
 set(APP_DIR "${LL_MEC_SRC}/app")
 set(CORE_DIR "${LL_MEC_SRC}/core")
 set(DRIVER_DIR "${LL_MEC_SRC}/driver")
+set(UTIL_DIR "${LL_MEC_SRC}/util")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -95,11 +96,21 @@ set(EPS_DIR "${CORE_DIR}/eps")
 set(EPS_src_files
   ${EPS_DIR}/controller.cc
   ${EPS_DIR}/of_interface.cc
+  ${EPS_DIR}/conf.cc
   )
 set(EPS_include_files
   ${EPS_DIR}
   ${APP_DIR}
   )
+
+#Util
+set(UTIL_src_files
+  ${UTIL_DIR}/input_parser.cc
+  )
+set(UTIL_include_files
+  ${UTIL_DIR}
+  )
+add_library(UTIL ${UTIL_src_files})
 
 find_package(Event REQUIRED)
 add_library(EPS ${EPS_src_files})
@@ -166,6 +177,7 @@ include_directories(
   ${JSON_include_files}
   ${EPS_include_files}
   ${APP_include_files}
+  ${UTIL_include_files}
   ${NORTH_API_include_files}
   ${PISTACHE_include_files}
   ${Event_INCLUDE_DIRS}
@@ -185,6 +197,7 @@ add_executable(ll-mecsim
 target_link_libraries(ll-mec
   CORE
   APP
+  UTIL
   NORTH_API
   PISTACHE
   )

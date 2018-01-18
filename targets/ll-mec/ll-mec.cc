@@ -13,8 +13,30 @@
 #include "rest_manager.h"
 #include "stats_rest_calls.h"
 #include "ue_rest_calls.h"
+#include "input_parser.h"
+#include "conf.h"
 
-int main(){
+#define DEFAULT_CONFIG "llmec_config.json"
+
+int main(int argc, char **argv){
+  /* initialize command arguments parser*/
+  Input_parser input(argc, argv);
+  Conf* llmec_config = Conf::getInstance();
+  llmec_config->config_path = DEFAULT_CONFIG;
+
+  /* Start parsing command line arguments */
+  if (input.cmd_option_exists("-h")) {
+    Input_parser::print_help();
+    return 0;
+  }
+  /* Read the config file path*/
+  else if (input.cmd_option_exists("-c")) {
+    std::string config_path = input.get_cmd_option("-c");
+    if (!config_path.empty()) {
+      llmec_config->config_path = config_path;
+    }
+  }
+  llmec_config->parse_config();
   llmec::core::eps::Controller ctrl("0.0.0.0", 6653, 4);
 
   //OpenFlow driver interface init
