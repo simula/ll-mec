@@ -27,10 +27,12 @@ namespace north_api {
         && (!ue_identities_json["ue_ip"].empty() && ue_identities_json["ue_ip"].is_string())
         && (!ue_identities_json["enb_ip"].empty() && ue_identities_json["enb_ip"].is_string())
         ) {
-      std::cout<<ue_identities_json["s1_ul_teid"].dump()<<std::endl;
-      std::cout<<ue_identities_json["s1_dl_teid"].dump()<<std::endl;
-      uint64_t s1_ul_teid = std::stoul(ue_identities_json["s1_ul_teid"].dump(), nullptr, 16);
-      uint64_t s1_dl_teid = std::stoul(ue_identities_json["s1_dl_teid"].dump(), nullptr, 16);
+      std::cout<<ue_identities_json["s1_ul_teid"].get<std::string>()<<std::endl;
+      std::cout<<ue_identities_json["s1_dl_teid"].get<std::string>()<<std::endl;
+      uint64_t s1_ul_teid = std::stoul(ue_identities_json["s1_ul_teid"].get<std::string>(), nullptr, 16);
+      uint64_t s1_dl_teid = std::stoul(ue_identities_json["s1_dl_teid"].get<std::string>(), nullptr, 16);
+      std::cout<<s1_ul_teid<<std::endl;
+      std::cout<<s1_dl_teid<<std::endl;
       std::string ue_ip = ue_identities_json["ue_ip"];
       std::string enb_ip = ue_identities_json["enb_ip"];
       std::cout<<s1_ul_teid<<" "<<s1_dl_teid<<" "<<ue_ip<<" "<<enb_ip<<std::endl;
