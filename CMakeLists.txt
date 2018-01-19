@@ -185,14 +185,16 @@ include_directories(
 
 
 #targets
+# Uncomment ll-mecsim when needed
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 set(LL_MEC ${LL_MEC_TARGET}/ll-mec)
-set(LL_MECSIM ${LL_MEC_TARGET}/ll-mecsim)
+#set(LL_MECSIM ${LL_MEC_TARGET}/ll-mecsim)
 add_executable(ll-mec
   ${LL_MEC}/ll-mec.cc
   )
-add_executable(ll-mecsim
-  ${LL_MECSIM}/ll-mecsim.cc
-  )
+#add_executable(ll-mecsim
+#  ${LL_MECSIM}/ll-mecsim.cc
+#  )
 #libraries to be linked
 target_link_libraries(ll-mec
   CORE
@@ -201,4 +203,4 @@ target_link_libraries(ll-mec
   NORTH_API
   PISTACHE
   )
-target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)
+#target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)

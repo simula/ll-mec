@@ -1,5 +1,7 @@
 build
 build/*
+ll-mec
+ll-mecsim
 *.swp
 
 # Prerequisites
