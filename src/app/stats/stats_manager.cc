@@ -21,8 +21,8 @@ std::shared_ptr<std::vector<fluid_msg::of13::FlowStats>> Stats_manager::get_flow
 }
 void Stats_manager::start() {
   while (true) {
-    fluid_base::OFConnection *of_conn_ = (this->ctrl).get_ofconnection((this->ctrl).conn_id);
-    // TODO
+    llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
+    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
     if (of_conn_ != NULL) {
       this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, 1);
       std::chrono::microseconds duration(5000);

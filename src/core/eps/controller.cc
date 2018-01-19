@@ -4,6 +4,21 @@ namespace llmec {
 namespace core {
 namespace eps {
 
+Controller* Controller::instance = 0;
+
+void Controller::create_instance(const char* address, const int port, const int n_workers, bool secure)
+{
+  if (instance == 0) {
+    instance = new Controller(address, port, n_workers, secure);
+  }
+}
+
+Controller* Controller::get_instance()
+{
+  assert(instance);
+  return instance;
+}
+
 void Controller::stop() {
   running_ = false;
   fluid_base::OFServer::stop();
@@ -46,24 +61,6 @@ void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type
 void Controller::register_for_event(const std::shared_ptr<llmec::app::App>& app, int event_type) {
   event_listeners_[event_type].push_back(app);
 }
-
-/*volatile sig_atomic_t quit=0;
-void sigint_handler(int s) {
-  quit = 1;
-}
-
-void wait_for_sigint() {
-  struct sigaction sa;
-  memset(&sa, 0, sizeof(sa));
-  sa.sa_handler = sigint_handler;
-  sigfillset(&sa.sa_mask);
-  sigaction(SIGINT, &sa, NULL);
-
-  while (1) {
-    if (quit) break;
-    sleep(1000);
-  }
-}*/
 
 } // namespace eps
 } // namespace core
