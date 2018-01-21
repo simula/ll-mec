@@ -17,6 +17,7 @@ class Ue_rest_calls : public Rest_calls {
     void get_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void get_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void delete_redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     //void obtain_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);

@@ -17,6 +17,7 @@ namespace north_api {
     Pistache::Rest::Routes::Delete(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue_all, this));
     Pistache::Rest::Routes::Delete(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue, this));
     Pistache::Rest::Routes::Post(router, "/ue/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::redirect_ue, this));
+    Pistache::Rest::Routes::Delete(router, "/ue/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_redirect_ue, this));
   }
 
   void Ue_rest_calls::add_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -92,6 +93,20 @@ namespace north_api {
     std::string to = payload["to"];
 
     if (this->ue_manager->redirect_ue(ue_id, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip, from, to) == false) {
+      resp = "Switch connection lost.";
+      response.send(Pistache::Http::Code::Service_Unavailable, resp);
+      return;
+    }
+    resp = "OK";
+    response.send(Pistache::Http::Code::Ok, resp);
+    return;
+  }
+
+  void Ue_rest_calls::delete_redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    /* Take eps_bearer_id as ue_id */
+    auto ue_id = request.param(":id").as<int>();
+    std::string resp;
+    if (this->ue_manager->delete_redirect_ue(ue_id) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;

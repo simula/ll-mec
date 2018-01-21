@@ -16,46 +16,34 @@ namespace north_api {
 
   void Stats_rest_calls::get_flow_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     std::shared_ptr<std::vector<fluid_msg::of13::FlowStats>> flow_stats = this->stats_manager->get_flow_stats();
-    json output;
-    // TODO could be handled better
+    json output = json::array();
     if (flow_stats != NULL) {
+      int c=0;
       for (auto item : *flow_stats) {
-        /*json11::Json::object test = json11::Json::object {
-          {"table_id", (int)item.table_id()},
-          {"duration_sec", (double)item.duration_sec()},
-          {"priority", (int)item.priority()},
-          {"packet_count",(double)item.packet_count()},
-          {"byte_count",(double)item.byte_count()},
-        };*/
-        output["table_id"] = item.table_id();
-        output["duration_sec"] = item.duration_sec();
-        output["priority"] = item.priority();
-        output["packet_count"] = item.packet_count();
-        output["byte_count"] = item.byte_count();
+        json flow;
+        flow["table_id"] = item.table_id();
+        flow["duration_sec"] = item.duration_sec();
+        flow["priority"] = item.priority();
+        flow["packet_count"] = item.packet_count();
+        flow["byte_count"] = item.byte_count();
         if (item.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_TUNNEL_ID) != NULL) {
-          output["direction"] = "uplink";
-          //test.insert(std::pair<std::string, json11::Json>("direction", "uplink"));
-          //std::cout<<((fluid_msg::of13::TUNNELId*)item.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_TUNNEL_ID) )->value()<<std::endl;
-          fluid_msg::of13::TUNNELId* tunnel_id = (fluid_msg::of13::TUNNELId*)item.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_TUNNEL_ID);
-          //std::cout<<tunnel_id->value()<<std::endl;
-          //test.insert( std::pair<std::string, json11::Json>("s1_ul_tunnel_id", std::to_string(tunnel_id->value())));
+          flow["direction"] = "uplink";
+          /* fluid_msg::of13::TUNNELId* tunnel_id = (fluid_msg::of13::TUNNELId*)item.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_TUNNEL_ID); */
         }
         else {
-          output["direction"] = "downlink";
+          flow["direction"] = "downlink";
         }
+
         if (item.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_IN_PORT) != NULL) {
-          //std::cout<<((fluid_msg::of13::InPort*)item.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_IN_PORT) )->value()<<std::endl;
           fluid_msg::of13::InPort* in_port = (fluid_msg::of13::InPort*)item.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_IN_PORT);
-          output["in_port"] = static_cast<int>(in_port->value());
-          //test.insert( std::pair<std::string, json11::Json>("in_port", (int)(in_port->value())));
+          flow["in_port"] = static_cast<int>(in_port->value());
         }
         else {
-          output["in_port"] = 1;
-          //test.insert( std::pair<std::string, json11::Json>("in_port", 1));
+          flow["in_port"] = 1;
         }
+        output.push_back(flow);
       }
     }
-//    std::cout<<flow_stats->size()<<std::endl;
     std::string resp = output.dump();
     response.send(Pistache::Http::Code::Ok, resp);
   }

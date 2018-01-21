@@ -1,4 +1,6 @@
+#include "conf.h"
 #include "stats_manager.h"
+
 #include <iostream>
 #include <fluid/of13msg.hh>
 #include <fluid/of13/openflow-13.h>
@@ -23,10 +25,11 @@ void Stats_manager::start() {
   while (true) {
     llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
+    Conf* llmec_config = Conf::getInstance();
     if (of_conn_ != NULL) {
-      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, 1);
-      std::chrono::microseconds duration(5000);
-      std::this_thread::sleep_for(duration);
+      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["s1u_port"]);
+      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["external_port"]);
+      std::this_thread::sleep_for(std::chrono::microseconds(2000000));
     }
   }
 }

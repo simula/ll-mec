@@ -36,6 +36,10 @@ bool Ue_manager::add_ue(uint64_t ue_id, std::string imsi, uint64_t s1_ul_teid, u
   return true;
 }
 bool Ue_manager::redirect_ue(uint64_t ue_id, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip, std::string from, std::string to) {
+  /* No such ue context */
+  if (this->ue_context.find(ue_id) == this->ue_context.end())
+    return false;
+
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
 
@@ -45,13 +49,33 @@ bool Ue_manager::redirect_ue(uint64_t ue_id, uint64_t s1_ul_teid, uint64_t s1_dl
   this->of_interface.redirect_edge_service_ul_flow(of_conn_, ue_id, s1_ul_teid, from, to);
   this->of_interface.redirect_edge_service_dl_flow(of_conn_, ue_id, ue_ip, s1_dl_teid, enb_ip, from, to);
 
+  /* Add redirect information in ue context */
+  this->ue_context_lock.lock();
+  json redirect;
+  redirect["from"] = from;
+  redirect["to"] = to;
+  (this->ue_context[ue_id])["redirect"] = redirect;
+  this->ue_context_lock.unlock();
+
+  return true;
+}
+
+bool Ue_manager::delete_redirect_ue(uint64_t ue_id) {
+  /* No such ue context */
+  if (this->ue_context.find(ue_id) == this->ue_context.end())
+    return false;
+
+  json ue = this->ue_context[ue_id];
+  this->delete_ue(ue_id);
+  this->add_ue(ue_id, ue["imsi"].get<std::string>(), ue["s1_ul_teid"].get<int>(), ue["s1_dl_teid"].get<int>(), ue["ue_ip"].get<std::string>(), ue["enb_ip"].get<std::string>());
+
   return true;
 }
 
 json Ue_manager::get_ue(uint64_t ue_id) {
   json response = json::array();
   this->ue_context_lock.lock();
-  if (this->ue_context[ue_id] != nullptr)
+  if (this->ue_context.find(ue_id) != this->ue_context.end())
     response.push_back(this->ue_context[ue_id]);
   this->ue_context_lock.unlock();
   return response;
