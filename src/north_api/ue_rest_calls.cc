@@ -10,10 +10,11 @@ namespace llmec {
 namespace north_api {
 
   void Ue_rest_calls::register_calls(Pistache::Rest::Router& router) {
+    /* Be careful that the order matters, e.g. if switch ue/all and ue/:id, all will be considered as :id */
     Pistache::Rest::Routes::Post(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_ue, this));
+    Pistache::Rest::Routes::Get(router, "/ue/all", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
     Pistache::Rest::Routes::Get(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue, this));
     Pistache::Rest::Routes::Delete(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue, this));
-    Pistache::Rest::Routes::Get(router, "/ue/all", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
     Pistache::Rest::Routes::Post(router, "/ue/redirect", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::redirect_ue, this));
   }
 
@@ -91,12 +92,15 @@ namespace north_api {
     return;
   }
   void Ue_rest_calls::get_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
-    std::string resp = "Not implemented yet.";
-    response.send(Pistache::Http::Code::Not_Implemented, resp);
+    auto ue_id = request.param(":id").as<int>();
+    json ue = this->ue_manager->get_ue(ue_id);
+    std::string resp = ue.dump();
+    response.send(Pistache::Http::Code::Ok, resp);
   }
   void Ue_rest_calls::get_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
-    std::string resp = "Not implemented yet.";
-    response.send(Pistache::Http::Code::Not_Implemented, resp);
+    json ue_all = this->ue_manager->get_ue_all();
+    std::string resp = ue_all.dump();
+    response.send(Pistache::Http::Code::Ok, resp);
   }
   void Ue_rest_calls::delete_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     /* Take eps_bearer_id as ue_id */

@@ -64,6 +64,25 @@ bool Ue_manager::delete_ue(uint64_t ue_id) {
   return true;
 }
 
+json Ue_manager::get_ue(uint64_t ue_id) {
+  json response = json::array();
+  this->ue_context_lock.lock();
+  if (this->ue_context[ue_id] != nullptr)
+    response.push_back(this->ue_context[ue_id]);
+  this->ue_context_lock.unlock();
+  return response;
+}
+
+json Ue_manager::get_ue_all() {
+  json response = json::array();
+  this->ue_context_lock.lock();
+  for (auto each:this->ue_context)
+    if (each.second != nullptr)
+      response.push_back(each.second);
+  this->ue_context_lock.unlock();
+  return response;
+}
+
 } // namespace uplane
 } // namespace app
 } // namespace llmec
