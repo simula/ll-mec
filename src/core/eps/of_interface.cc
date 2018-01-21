@@ -86,7 +86,7 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t ul_tunnel) {
+void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t eps_bearer_id, uint64_t ul_tunnel) {
   Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
@@ -97,7 +97,7 @@ void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, 
 
   fluid_msg::of13::FlowMod fm;
   fm.xid(43);
-  fm.cookie(1);
+  fm.cookie(eps_bearer_id);
   fm.cookie_mask(0xffffffffffffffff);
   fm.table_id(0);
   fm.command(fluid_msg::of13::OFPFC_ADD);
@@ -120,7 +120,7 @@ void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, 
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip) {
+void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, uint64_t eps_bearer_id, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip) {
   Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
@@ -135,7 +135,7 @@ void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, 
   fluid_msg::of13::FlowMod fm;
   fm.xid(43);
   // Set cookie to 1 in order to flush flows easily
-  fm.cookie(1);
+  fm.cookie(eps_bearer_id);
   fm.cookie_mask(0xffffffffffffffff);
   fm.table_id(0);
   fm.command(fluid_msg::of13::OFPFC_ADD);
@@ -254,7 +254,7 @@ void OFInterface::get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t cookie) { // Currently assume cookie =1 for those rules added by ll-mec
+void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t eps_bearer_id) {
   uint8_t* buffer;
   fluid_msg::of13::Match m;
   
@@ -262,7 +262,7 @@ void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t cookie)
   fluid_msg::of13::FlowMod fm;
   fm.xid(43);
   // Set cookie to 1 in order to flush flows easily
-  fm.cookie(cookie);
+  fm.cookie(eps_bearer_id);
   fm.cookie_mask(0xffffffffffffffff);
   //fm.table_id(fluid_msg::of13::OFPTT_ALL);
   fm.table_id(0);
