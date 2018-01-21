@@ -72,7 +72,7 @@ int main(int argc, char **argv){
   llmec_config->parse_config();
 
   /* Initial the controller based on the config */
-  llmec::core::eps::Controller::create_instance("0.0.0.0", 6653, 4, false);
+  llmec::core::eps::Controller::create_instance(llmec_config->X["llmec"]["address"].get<std::string>().c_str(), llmec_config->X["llmec"]["port"].get<int>(), llmec_config->X["llmec"]["number_of_workers"].get<int>(), llmec_config->X["llmec"]["secure_connection"].get<bool>());
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
 
   //OpenFlow driver interface init
@@ -90,7 +90,7 @@ int main(int argc, char **argv){
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
    //northbound api initial
-  Pistache::Port port(9999);
+  Pistache::Port port(llmec_config->X["northbound_api"]["port"].get<int>());
   Pistache::Address addr(Pistache::Ipv4::any(), port);
   llmec::north_api::Rest_manager rest_manager(addr);
 

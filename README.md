@@ -30,6 +30,15 @@ LL-MEC is a real-time Multi-access Edge Computing platform.
 
 ## Configuration example (llmec_config.json)
     {
+      "llmec": {
+        "address": "0.0.0.0",
+        "port": 6653,
+        "number_of_workers": 4,
+        "secure_connection": false
+      },
+      "northbound_api": {
+        "port": 9999
+      },
       "gateway": {
         "mac": "00:24:9b:23:33:a6"
       },
