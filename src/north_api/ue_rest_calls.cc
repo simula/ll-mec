@@ -12,10 +12,11 @@ namespace north_api {
   void Ue_rest_calls::register_calls(Pistache::Rest::Router& router) {
     /* Be careful that the order matters, e.g. if switch ue/all and ue/:id, all will be considered as :id */
     Pistache::Rest::Routes::Post(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_ue, this));
-    Pistache::Rest::Routes::Get(router, "/ue/all", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
+    Pistache::Rest::Routes::Get(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
     Pistache::Rest::Routes::Get(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue, this));
+    Pistache::Rest::Routes::Delete(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue_all, this));
     Pistache::Rest::Routes::Delete(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue, this));
-    Pistache::Rest::Routes::Post(router, "/ue/redirect", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::redirect_ue, this));
+    Pistache::Rest::Routes::Post(router, "/ue/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::redirect_ue, this));
   }
 
   void Ue_rest_calls::add_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -57,13 +58,17 @@ namespace north_api {
     response.send(Pistache::Http::Code::Ok, resp);
     return;
   }
+
   void Ue_rest_calls::redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     std::string resp;
     if (request.body().empty()) {
-      resp = "UE identities required.";
+      resp = "Payload is empty. Redirect information required.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
     }
+    auto ue_id = request.param(":id").as<int>();
+    std::cout<<ue_id<<std::endl;
+    std::cout<<request.body()<<std::endl;
     json payload = json::parse(request.body());
     if ( (payload["s1_ul_teid"].empty() || !payload["s1_ul_teid"].is_string())
         || (payload["s1_dl_teid"].empty() || !payload["s1_dl_teid"].is_string())
@@ -76,13 +81,17 @@ namespace north_api {
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
     }
-    uint64_t s1_ul_teid = std::stoul(payload["s1_ul_teid"].dump(), nullptr, 16);
-    uint64_t s1_dl_teid = std::stoul(payload["s1_dl_teid"].dump(), nullptr, 16);
+    uint64_t s1_ul_teid = std::stoul(payload["s1_ul_teid"].get<std::string>(), nullptr, 16);
+    uint64_t s1_dl_teid = std::stoul(payload["s1_dl_teid"].get<std::string>(), nullptr, 16);
+    std::cout<<s1_ul_teid<<std::endl;
+    std::cout<<s1_dl_teid<<std::endl;
     std::string ue_ip = payload["ue_ip"];
+
     std::string enb_ip = payload["enb_ip"];
     std::string from = payload["from"];
     std::string to = payload["to"];
-    if (this->ue_manager->redirect_ue(s1_ul_teid, s1_dl_teid, ue_ip, enb_ip, from, to) == false) {
+
+    if (this->ue_manager->redirect_ue(ue_id, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip, from, to) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
@@ -91,27 +100,37 @@ namespace north_api {
     response.send(Pistache::Http::Code::Ok, resp);
     return;
   }
+
   void Ue_rest_calls::get_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     auto ue_id = request.param(":id").as<int>();
     json ue = this->ue_manager->get_ue(ue_id);
     std::string resp = ue.dump();
     response.send(Pistache::Http::Code::Ok, resp);
   }
+
   void Ue_rest_calls::get_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     json ue_all = this->ue_manager->get_ue_all();
     std::string resp = ue_all.dump();
     response.send(Pistache::Http::Code::Ok, resp);
   }
+
   void Ue_rest_calls::delete_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     /* Take eps_bearer_id as ue_id */
     auto ue_id = request.param(":id").as<int>();
     std::string resp;
-    if (request.body().empty()) {
-      resp = "UE identities required.";
-      response.send(Pistache::Http::Code::Bad_Request, resp);
+    if (this->ue_manager->delete_ue(ue_id) == false) {
+      resp = "Switch connection lost.";
+      response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
     }
-    if (this->ue_manager->delete_ue(ue_id) == false) {
+    resp = "OK";
+    response.send(Pistache::Http::Code::Ok, resp);
+    return;
+  }
+
+  void Ue_rest_calls::delete_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    std::string resp;
+    if (this->ue_manager->delete_ue_all() == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;

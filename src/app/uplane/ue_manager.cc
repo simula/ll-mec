@@ -35,31 +35,15 @@ bool Ue_manager::add_ue(uint64_t ue_id, std::string imsi, uint64_t s1_ul_teid, u
 
   return true;
 }
-bool Ue_manager::redirect_ue(uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip, std::string from, std::string to) {
+bool Ue_manager::redirect_ue(uint64_t ue_id, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip, std::string from, std::string to) {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
 
   /* Return if connection does not exist */
   if (of_conn_ == nullptr || !of_conn_->is_alive())
     return false;
-  this->of_interface.redirect_edge_service_ul_flow(of_conn_, s1_ul_teid, from, to);
-  this->of_interface.redirect_edge_service_dl_flow(of_conn_, ue_ip, s1_dl_teid, enb_ip, from, to);
-
-  return true;
-}
-bool Ue_manager::delete_ue(uint64_t ue_id) {
-  llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
-  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
-
-  /* Return if connection does not exist */
-  if (of_conn_ == nullptr || !of_conn_->is_alive())
-    return false;
-  this->of_interface.flush_flow(of_conn_, ue_id);
-
-  /* Remove the ue context */
-  this->ue_context_lock.lock();
-  this->ue_context.erase(ue_id);
-  this->ue_context_lock.unlock();
+  this->of_interface.redirect_edge_service_ul_flow(of_conn_, ue_id, s1_ul_teid, from, to);
+  this->of_interface.redirect_edge_service_dl_flow(of_conn_, ue_id, ue_ip, s1_dl_teid, enb_ip, from, to);
 
   return true;
 }
@@ -81,6 +65,41 @@ json Ue_manager::get_ue_all() {
       response.push_back(each.second);
   this->ue_context_lock.unlock();
   return response;
+}
+
+bool Ue_manager::delete_ue(uint64_t ue_id) {
+  llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
+  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
+
+  /* Return if connection does not exist */
+  if (of_conn_ == nullptr || !of_conn_->is_alive())
+    return false;
+  this->of_interface.flush_flow(of_conn_, ue_id);
+
+  /* Remove the ue context */
+  this->ue_context_lock.lock();
+  this->ue_context.erase(ue_id);
+  this->ue_context_lock.unlock();
+
+  return true;
+}
+
+bool Ue_manager::delete_ue_all() {
+  llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
+  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
+
+  /* Return if connection does not exist */
+  if (of_conn_ == nullptr || !of_conn_->is_alive())
+    return false;
+  /* flush flow for each ue and clear the map */
+  this->ue_context_lock.lock();
+  for (auto each:this->ue_context) {
+    this->of_interface.flush_flow(of_conn_, each.first);
+  }
+  this->ue_context.clear();
+  this->ue_context_lock.unlock();
+
+  return true;
 }
 
 } // namespace uplane
