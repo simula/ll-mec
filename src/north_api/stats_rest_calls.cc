@@ -18,7 +18,6 @@ namespace north_api {
     std::shared_ptr<std::vector<fluid_msg::of13::FlowStats>> flow_stats = this->stats_manager->get_flow_stats();
     json output = json::array();
     if (flow_stats != NULL) {
-      int c=0;
       for (auto item : *flow_stats) {
         json flow;
         flow["table_id"] = item.table_id();

@@ -10,7 +10,7 @@ namespace llmec {
 namespace north_api {
 
   void Ue_rest_calls::register_calls(Pistache::Rest::Router& router) {
-    /* Be careful that the order matters, e.g. if switch ue/all and ue/:id, all will be considered as :id */
+    /* Be careful that the order matters */
     Pistache::Rest::Routes::Post(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_ue, this));
     Pistache::Rest::Routes::Get(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
     Pistache::Rest::Routes::Get(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue, this));
