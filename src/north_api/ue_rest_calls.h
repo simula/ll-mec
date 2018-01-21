@@ -17,7 +17,7 @@ class Ue_rest_calls : public Rest_calls {
     void get_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void get_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    void flush_flow(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void delete_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     //void obtain_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
   private:
     std::shared_ptr<llmec::app::uplane::Ue_manager> ue_manager;

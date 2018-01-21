@@ -19,9 +19,9 @@ class Ue_manager : public llmec::app::App {
     Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
     void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
-    bool add_ue(uint64_t eps_bearer_id, std::string imsi, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip);
+    bool add_ue(uint64_t ue_id, std::string imsi, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip);
     bool redirect_ue(uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip, std::string from, std::string to);
-    bool flush_flow(uint64_t eps_bearer_id);
+    bool delete_ue(uint64_t ue_id);
   private:
     std::unordered_map<uint64_t, json> ue_context;
     std::mutex ue_context_lock;
