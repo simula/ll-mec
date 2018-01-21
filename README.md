@@ -1,4 +1,3 @@
-
 Low Latency MEC platform (LL-MEC)
 ======================================
 ## What is LL-MEC?
@@ -8,7 +7,7 @@ LL-MEC is a real-time Multi-access Edge Computing platform.
 * LL-MEC is well suited to conduct proof-of-concept experiments.
 * LL-MEC is designed to easily expand the control function as well as the supported OpenFlow rules.
 
-## Library Dependency
+## Library dependency
 * libfluid (http://libjpeg.sourceforge.net/): load and save jpeg image
 * nlohmann/json (https://github.com/nlohmann/json): craft and parse JSON message
 * Pistache (https://github.com/oktal/pistache): REST API framework
@@ -29,7 +28,18 @@ LL-MEC is a real-time Multi-access Edge Computing platform.
     ./clean_ll-mec.sh
     # to clean
 
-## Usage Example
+## Configuration example (llmec_config.json)
+    {
+      "gateway": {
+        "mac": "00:24:9b:23:33:a6"
+      },
+      "ovs_switch": {
+        "s1u_port": 2,
+        "external_port": 1
+      }
+    }
+
+## Usage example
     $ sudo ./ll-mec
     Server running (0.0.0.0:6653)
     Connection id=0 started
