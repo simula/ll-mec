@@ -23,6 +23,7 @@
 
 #include "conf.h"
 #include "stats_manager.h"
+#include "spdlog.h"
 
 #include <iostream>
 #include <fluid/of13msg.hh>
@@ -45,6 +46,7 @@ std::shared_ptr<std::vector<fluid_msg::of13::FlowStats>> Stats_manager::get_flow
   return this->flow_stats_;
 }
 void Stats_manager::start() {
+  spdlog::get("ll-mec")->info("Stats manager started");
   while (true) {
     llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);

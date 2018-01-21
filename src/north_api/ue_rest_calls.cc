@@ -22,10 +22,11 @@
 */
 
 #include <pistache/http.h>
-#include "ue_rest_calls.h"
-#include "json.h"
 #include <iostream>
 #include <string>
+#include "ue_rest_calls.h"
+#include "json.h"
+#include "spdlog.h"
 
 using json = nlohmann::json;
 
@@ -166,17 +167,15 @@ namespace north_api {
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
     }
-    std::cout<<ue_identities_json["s1_ul_teid"].get<std::string>()<<std::endl;
-    std::cout<<ue_identities_json["s1_dl_teid"].get<std::string>()<<std::endl;
+    spdlog::get("ll-mec")->debug("string s1_ul_teid {}, s1_dl_teid {}", ue_identities_json["s1_ul_teid"].get<std::string>(), ue_identities_json["s1_dl_teid"].get<std::string>());
     uint64_t s1_ul_teid = std::stoul(ue_identities_json["s1_ul_teid"].get<std::string>(), nullptr, 16);
     uint64_t s1_dl_teid = std::stoul(ue_identities_json["s1_dl_teid"].get<std::string>(), nullptr, 16);
-    std::cout<<s1_ul_teid<<std::endl;
-    std::cout<<s1_dl_teid<<std::endl;
+    spdlog::get("ll-mec")->debug("number s1_ul_teid {}, s1_dl_teid {}", s1_ul_teid, s1_dl_teid);
     std::string ue_ip = ue_identities_json["ue_ip"];
     std::string enb_ip = ue_identities_json["enb_ip"];
     uint64_t ue_id = ue_identities_json["eps_bearer_id"].get<int>();
     std::string imsi = ue_identities_json["imsi"].get<std::string>();
-    std::cout<<ue_id<<" "<<imsi<<" "<<s1_ul_teid<<" "<<s1_dl_teid<<" "<<ue_ip<<" "<<enb_ip<<std::endl;
+    spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}", ue_id, imsi);
     if (this->ue_manager->add_ue(ue_id, imsi, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
@@ -195,8 +194,6 @@ namespace north_api {
       return;
     }
     auto ue_id = request.param(":id").as<int>();
-    std::cout<<ue_id<<std::endl;
-    std::cout<<request.body()<<std::endl;
     json payload = json::parse(request.body());
     if ( (payload["s1_ul_teid"].empty() || !payload["s1_ul_teid"].is_string())
         || (payload["s1_dl_teid"].empty() || !payload["s1_dl_teid"].is_string())
@@ -211,8 +208,6 @@ namespace north_api {
     }
     uint64_t s1_ul_teid = std::stoul(payload["s1_ul_teid"].get<std::string>(), nullptr, 16);
     uint64_t s1_dl_teid = std::stoul(payload["s1_dl_teid"].get<std::string>(), nullptr, 16);
-    std::cout<<s1_ul_teid<<std::endl;
-    std::cout<<s1_dl_teid<<std::endl;
     std::string ue_ip = payload["ue_ip"];
 
     std::string enb_ip = payload["enb_ip"];

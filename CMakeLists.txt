@@ -170,6 +170,9 @@ set(NORTH_API_include_files
   )
 add_library(NORTH_API ${NORTH_API_src_files})
 
+# spdlog header files
+set(SPDLOG_include_dir "${DRIVER_DIR}/spdlog")
+
 #headers to be included
 include_directories(
   ${FLUIDBASE_include_files}
@@ -180,6 +183,7 @@ include_directories(
   ${UTIL_include_files}
   ${NORTH_API_include_files}
   ${PISTACHE_include_files}
+  ${SPDLOG_include_dir}
   ${Event_INCLUDE_DIRS}
   )
 

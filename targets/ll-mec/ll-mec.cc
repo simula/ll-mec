@@ -38,10 +38,16 @@
 #include "ue_rest_calls.h"
 #include "input_parser.h"
 #include "conf.h"
+#include "spdlog.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
+#define LOG_NAME "ll-mec"
 
 int main(int argc, char **argv){
+  /* Initialize logger*/
+  auto console = spdlog::stdout_color_mt(LOG_NAME);
+  spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%l] %v");
+
   /* initialize command arguments parser*/
   Input_parser input(argc, argv);
   Conf* llmec_config = Conf::getInstance();
@@ -57,6 +63,10 @@ int main(int argc, char **argv){
     std::string config_path = input.get_cmd_option("-c");
     if (!config_path.empty()) {
       llmec_config->config_path = config_path;
+      spdlog::get("ll-mec")->info("Configuration file {} loaded", config_path);
+    }
+    else {
+      spdlog::get("ll-mec")->info("No configuration file specified. Default config path loaded");
     }
   }
   llmec_config->parse_config();
@@ -68,25 +78,18 @@ int main(int argc, char **argv){
   //OpenFlow driver interface init
   llmec::core::eps::OFInterface of_interface;
 
-  //TODO Application manager and low latency scheduler
   //Initialize application
-  //SGWC sgwc(of_interface);
-  //llmec::app::basic_switch::Basic_switch swt(of_interface);
   auto basic_switch = std::make_shared<llmec::app::basic_switch::Basic_switch>(of_interface);
   auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
   auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
 
   //Register event for application
-  //ctrl.register_for_event(&sgwc, EVENT_PACKET_IN);
   ctrl->register_for_event(basic_switch, llmec::core::eps::EVENT_SWITCH_UP);
   ctrl->register_for_event(stats_manager, llmec::core::eps::EVENT_MULTIPART_REPLY);
-  //ctrl.register_for_event(stats_manager, llmec::core::eps::EVENT_SWITCH_UP);
 
-  //std::thread sgwc_app(&SGWC::run, &sgwc);
-  //std::thread swt_app(&llmec::app::basic_switch::Basic_switch::run, basic_switch);
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
-  //northbound api initial
+   //northbound api initial
   Pistache::Port port(9999);
   Pistache::Address addr(Pistache::Ipv4::any(), port);
   llmec::north_api::Rest_manager rest_manager(addr);

@@ -16,6 +16,8 @@
 #include "fluid/base/EventLoop.hh"
 #include "fluid/TLS.hh"
 
+#include "spdlog.h"
+
 #include <string>
 #include <sstream>
 
@@ -110,7 +112,7 @@ bool BaseOFServer::start(bool block) {
         return false;
     if (this->secure)
         fprintf(stderr, "Secure ");
-    fprintf(stderr, "Server running (%s:%s)\n", this->address, this->port);
+    spdlog::get("ll-mec")->info("Server running ({}:{})", this->address, this->port);
 
     // Start one thread for each event loop
     // If we're blocking, the first event loop will run in the calling thread

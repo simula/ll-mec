@@ -21,8 +21,9 @@
    SOFTWARE.
 */
 
-#include "basic_switch.h"
 #include <iostream>
+#include "basic_switch.h"
+#include "spdlog.h"
 
 namespace llmec {
 namespace app {
@@ -31,6 +32,7 @@ namespace basic_switch {
 void Basic_switch::event_callback(llmec::core::eps::ControllerEvent* ev) {
   if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_UP) {
     this->of_interface.install_default_flow(ev->of_conn_);
+    spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
     switch_set_.insert(ev->of_conn_->get_id());
   }
 }

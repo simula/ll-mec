@@ -24,6 +24,7 @@
 #include <algorithm>
 
 #include "input_parser.h"
+#include "spdlog.h"
 
 const std::string Input_parser::get_cmd_option(const std::string &option) const
 {
@@ -42,16 +43,12 @@ bool Input_parser::cmd_option_exists(const std::string &option) const
 }
 
 void Input_parser::print_help() {
-  /*
-  spdlog::get("console")->info("Texture atlas generator for Rightware");
-  spdlog::get("console")->info("-h");
-  spdlog::get("console")->info("");
-  spdlog::get("console")->info("\tThis help");
-  spdlog::get("console")->info("");
-  spdlog::get("console")->info("-p [PATH]");
-  spdlog::get("console")->info("");
-  spdlog::get("console")->info("\tRead all the images from [PATH] and generate the result0.jpg and result0.png ");
-  spdlog::get("console")->info("\tat the same folder where you run texture-atlas. More results(result1, result2");
-  spdlog::get("console")->info("\t, etc) will be generated if necessary");
-  */
+  spdlog::get("ll-mec")->info("Low Latency MEC platform");
+  spdlog::get("ll-mec")->info("-h");
+  spdlog::get("ll-mec")->info("");
+  spdlog::get("ll-mec")->info("\tThis help");
+  spdlog::get("ll-mec")->info("");
+  spdlog::get("ll-mec")->info("-c [CONFIG_PATH]");
+  spdlog::get("ll-mec")->info("");
+  spdlog::get("ll-mec")->info("\tLoad config file from [CONFIG_PATH]. Default config will loaded if not specified");
 }

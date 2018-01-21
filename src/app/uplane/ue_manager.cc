@@ -22,6 +22,7 @@
 */
 
 #include "ue_manager.h"
+#include "spdlog.h"
 #include <iostream>
 
 namespace llmec {
@@ -56,6 +57,7 @@ bool Ue_manager::add_ue(uint64_t ue_id, std::string imsi, uint64_t s1_ul_teid, u
   this->ue_context[ue_id] = ue_context_json;
   this->ue_context_lock.unlock();
 
+  spdlog::get("ll-mec")->info("Add UE: {}", ue_context_json.dump());
   return true;
 }
 bool Ue_manager::redirect_ue(uint64_t ue_id, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip, std::string from, std::string to) {
@@ -80,18 +82,32 @@ bool Ue_manager::redirect_ue(uint64_t ue_id, uint64_t s1_ul_teid, uint64_t s1_dl
   (this->ue_context[ue_id])["redirect"] = redirect;
   this->ue_context_lock.unlock();
 
+  spdlog::get("ll-mec")->info("Redirected UE id={} from {} to {}", ue_id, from, to);
   return true;
 }
 
 bool Ue_manager::delete_redirect_ue(uint64_t ue_id) {
+  llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
+  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
+
+  /* Return if connection does not exist */
+  if (of_conn_ == nullptr || !of_conn_->is_alive())
+    return false;
   /* No such ue context */
   if (this->ue_context.find(ue_id) == this->ue_context.end())
     return false;
 
   json ue = this->ue_context[ue_id];
-  this->delete_ue(ue_id);
-  this->add_ue(ue_id, ue["imsi"].get<std::string>(), ue["s1_ul_teid"].get<int>(), ue["s1_dl_teid"].get<int>(), ue["ue_ip"].get<std::string>(), ue["enb_ip"].get<std::string>());
+  this->of_interface.flush_flow(of_conn_, ue_id);
+  this->of_interface.install_default_UE_ul_flow(of_conn_, ue_id, ue["s1_ul_teid"].get<int>());
+  this->of_interface.install_default_UE_dl_flow(of_conn_, ue_id, ue["ue_ip"].get<std::string>(), ue["s1_dl_teid"].get<int>(), ue["enb_ip"].get<std::string>());
 
+  /* Remove redirect information in UE context */
+  this->ue_context_lock.lock();
+  this->ue_context.at(ue_id).erase("redirect");
+  this->ue_context_lock.unlock();
+
+  spdlog::get("ll-mec")->info("No redirected traffic for UE id={}", ue_id);
   return true;
 }
 
@@ -128,6 +144,7 @@ bool Ue_manager::delete_ue(uint64_t ue_id) {
   this->ue_context.erase(ue_id);
   this->ue_context_lock.unlock();
 
+  spdlog::get("ll-mec")->info("Removed UE id={}", ue_id);
   return true;
 }
 
@@ -146,6 +163,7 @@ bool Ue_manager::delete_ue_all() {
   this->ue_context.clear();
   this->ue_context_lock.unlock();
 
+  spdlog::get("ll-mec")->info("Removed all UEs");
   return true;
 }
 

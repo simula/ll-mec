@@ -22,6 +22,7 @@
 */
 
 #include "controller.h"
+#include "spdlog.h"
 
 namespace llmec {
 namespace core {
@@ -48,23 +49,23 @@ void Controller::stop() {
 }
 void Controller::connection_callback(fluid_base::OFConnection* ofconn, fluid_base::OFConnection::Event type) {
   if (type == fluid_base::OFConnection::EVENT_STARTED)
-    printf("Connection id=%d started\n", ofconn->get_id());
+    spdlog::get("ll-mec")->info("Switch id={} started", ofconn->get_id());
 
   else if (type == fluid_base::OFConnection::EVENT_ESTABLISHED) {
-    printf("Connection id=%d established\n", ofconn->get_id());
+    spdlog::get("ll-mec")->info("Switch id={} established", ofconn->get_id());
     this->conn_id = ofconn->get_id();
   }
 
   else if (type == fluid_base::OFConnection::EVENT_FAILED_NEGOTIATION)
-    printf("Connection id=%d failed version negotiation\n", ofconn->get_id());
+    spdlog::get("ll-mec")->info("Switch id=%d failed version negotiation", ofconn->get_id());
 
   else if (type == fluid_base::OFConnection::EVENT_CLOSED) {
-    printf("Connection id=%d closed by the user\n", ofconn->get_id());
+    spdlog::get("ll-mec")->info("Switch id=%d closed by the user", ofconn->get_id());
     dispatch_event(new SwitchDownEvent(ofconn));
   }
 
   else if (type == fluid_base::OFConnection::EVENT_DEAD) {
-    printf("Connection id=%d closed due to inactivity\n", ofconn->get_id());
+    spdlog::get("ll-mec")->info("Switch id=%d closed due to inactivity", ofconn->get_id());
     dispatch_event(new SwitchDownEvent(ofconn));
   }
 }
