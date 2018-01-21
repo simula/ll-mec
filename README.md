@@ -8,7 +8,7 @@ LL-MEC is a real-time Multi-access Edge Computing platform.
 * LL-MEC is designed to easily expand the control function as well as the supported OpenFlow rules.
 
 ## Library dependency
-* libfluid (http://libjpeg.sourceforge.net/): load and save jpeg image
+* libfluid (http://opennetworkingfoundation.github.io/libfluid/): libfluid is a library bundle that provides the basic features to implement an OpenFlow controller
 * nlohmann/json (https://github.com/nlohmann/json): craft and parse JSON message
 * Pistache (https://github.com/oktal/pistache): REST API framework
 * spdlog (https://github.com/gabime/spdlog): logging
