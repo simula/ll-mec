@@ -10,14 +10,118 @@ namespace llmec {
 namespace north_api {
 
   void Ue_rest_calls::register_calls(Pistache::Rest::Router& router) {
-    /* Be careful that the order matters */
+    /* Be careful that the registered order matters */
     Pistache::Rest::Routes::Post(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_ue, this));
+    /**
+     * @api {post} /ue Add UE context.
+     * @apiName AddUE
+     * @apiGroup User
+     *
+     * @apiParam {Number} eps_bearer_id EPS bearer ID
+     * @apiParam {String} imsi IMSI
+     * @apiParam {String} s1_ul_teid S1 downlink tunnel ID
+     * @apiParam {String} s1_dl_teid S1 uplink tunnel ID
+     * @apiParam {String} ue_ip IP address of UE
+     * @apiParam {String} enb_ip IP address of eNodeB
+     * @apiExample Example usage:
+     *     curl -X POST http://127.0.0.1:9999/ue -d '{"eps_bearer_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError BadRequest Payload format error or empty.
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
     Pistache::Rest::Routes::Get(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue_all, this));
+    /**
+     * @api {get} /ue Get all UE context.
+     * @apiName GetUEs
+     * @apiGroup User
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:9999/ue
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","s1_dl_teid":4,"s1_ul_teid":3,"ue_id":1,"ue_ip":"172.16.0.1"},
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000001","s1_dl_teid":2,"s1_ul_teid":1,"ue_id":2,"ue_ip":"172.16.0.2"}
+     *     ]
+     */
     Pistache::Rest::Routes::Get(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_ue, this));
+    /**
+     * @api {get} /ue/:id Get one specific UE context.
+     * @apiName GetUE
+     * @apiGroup User
+     * @apiParam {Number} id UE id (EPS bearer id) of the user
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:9999/ue/1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","s1_dl_teid":4,"s1_ul_teid":3,"ue_id":1,"ue_ip":"172.16.0.1"}
+     *     ]
+     */
     Pistache::Rest::Routes::Delete(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue_all, this));
+    /**
+     * @api {delete} /ue Remove all UE context.
+     * @apiName DeleteUEs
+     * @apiGroup User
+     * @apiExample Example usage:
+     *     curl -X DELETE http://127.0.0.1:9999/ue
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
     Pistache::Rest::Routes::Delete(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue, this));
+    /**
+     * @api {delete} /ue/:id Remove one specific UE context.
+     * @apiName DeleteUE
+     * @apiGroup User
+     * @apiParam {Number} id UE id (EPS bearer id) of the user
+     * @apiExample Example usage:
+     *     curl -X DELETE http://127.0.0.1:9999/ue/1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
     Pistache::Rest::Routes::Post(router, "/ue/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::redirect_ue, this));
+    /**
+     * @api {post} /ue/redirect/:id Redirect specific traffic flow for one UE.
+     * @apiName RedirectUE
+     * @apiGroup User
+     *
+     * @apiParam {Number} id UE id (EPS bearer ID)
+     * @apiParam {String} s1_ul_teid S1 downlink tunnel ID
+     * @apiParam {String} s1_dl_teid S1 uplink tunnel ID
+     * @apiParam {String} ue_ip IP address of UE
+     * @apiParam {String} enb_ip IP address of eNodeB
+     * @apiParam {String} from where the to-be-redirected traffic is coming from
+     * @apiParam {String} to where the to-be-redirected traffic is going to
+     *
+     * @apiExample Example usage:
+     *     curl -X POST http://127.0.0.1:9999/ue/redirect/1 -d '{"s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3", "from":"192.168.12.3", "to":"192.168.12.1"}'
+     * @apiParam {Number} id UE id (EPS bearer id) of the user
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError BadRequest Payload format error or empty.
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
     Pistache::Rest::Routes::Delete(router, "/ue/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_redirect_ue, this));
+    /**
+     * @api {delete} /ue/redirect/:id Remove the redirect flow for one UE.
+     * @apiName RemoveRedirectUE
+     * @apiGroup User
+     *
+     * @apiParam {Number} id UE id (EPS bearer id) of the user
+     * @apiExample Example usage:
+     *     curl -X DELETE http://127.0.0.1:9999/ue/redirect/1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
   }
 
   void Ue_rest_calls::add_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {

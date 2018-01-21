@@ -12,6 +12,19 @@ namespace north_api {
 
   void Stats_rest_calls::register_calls(Pistache::Rest::Router& router) {
     Pistache::Rest::Routes::Get(router, "/stats/flows", Pistache::Rest::Routes::bind(&llmec::north_api::Stats_rest_calls::get_flow_stats, this));
+    /**
+     * @api {get} /stats/flows Get all the traffic flow statistic.
+     * @apiName GetFlows
+     * @apiGroup Stats
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:9999/stats/flows
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *      {"byte_count":0,"direction":"uplink","duration_sec":2098,"in_port":2,"packet_count":0,"priority":1,"table_id":0},
+     *      {"byte_count":0,"direction":"downlink","duration_sec":2098,"in_port":1,"packet_count":0,"priority":1,"table_id":0}
+     *     ]
+     */
   }
 
   void Stats_rest_calls::get_flow_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
