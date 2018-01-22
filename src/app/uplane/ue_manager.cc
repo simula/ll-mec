@@ -167,6 +167,32 @@ bool Ue_manager::delete_ue_all() {
   return true;
 }
 
+std::vector<uint64_t> Ue_manager::get_ue_list() {
+  std::vector<uint64_t> keys;
+  this->ue_context_lock.lock();
+  keys.reserve(this->ue_context.size());
+  for(auto kv : this->ue_context)
+    keys.push_back(kv.first);
+  this->ue_context_lock.unlock();
+  return keys;
+}
+
+Ue_manager* Ue_manager::instance = 0;
+
+void Ue_manager::create_instance(llmec::core::eps::OFInterface &of_interface)
+  {
+    if (instance == 0) {
+      instance = new Ue_manager(of_interface);
+    }
+  }
+
+Ue_manager* Ue_manager::get_instance()
+{
+  assert(instance);
+  return instance;
+}
+
+
 } // namespace uplane
 } // namespace app
 } // namespace llmec

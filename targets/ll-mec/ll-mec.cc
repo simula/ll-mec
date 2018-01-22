@@ -81,7 +81,9 @@ int main(int argc, char **argv){
   //Initialize application
   auto basic_switch = std::make_shared<llmec::app::basic_switch::Basic_switch>(of_interface);
   auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
-  auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
+  llmec::app::uplane::Ue_manager::create_instance(of_interface);
+  llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+//  auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
 
   //Register event for application
   ctrl->register_for_event(basic_switch, llmec::core::eps::EVENT_SWITCH_UP);
@@ -96,7 +98,7 @@ int main(int argc, char **argv){
 
   //rest calls setup
   llmec::north_api::Stats_rest_calls stats_rest_calls(std::dynamic_pointer_cast<llmec::app::stats::Stats_manager>(stats_manager));
-  llmec::north_api::Ue_rest_calls ue_rest_calls(std::dynamic_pointer_cast<llmec::app::uplane::Ue_manager>(ue_manager));
+  llmec::north_api::Ue_rest_calls ue_rest_calls;
 
   //calls register
   rest_manager.register_calls(stats_rest_calls);

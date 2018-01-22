@@ -39,9 +39,10 @@ namespace uplane {
 
 class Ue_manager : public llmec::app::App {
   public:
-    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
     void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
+    static void create_instance(llmec::core::eps::OFInterface &of_interface);
+    static Ue_manager* get_instance();
 
     /* Add one UE context to the underlying user plane */
     bool add_ue(uint64_t ue_id, std::string imsi, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip);
@@ -63,7 +64,12 @@ class Ue_manager : public llmec::app::App {
 
     /* Delete all UEs context */
     bool delete_ue_all();
+
+    /* Get user id list */
+    std::vector<uint64_t> get_ue_list();
   private:
+    static Ue_manager* instance;
+    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
     std::unordered_map<uint64_t, json> ue_context;
     std::mutex ue_context_lock;
 };

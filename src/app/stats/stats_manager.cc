@@ -24,6 +24,7 @@
 #include "conf.h"
 #include "stats_manager.h"
 #include "spdlog.h"
+#include "ue_manager.h"
 
 #include <iostream>
 #include <fluid/of13msg.hh>
@@ -51,9 +52,12 @@ void Stats_manager::start() {
     llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
     Conf* llmec_config = Conf::getInstance();
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     if (of_conn_ != NULL) {
-      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["s1u_port"]);
-      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["external_port"]);
+      std::vector<uint64_t> ue_list = ue_manager->get_ue_list();
+      for (auto each:ue_list)
+        this->of_interface.get_flow_stats(of_conn_, 43, 0, each, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["s1u_port"]);
+//      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["external_port"]);
       std::this_thread::sleep_for(std::chrono::microseconds(2000000));
     }
   }

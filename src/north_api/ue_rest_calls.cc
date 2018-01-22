@@ -149,6 +149,7 @@ namespace north_api {
   }
 
   void Ue_rest_calls::add_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     std::string resp;
     if (request.body().empty()) {
       resp = "UE identities required.";
@@ -176,7 +177,7 @@ namespace north_api {
     uint64_t ue_id = ue_identities_json["eps_bearer_id"].get<int>();
     std::string imsi = ue_identities_json["imsi"].get<std::string>();
     spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}", ue_id, imsi);
-    if (this->ue_manager->add_ue(ue_id, imsi, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip) == false) {
+    if (ue_manager->add_ue(ue_id, imsi, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
@@ -187,6 +188,7 @@ namespace north_api {
   }
 
   void Ue_rest_calls::redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     std::string resp;
     if (request.body().empty()) {
       resp = "Payload is empty. Redirect information required.";
@@ -214,7 +216,7 @@ namespace north_api {
     std::string from = payload["from"];
     std::string to = payload["to"];
 
-    if (this->ue_manager->redirect_ue(ue_id, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip, from, to) == false) {
+    if (ue_manager->redirect_ue(ue_id, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip, from, to) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
@@ -225,10 +227,11 @@ namespace north_api {
   }
 
   void Ue_rest_calls::delete_redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     /* Take eps_bearer_id as ue_id */
     auto ue_id = request.param(":id").as<int>();
     std::string resp;
-    if (this->ue_manager->delete_redirect_ue(ue_id) == false) {
+    if (ue_manager->delete_redirect_ue(ue_id) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
@@ -239,23 +242,26 @@ namespace north_api {
   }
 
   void Ue_rest_calls::get_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     auto ue_id = request.param(":id").as<int>();
-    json ue = this->ue_manager->get_ue(ue_id);
+    json ue = ue_manager->get_ue(ue_id);
     std::string resp = ue.dump();
     response.send(Pistache::Http::Code::Ok, resp);
   }
 
   void Ue_rest_calls::get_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
-    json ue_all = this->ue_manager->get_ue_all();
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+    json ue_all = ue_manager->get_ue_all();
     std::string resp = ue_all.dump();
     response.send(Pistache::Http::Code::Ok, resp);
   }
 
   void Ue_rest_calls::delete_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     /* Take eps_bearer_id as ue_id */
     auto ue_id = request.param(":id").as<int>();
     std::string resp;
-    if (this->ue_manager->delete_ue(ue_id) == false) {
+    if (ue_manager->delete_ue(ue_id) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
@@ -266,8 +272,9 @@ namespace north_api {
   }
 
   void Ue_rest_calls::delete_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     std::string resp;
-    if (this->ue_manager->delete_ue_all() == false) {
+    if (ue_manager->delete_ue_all() == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
