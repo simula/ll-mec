@@ -73,6 +73,8 @@ class llmec_rest_api(object):
     # APIs 
     add_ue='/ue'
 
+    get_ue='/ue'
+
     redirect_ue='/ue/redirect'
 
     flow_flush='/flow/flush'
@@ -87,8 +89,10 @@ class ue_manager(object):
         self.status = ''
         self.op_mode = op_mode
         self.log = log
+        self.stats_data = ''
 
         self.add_ue_api=llmec_rest_api.add_ue
+        self.get_ue=llmec_rest_api.get_ue
         self.redirect_ue_api=llmec_rest_api.redirect_ue
 
        
@@ -146,6 +150,33 @@ class ue_manager(object):
 
         else :
             self.log.warn('Unknown operation mode ' + op_mode )       
+
+    def ue_status(self):
+
+        url = self.url+self.get_ue
+        self.log.debug('GET ' + str(url))
+
+        file = ''
+
+        if self.op_mode == 'sdk' :
+            try :
+                req = requests.get(url)
+                if req.status_code == 200 :
+                    self.stats_data = req.json()
+                    self.log.debug('successfully got the ue status ' )
+                    self.status='connected'
+                else :
+                    self.status='disconnected'
+                    self.log.error('Request error code : ' + req.status_code)
+            except :
+                self.log.error('Failed to get the flow status' )
+
+        else :
+            self.log.warn('Unknown operation mode ' + op_mode )
+
+        if self.status == 'connected' :
+            self.log.debug('UE Manager requested data')
+            self.log.debug(json.dumps(self.stats_data, indent=2))
 
             
 

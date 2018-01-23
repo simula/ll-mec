@@ -97,6 +97,10 @@ class test_app(object):
             fm.get_num_packets(ue_id)
             fm.get_num_packets(ue_id,dir='dl')
             print '-----------------------------------------------------------------------------------------'
+
+        for ue_id in range(0, fm.get_num_ues()) :
+            self.log.info('UE id ' + str(ue_id) + ', IMSI=' + um.stats_data[ue_id]['imsi'] + ', s1 uplink tunnel ID=' + str(um.stats_data[ue_id]['s1_ul_teid']) + ', s1 downlink tunnel ID=' + str(um.stats_data[ue_id]['s1_dl_teid']))
+            print '-----------------------------------------------------------------------------------------'
             
         
     def cmd(self, um, fm):
@@ -193,10 +197,11 @@ if __name__ == '__main__':
                               url=args.url,
                               port=args.port,
                               op_mode=args.op_mode)
+    um.ue_status()
 
     t1 = Timer(3, test_app.run,kwargs=dict(um=um, fm=fm))
     t1.start()
 
-    t2 = Timer(5, test_app.cmd,kwargs=dict(um=um, fm=fm))
-    t2.start()
+    #t2 = Timer(5, test_app.cmd,kwargs=dict(um=um, fm=fm))
+    #t2.start()
 
