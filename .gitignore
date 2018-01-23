@@ -3,6 +3,7 @@ build/*
 ll-mec
 ll-mecsim
 *.swp
+*.pyc
 
 # Prerequisites
 *.d
