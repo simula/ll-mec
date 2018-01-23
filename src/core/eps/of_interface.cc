@@ -267,7 +267,7 @@ void OFInterface::redirect_edge_service_dl_flow(fluid_base::OFConnection* of_con
 }
 
 
-void OFInterface::get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid, uint8_t table_id, uint64_t cookie, uint64_t cookie_mask, uint32_t out_port) {
+void OFInterface::get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid, uint8_t table_id, uint64_t cookie, uint64_t cookie_mask) {
   uint8_t* buffer;
   fluid_msg::of13::MultipartRequestFlow mrf(xid, 0, fluid_msg::of13::OFPTT_ALL, fluid_msg::of13::OFPP_ANY, fluid_msg::of13::OFPG_ANY, cookie, cookie_mask);
   buffer = mrf.pack();

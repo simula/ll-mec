@@ -35,26 +35,29 @@ void Ue_manager::start() {
 /*  while(true){
   }*/
 }
-bool Ue_manager::add_ue(uint64_t ue_id, std::string imsi, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip) {
+bool Ue_manager::add_ue(uint64_t eps_bearer_id, std::string imsi, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip) {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
 
   /* Return if connection does not exist */
   if (of_conn_ == nullptr || !of_conn_->is_alive())
     return false;
-  this->of_interface.install_default_UE_ul_flow(of_conn_, ue_id, s1_ul_teid);
-  this->of_interface.install_default_UE_dl_flow(of_conn_, ue_id, ue_ip, s1_dl_teid, enb_ip);
+  this->of_interface.install_default_UE_ul_flow(of_conn_, this->id, s1_ul_teid);
+  this->of_interface.install_default_UE_dl_flow(of_conn_, this->id, ue_ip, s1_dl_teid, enb_ip);
 
   /* Store the ue context into thread safe map */
   this->ue_context_lock.lock();
   json ue_context_json;
-  ue_context_json["ue_id"] = ue_id;
+  ue_context_json["ue_id"] = this->id;
+  ue_context_json["eps_bearer_id"] = eps_bearer_id;
   ue_context_json["imsi"] = imsi;
   ue_context_json["ue_ip"] = ue_ip;
   ue_context_json["enb_ip"] = enb_ip;
   ue_context_json["s1_ul_teid"] = s1_ul_teid;
   ue_context_json["s1_dl_teid"] = s1_dl_teid;
-  this->ue_context[ue_id] = ue_context_json;
+  this->ue_context[this->id] = ue_context_json;
+  this->imsi_mapping[imsi]=this->id;
+  this->id = (this->id+1) % 65535;
   this->ue_context_lock.unlock();
 
   spdlog::get("ll-mec")->info("Add UE: {}", ue_context_json.dump());
@@ -130,21 +133,22 @@ json Ue_manager::get_ue_all() {
   return response;
 }
 
-bool Ue_manager::delete_ue(uint64_t ue_id) {
+bool Ue_manager::delete_ue(std::string imsi) {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
 
   /* Return if connection does not exist */
   if (of_conn_ == nullptr || !of_conn_->is_alive())
     return false;
-  this->of_interface.flush_flow(of_conn_, ue_id);
+  this->of_interface.flush_flow(of_conn_, this->imsi_mapping[imsi]);
 
   /* Remove the ue context */
   this->ue_context_lock.lock();
-  this->ue_context.erase(ue_id);
+  this->ue_context.erase(imsi_mapping[imsi]);
+  this->imsi_mapping.erase(imsi);
   this->ue_context_lock.unlock();
 
-  spdlog::get("ll-mec")->info("Removed UE id={}", ue_id);
+  spdlog::get("ll-mec")->info("Removed UE id={}", this->imsi_mapping[imsi]);
   return true;
 }
 
@@ -161,6 +165,7 @@ bool Ue_manager::delete_ue_all() {
     this->of_interface.flush_flow(of_conn_, each.first);
   }
   this->ue_context.clear();
+  this->imsi_mapping.clear();
   this->ue_context_lock.unlock();
 
   spdlog::get("ll-mec")->info("Removed all UEs");

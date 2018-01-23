@@ -74,13 +74,13 @@ namespace north_api {
      * @api {get} /ue/:id Get one specific UE context.
      * @apiName GetUE
      * @apiGroup User
-     * @apiParam {Number} id UE id (EPS bearer id) of the user
+     * @apiParam {Number} id UE id of the user
      * @apiExample Example usage:
      *     curl -X GET http://127.0.0.1:9999/ue/1
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","s1_dl_teid":4,"s1_ul_teid":3,"ue_id":1,"ue_ip":"172.16.0.1"}
+     *      {"ue_id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","s1_dl_teid":4,"s1_ul_teid":3,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
      *     ]
      */
     Pistache::Rest::Routes::Delete(router, "/ue", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue_all, this));
@@ -95,14 +95,14 @@ namespace north_api {
      *
      * @apiError ServiceUnavailable Switch connection lost.
      */
-    Pistache::Rest::Routes::Delete(router, "/ue/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue, this));
+    Pistache::Rest::Routes::Delete(router, "/ue/:imsi", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_ue, this));
     /**
-     * @api {delete} /ue/:id Remove one specific UE context.
+     * @api {delete} /ue/:imsi Remove one specific UE context.
      * @apiName DeleteUE
      * @apiGroup User
-     * @apiParam {Number} id UE id (EPS bearer id) of the user
+     * @apiParam {String} id imsi of the user
      * @apiExample Example usage:
-     *     curl -X DELETE http://127.0.0.1:9999/ue/1
+     *     curl -X DELETE http://127.0.0.1:9999/ue/208950000000001
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *
@@ -174,10 +174,10 @@ namespace north_api {
     spdlog::get("ll-mec")->debug("number s1_ul_teid {}, s1_dl_teid {}", s1_ul_teid, s1_dl_teid);
     std::string ue_ip = ue_identities_json["ue_ip"];
     std::string enb_ip = ue_identities_json["enb_ip"];
-    uint64_t ue_id = ue_identities_json["eps_bearer_id"].get<int>();
+    uint64_t eps_bearer_id = ue_identities_json["eps_bearer_id"].get<int>();
     std::string imsi = ue_identities_json["imsi"].get<std::string>();
-    spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}", ue_id, imsi);
-    if (ue_manager->add_ue(ue_id, imsi, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip) == false) {
+    spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}", eps_bearer_id, imsi);
+    if (ue_manager->add_ue(eps_bearer_id, imsi, s1_ul_teid, s1_dl_teid, ue_ip, enb_ip) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
@@ -259,9 +259,9 @@ namespace north_api {
   void Ue_rest_calls::delete_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     /* Take eps_bearer_id as ue_id */
-    auto ue_id = request.param(":id").as<int>();
+    auto imsi = request.param(":imsi").as<std::string>();
     std::string resp;
-    if (ue_manager->delete_ue(ue_id) == false) {
+    if (ue_manager->delete_ue(imsi) == false) {
       resp = "Switch connection lost.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;

@@ -60,7 +60,7 @@ class Ue_manager : public llmec::app::App {
     json get_ue_all();
 
     /* Delete one specific UE context from the underlying user plane */
-    bool delete_ue(uint64_t ue_id);
+    bool delete_ue(std::string imsi);
 
     /* Delete all UEs context */
     bool delete_ue_all();
@@ -68,9 +68,11 @@ class Ue_manager : public llmec::app::App {
     /* Get user id list */
     std::vector<uint64_t> get_ue_list();
   private:
+    uint64_t id;
     static Ue_manager* instance;
-    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
+    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface), id(1) {}
     std::unordered_map<uint64_t, json> ue_context;
+    std::unordered_map<std::string, uint64_t> imsi_mapping;
     std::mutex ue_context_lock;
 };
 

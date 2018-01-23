@@ -54,12 +54,9 @@ void Stats_manager::start() {
     Conf* llmec_config = Conf::getInstance();
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     if (of_conn_ != NULL) {
-      std::vector<uint64_t> ue_list = ue_manager->get_ue_list();
-      for (auto each:ue_list)
-        this->of_interface.get_flow_stats(of_conn_, 43, 0, each, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["s1u_port"]);
-//      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffffffff, llmec_config->X["ovs_switch"]["external_port"]);
-      std::this_thread::sleep_for(std::chrono::microseconds(2000000));
+      this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffff0000);
     }
+    std::this_thread::sleep_for(std::chrono::microseconds(2000000));
   }
 }
 
