@@ -178,6 +178,9 @@ class ue_manager(object):
             self.log.debug('UE Manager requested data')
             self.log.debug(json.dumps(self.stats_data, indent=2))
 
+    def get_num_ues(self):
+        return len(self.stats_data)
+
             
 
 class flow_manager(object):

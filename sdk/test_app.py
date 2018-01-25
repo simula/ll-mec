@@ -84,8 +84,9 @@ class test_app(object):
         self.local_ip= '192.168.12.200'
         self.py3_flag = version_info[0] > 2 
 
-    def get_status(self,fm):
+    def get_status(self, um, fm):
         fm.flow_status()
+        um.ue_status()
 
         self.log.info('Total number of applied UEs ' + str(fm.get_num_ues()))
         self.log.info('Total number of applied rules ' + str(fm.get_num_rules()))
@@ -98,7 +99,8 @@ class test_app(object):
             fm.get_num_packets(ue_id,dir='dl')
             print '-----------------------------------------------------------------------------------------'
 
-        for ue_id in range(0, fm.get_num_ues()) :
+        for ue_id in range(0, um.get_num_ues()) :
+            print ue_id
             self.log.info('UE id ' + str(ue_id) + ', IMSI=' + um.stats_data[ue_id]['imsi'] + ', s1 uplink tunnel ID=' + str(um.stats_data[ue_id]['s1_ul_teid']) + ', s1 downlink tunnel ID=' + str(um.stats_data[ue_id]['s1_dl_teid']))
             print '-----------------------------------------------------------------------------------------'
             
@@ -153,7 +155,7 @@ class test_app(object):
     def run(self, um, fm):
         log.info('2. Reading the status of the underlying flows')
         
-        test_app.get_status(fm)
+        test_app.get_status(um, fm)
         
         t1 = Timer(3, self.run,kwargs=dict(um=um, fm=fm))
         t1.start()        
@@ -186,21 +188,21 @@ if __name__ == '__main__':
                    log_level=args.log,
                    op_mode=args.op_mode)
     
-    
+
     fm = llmec_sdk.flow_manager(log=log,
                                 url=args.url,
                                 port=args.port,
                                 op_mode=args.op_mode)
-    
-    fm.flow_status()
     um = llmec_sdk.ue_manager(log=log,
                               url=args.url,
                               port=args.port,
                               op_mode=args.op_mode)
+    fm.flow_status()
     um.ue_status()
 
     t1 = Timer(3, test_app.run,kwargs=dict(um=um, fm=fm))
     t1.start()
+
 
     #t2 = Timer(5, test_app.cmd,kwargs=dict(um=um, fm=fm))
     #t2.start()
