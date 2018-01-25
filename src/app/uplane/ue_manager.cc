@@ -142,13 +142,14 @@ bool Ue_manager::delete_ue(std::string imsi) {
     return false;
   this->of_interface.flush_flow(of_conn_, this->imsi_mapping[imsi]);
 
+  spdlog::get("ll-mec")->info("Removed UE id={}", this->imsi_mapping[imsi]);
+
   /* Remove the ue context */
   this->ue_context_lock.lock();
   this->ue_context.erase(imsi_mapping[imsi]);
   this->imsi_mapping.erase(imsi);
   this->ue_context_lock.unlock();
 
-  spdlog::get("ll-mec")->info("Removed UE id={}", this->imsi_mapping[imsi]);
   return true;
 }
 
