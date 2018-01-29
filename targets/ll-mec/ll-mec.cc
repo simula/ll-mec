@@ -36,6 +36,7 @@
 #include "rest_manager.h"
 #include "stats_rest_calls.h"
 #include "ue_rest_calls.h"
+#include "context_manager.h"
 #include "input_parser.h"
 #include "conf.h"
 #include "spdlog.h"
@@ -74,6 +75,7 @@ int main(int argc, char **argv){
   /* Initial the controller based on the config */
   llmec::core::eps::Controller::create_instance(llmec_config->X["llmec"]["address"].get<std::string>().c_str(), llmec_config->X["llmec"]["port"].get<int>(), llmec_config->X["llmec"]["number_of_workers"].get<int>(), llmec_config->X["llmec"]["secure_connection"].get<bool>());
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
+  llmec::data::Context_manager::create_instance();
 
   //OpenFlow driver interface init
   llmec::core::eps::OFInterface of_interface;

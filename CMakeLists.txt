@@ -17,11 +17,12 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 set(LL_MEC_SRC "${PROJECT_SOURCE_DIR}/src")
 set(LL_MEC_TARGET "${PROJECT_SOURCE_DIR}/targets")
 
-#3 levels - DRIVER / CORE / APP
+#3 levels - DRIVER / CORE / APP / UTIL / DATA
 set(APP_DIR "${LL_MEC_SRC}/app")
 set(CORE_DIR "${LL_MEC_SRC}/core")
 set(DRIVER_DIR "${LL_MEC_SRC}/driver")
 set(UTIL_DIR "${LL_MEC_SRC}/util")
+set(DATA_DIR "${LL_MEC_SRC}/data")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -112,6 +113,15 @@ set(UTIL_include_files
   )
 add_library(UTIL ${UTIL_src_files})
 
+#Data
+set(DATA_src_files
+  ${DATA_DIR}/context_manager.cc
+  )
+set(DATA_include_files
+  ${DATA_DIR}
+  )
+add_library(DATA ${DATA_src_files})
+
 find_package(Event REQUIRED)
 add_library(EPS ${EPS_src_files})
 target_link_libraries(EPS FLUIDBASE FLUIDMSG)
@@ -181,6 +191,7 @@ include_directories(
   ${EPS_include_files}
   ${APP_include_files}
   ${UTIL_include_files}
+  ${DATA_include_files}
   ${NORTH_API_include_files}
   ${PISTACHE_include_files}
   ${SPDLOG_include_dir}
@@ -204,6 +215,7 @@ target_link_libraries(ll-mec
   CORE
   APP
   UTIL
+  DATA
   NORTH_API
   PISTACHE
   )
