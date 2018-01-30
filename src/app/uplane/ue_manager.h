@@ -44,36 +44,30 @@ class Ue_manager : public llmec::app::App {
     static void create_instance(llmec::core::eps::OFInterface &of_interface);
     static Ue_manager* get_instance();
 
-    /* Add one UE context to the underlying user plane */
-    bool add_ue(uint64_t ue_id, std::string imsi, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip);
+    /* Add one bearer context to the underlying user plane */
+    bool add_bearer(json context);
 
-    /* Redirect one specific UE from IPv4_A to IPv4_B */
-    bool redirect_ue(uint64_t ue_id, uint64_t s1_ul_teid, uint64_t s1_dl_teid, std::string ue_ip, std::string enb_ip, std::string from, std::string to);
+    /* Redirect one specific bearer from IPv4_A to IPv4_B */
+    bool add_redirect_bearer(uint64_t id, json context);
 
-    /* Redirect one specific UE back if any */
-    bool delete_redirect_ue(uint64_t ue_id);
+    /* Redirect one specific bearer back if any */
+    bool delete_redirect_bearer(uint64_t id);
 
-    /* Return one specific UE information in JSON array*/
-    json get_ue(uint64_t ue_id);
+    /* Return one specific bearer information in JSON array */
+    json get_bearer(uint64_t ue_id);
 
-    /* Return all UEs information in JSON array */
-    json get_ue_all();
+    /* Return all bearers information in JSON array */
+    json get_bearer_all();
 
-    /* Delete one specific UE context from the underlying user plane */
-    bool delete_ue(std::string imsi);
+    /* Delete one specific bearer context from the underlying user plane */
+    bool delete_bearer(uint64_t id);
 
-    /* Delete all UEs context */
-    bool delete_ue_all();
+    /* Delete all bearers context */
+    bool delete_bearer_all();
 
-    /* Get user id list */
-    std::vector<uint64_t> get_ue_list();
   private:
-    uint64_t id;
     static Ue_manager* instance;
-    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface), id(1) {}
-    std::unordered_map<uint64_t, json> ue_context;
-    std::unordered_map<std::string, uint64_t> imsi_mapping;
-    std::mutex ue_context_lock;
+    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
 };
 
 } // namespace uplane

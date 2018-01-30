@@ -36,13 +36,15 @@ class Ue_rest_calls : public Rest_calls {
   public:
     Ue_rest_calls() { }
     void register_calls(Pistache::Rest::Router& router);
-    void add_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    void get_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    void get_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    void redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    void delete_redirect_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    void delete_ue(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    void delete_ue_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void add_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void get_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void get_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void get_bearer_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void add_redirect_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void delete_redirect_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void delete_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void delete_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void delete_bearer_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     //void obtain_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
 //  private:
 //    std::shared_ptr<llmec::app::uplane::Ue_manager> ue_manager;
