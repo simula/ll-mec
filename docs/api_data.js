@@ -27,9 +27,9 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/ue",
-    "title": "Add UE context.",
-    "name": "AddUE",
+    "url": "/bearer",
+    "title": "Add default/dedicated bearer context.",
+    "name": "AddBearer",
     "group": "User",
     "parameter": {
       "fields": {
@@ -40,6 +40,13 @@ define({ "api": [
             "optional": false,
             "field": "eps_bearer_id",
             "description": "<p>EPS bearer ID</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "slice_id",
+            "description": "<p>(optional) Slice ID. default = 0</p>"
           },
           {
             "group": "Parameter",
@@ -82,7 +89,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X POST http://127.0.0.1:9999/ue -d '{\"eps_bearer_id\":1, \"imsi\":\"208950000000009\", \"s1_ul_teid\":\"0x3\", \"s1_dl_teid\":\"0x4\", \"ue_ip\":\"172.16.0.2\", \"enb_ip\":\"192.168.0.3\"}'",
+        "content": "curl -X POST http://127.0.0.1:9999/bearer -d '{\"eps_bearer_id\":1, \"imsi\":\"208950000000009\", \"s1_ul_teid\":\"0x3\", \"s1_dl_teid\":\"0x4\", \"ue_ip\":\"172.16.0.2\", \"enb_ip\":\"192.168.0.3\"}'",
         "type": "json"
       }
     ],
@@ -119,9 +126,9 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/ue/:id",
-    "title": "Remove one specific UE context.",
-    "name": "DeleteUE",
+    "url": "/bearer/:id",
+    "title": "Remove one specific bearer context [Default].",
+    "name": "DeleteBearer",
     "group": "User",
     "parameter": {
       "fields": {
@@ -131,7 +138,7 @@ define({ "api": [
             "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>UE id (EPS bearer id) of the user</p>"
+            "description": "<p>ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)</p>"
           }
         ]
       }
@@ -139,7 +146,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X DELETE http://127.0.0.1:9999/ue/1",
+        "content": "curl -X DELETE http://127.0.0.1:9999/bearer/1",
         "type": "json"
       }
     ],
@@ -170,14 +177,116 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/ue",
-    "title": "Remove all UE context.",
-    "name": "DeleteUEs",
+    "url": "/bearer/id/:id",
+    "title": "Remove one specific bearer context by LLMEC internally-used bearer ID.",
+    "name": "DeleteBearerByID",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "curl -X DELETE http://127.0.0.1:9999/bearer/id/1",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "ServiceUnavailable",
+            "description": "<p>Switch connection lost.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/north_api/ue_rest_calls.cc",
+    "groupTitle": "User"
+  },
+  {
+    "type": "delete",
+    "url": "/bearer/imsi_bearer/:imsi_bearer",
+    "title": "Remove one specific bearer context by its IMSI and bearer ID.",
+    "name": "DeleteBearerByIMSIandBearerID",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "imsi_bearer",
+            "description": "<p>IMSI and Bearer ID are concatenated by comma to from an indentity of bearer, e.g. 208950000000009,1</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "curl -X DELETE http://127.0.0.1:9999/bearer/imsi_bearer/208950000000009,1",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "optional": false,
+            "field": "ServiceUnavailable",
+            "description": "<p>Switch connection lost.</p>"
+          }
+        ]
+      }
+    },
+    "version": "0.0.0",
+    "filename": "src/north_api/ue_rest_calls.cc",
+    "groupTitle": "User"
+  },
+  {
+    "type": "delete",
+    "url": "/bearer",
+    "title": "Remove all bearers context.",
+    "name": "DeleteBearers",
     "group": "User",
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X DELETE http://127.0.0.1:9999/ue",
+        "content": "curl -X DELETE http://127.0.0.1:9999/bearer",
         "type": "json"
       }
     ],
@@ -208,9 +317,9 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/ue/:id",
-    "title": "Get one specific UE context.",
-    "name": "GetUE",
+    "url": "/bearer/id/:id",
+    "title": "Get one specific bearer context By LLMEC-internally used bearer ID.",
+    "name": "GetBearerByID",
     "group": "User",
     "parameter": {
       "fields": {
@@ -220,7 +329,7 @@ define({ "api": [
             "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>UE id (EPS bearer id) of the user</p>"
+            "description": "<p>ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)</p>"
           }
         ]
       }
@@ -228,7 +337,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X GET http://127.0.0.1:9999/ue/1",
+        "content": "curl -X GET http://127.0.0.1:9999/bearer/id/1",
         "type": "json"
       }
     ],
@@ -236,7 +345,7 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n[\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"ue_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
+          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"slice_id\":0,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
           "type": "json"
         }
       ]
@@ -247,14 +356,27 @@ define({ "api": [
   },
   {
     "type": "get",
-    "url": "/ue",
-    "title": "Get all UE context.",
-    "name": "GetUEs",
+    "url": "/bearer/:id",
+    "title": "Get one specific bearer context [Default].",
+    "name": "GetBearerByID",
     "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)</p>"
+          }
+        ]
+      }
+    },
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X GET http://127.0.0.1:9999/ue",
+        "content": "curl -X GET http://127.0.0.1:9999/bearer/1",
         "type": "json"
       }
     ],
@@ -262,7 +384,72 @@ define({ "api": [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n[\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"ue_id\":1,\"ue_ip\":\"172.16.0.1\"},\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000001\",\"s1_dl_teid\":2,\"s1_ul_teid\":1,\"ue_id\":2,\"ue_ip\":\"172.16.0.2\"}\n]",
+          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"slice_id\":0,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/north_api/ue_rest_calls.cc",
+    "groupTitle": "User"
+  },
+  {
+    "type": "get",
+    "url": "/bearer/imsi_bearer/:imsi_bearer",
+    "title": "Get one specific bearer context by IMSI and EPS Bearer ID.",
+    "name": "GetBearerByIMSIandBearerID",
+    "group": "User",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "imsi_bearer",
+            "description": "<p>IMSI and Bearer ID are concatenated by comma to from an indentity of bearer, e.g. 208950000000009,1</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "curl -X GET http://127.0.0.1:9999/bearer/imsi_bearer/208950000000009,1",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
+          "type": "json"
+        }
+      ]
+    },
+    "version": "0.0.0",
+    "filename": "src/north_api/ue_rest_calls.cc",
+    "groupTitle": "User"
+  },
+  {
+    "type": "get",
+    "url": "/bearer",
+    "title": "Get all bearer context.",
+    "name": "GetBearers",
+    "group": "User",
+    "examples": [
+      {
+        "title": "Example usage:",
+        "content": "curl -X GET http://127.0.0.1:9999/bearer",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "HTTP/1.1 200 OK\n[\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"slice_id\":0,\"id\":1,\"ue_ip\":\"172.16.0.1\"},\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000001\",\"eps_bearer_id\":5,\"s1_dl_teid\":2,\"s1_ul_teid\":1,\"slice_id\":0,\"id\":2,\"ue_ip\":\"172.16.0.2\"}\n]",
           "type": "json"
         }
       ]
@@ -273,48 +460,13 @@ define({ "api": [
   },
   {
     "type": "post",
-    "url": "/ue/redirect/:id",
-    "title": "Redirect specific traffic flow for one UE.",
-    "name": "RedirectUE",
+    "url": "/bearer/redirect/:id",
+    "title": "Redirect specific traffic flow for one bearer.",
+    "name": "RedirectBearer",
     "group": "User",
     "parameter": {
       "fields": {
         "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "id",
-            "description": "<p>UE id (EPS bearer ID)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "s1_ul_teid",
-            "description": "<p>S1 downlink tunnel ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "s1_dl_teid",
-            "description": "<p>S1 uplink tunnel ID</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "ue_ip",
-            "description": "<p>IP address of UE</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "enb_ip",
-            "description": "<p>IP address of eNodeB</p>"
-          },
           {
             "group": "Parameter",
             "type": "String",
@@ -328,6 +480,13 @@ define({ "api": [
             "optional": false,
             "field": "to",
             "description": "<p>where the to-be-redirected traffic is going to</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)</p>"
           }
         ]
       }
@@ -335,7 +494,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X POST http://127.0.0.1:9999/ue/redirect/1 -d '{\"s1_ul_teid\":\"0x3\", \"s1_dl_teid\":\"0x4\", \"ue_ip\":\"172.16.0.2\", \"enb_ip\":\"192.168.0.3\", \"from\":\"192.168.12.3\", \"to\":\"192.168.12.1\"}'",
+        "content": "curl -X POST http://127.0.0.1:9999/bearer/redirect/1 -d '{\"from\":\"192.168.12.3\", \"to\":\"192.168.12.1\"}'",
         "type": "json"
       }
     ],
@@ -372,9 +531,9 @@ define({ "api": [
   },
   {
     "type": "delete",
-    "url": "/ue/redirect/:id",
-    "title": "Remove the redirect flow for one UE.",
-    "name": "RemoveRedirectUE",
+    "url": "/bearer/redirect/:id",
+    "title": "Remove the redirect flow for one bearer.",
+    "name": "RemoveRedirectBearer",
     "group": "User",
     "parameter": {
       "fields": {
@@ -384,7 +543,7 @@ define({ "api": [
             "type": "Number",
             "optional": false,
             "field": "id",
-            "description": "<p>UE id (EPS bearer id) of the user</p>"
+            "description": "<p>ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)</p>"
           }
         ]
       }
@@ -392,7 +551,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X DELETE http://127.0.0.1:9999/ue/redirect/1",
+        "content": "curl -X DELETE http://127.0.0.1:9999/bearer/redirect/1",
         "type": "json"
       }
     ],
