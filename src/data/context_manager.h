@@ -88,7 +88,7 @@ class Context_manager {
     /* pair<imsi, bearer_id> <-> id */
     std::map<std::pair<std::string, uint64_t>, uint64_t> imsi_mapping;
 
-    /* slice_id <-> set<uint64_t> */
+    /* slice_id <-> set<id> */
     std::map<uint64_t, std::set<uint64_t>> slice_group;
 };
 

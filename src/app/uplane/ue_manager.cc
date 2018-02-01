@@ -58,12 +58,12 @@ bool Ue_manager::add_bearer(json context)
     context_manager->delete_bearer(id);
     this->of_interface.flush_flow(of_conn_, id);
     context_manager->add_bearer(id, context);
-    spdlog::get("ll-mec")->info("Overwrite bearer {}: {}", id, context.dump());
+    spdlog::get("ll-mec")->info("Overwrite UE bearer {}: {}", id, context.dump());
   }
   else {
     context_manager->add_bearer(context);
     id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
-    spdlog::get("ll-mec")->info("Add bearer {}: {}", id, context.dump());
+    spdlog::get("ll-mec")->info("Add UE bearer {}: {}", id, context.dump());
   }
 
   this->of_interface.install_default_UE_ul_flow(of_conn_, id, context["s1_ul_teid"].get<int>());
