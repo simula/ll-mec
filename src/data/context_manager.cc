@@ -90,6 +90,7 @@ bool Context_manager::delete_bearer(uint64_t id)
   json context = this->bearer_context[id];
   this->imsi_mapping.erase(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()));
   this->slice_group[context["slice_id"].get<int>()].erase(context["id"].get<int>());
+  if (slice_group[context["slice_id"].get<int>()].empty()) slice_group.erase(context["slice_id"].get<int>());
   this->bearer_context.erase(id);
   this->bag_of_occupied_ids.erase(id);
   this->context_lock.unlock();
@@ -150,6 +151,17 @@ std::vector<uint64_t> Context_manager::get_id_list()
   return keys;
 }
 
+std::vector<uint64_t> Context_manager::get_slice_id_list()
+{
+  std::vector<uint64_t> keys;
+  this->context_lock.lock();
+  keys.reserve(this->slice_group.size());
+  for(auto kv : this->slice_group)
+    keys.push_back(kv.first);
+  this->context_lock.unlock();
+  return keys;
+}
+
 uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
 {
   uint64_t id = 0;
@@ -160,49 +172,63 @@ uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
   return id;
 }
 
-std::set<uint64_t> Context_manager::get_slice_group(uint64_t slice_id)
+json Context_manager::get_slice_group(uint64_t slice_id)
 {
-  std::set<uint64_t> id_set;
+  json id_array = json::array();
   this->context_lock.lock();
-  if (this->slice_group.count(slice_id) != 0)
-    id_set = this->slice_group.at(slice_id);
+  if (this->slice_group.count(slice_id) != 0) {
+    for (auto each:this->slice_group.at(slice_id)) {
+      id_array.push_back(each);
+    }
+  }
   this->context_lock.unlock();
-  return id_set;
+  return id_array;
 }
 
 void Context_manager::imsi_mapping_dump()
 {
-  spdlog::get("ll-mec")->info("{:<15},{:<5} {:<30}", "IMSI", "EPS bearer ID", "Internal ID");
+  spdlog::get("ll-mec")->info("");
+  spdlog::get("ll-mec")->info("--- IMSI mapping raw dump ---");
+  spdlog::get("ll-mec")->info("{:<15},{:<13} | {:<30}", "IMSI", "EPS bearer ID", "Internal ID");
   this->context_lock.lock();
   for (auto each:this->imsi_mapping) {
-    spdlog::get("ll-mec")->info("{:<15},{:<5} {:<5}", each.first.first, each.first.second, each.second);
+    spdlog::get("ll-mec")->info("{:<15},{:<13} | {:<5}", each.first.first, each.first.second, each.second);
   }
   this->context_lock.unlock();
+  spdlog::get("ll-mec")->info("");
 }
 
 void Context_manager::bearer_context_dump()
 {
-  spdlog::get("ll-mec")->info("{:<5} {:<50}", "Internal ID", "Bearer context");
+  spdlog::get("ll-mec")->info("");
+  spdlog::get("ll-mec")->info("--- Bearer context raw dump ---");
+  spdlog::get("ll-mec")->info("{:<11} | {:<50}", "Internal ID", "Bearer context");
   this->context_lock.lock();
   for (auto each:this->bearer_context) {
-    spdlog::get("ll-mec")->info("{:<5} {:<50}", each.first, each.second.dump());
+    spdlog::get("ll-mec")->info("{:<11} | {:<50}", each.first, each.second.dump());
   }
   this->context_lock.unlock();
+  spdlog::get("ll-mec")->info("");
 }
 
 void Context_manager::slice_group_dump()
 {
-  spdlog::get("ll-mec")->info("{:<5} {:<50}", "Slice ID", "Group of internally-used bearer ID");
+  spdlog::get("ll-mec")->info("");
+  spdlog::get("ll-mec")->info("--- Slice group raw dump ---");
+  spdlog::get("ll-mec")->info("{:<8} | {:<50}", "Slice ID", "Group of internally-used bearer ID");
   this->context_lock.lock();
   for (auto each:this->slice_group) {
     std::string set_of_id = "{ ";
+    int c = 0;
     for (auto id:each.second) {
-      set_of_id = set_of_id + ", " + std::to_string(id);
+      set_of_id = set_of_id + (c == 0 ? "": ", ") + std::to_string(id);
+      c++;
     }
     set_of_id += " }";
-    spdlog::get("ll-mec")->info("{:<5} {:<50}", each.first, set_of_id);
+    spdlog::get("ll-mec")->info("{:<8} | {:<50}", each.first, set_of_id);
   }
   this->context_lock.unlock();
+  spdlog::get("ll-mec")->info("");
 }
 
 uint64_t Context_manager::next_id()

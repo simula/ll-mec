@@ -47,9 +47,8 @@ class Ue_rest_calls : public Rest_calls {
     void delete_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_bearer_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-    //void obtain_stats(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
-//  private:
-//    std::shared_ptr<llmec::app::uplane::Ue_manager> ue_manager;
+    void get_slice_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void get_slice_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
 };
 
 } // namespace north_api

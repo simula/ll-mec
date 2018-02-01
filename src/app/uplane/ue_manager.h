@@ -65,6 +65,12 @@ class Ue_manager : public llmec::app::App {
     /* Delete all bearers context */
     bool delete_bearer_all();
 
+    /* Return one specific slice information in JSON array */
+    json get_slice(uint64_t slice_id);
+
+    /* Return all slices information in JSON array */
+    json get_slice_all();
+
   private:
     static Ue_manager* instance;
     Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}

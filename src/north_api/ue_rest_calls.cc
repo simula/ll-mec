@@ -264,6 +264,32 @@ namespace north_api {
      *
      * @apiError ServiceUnavailable Switch connection lost.
      */
+    Pistache::Rest::Routes::Get(router, "/slice", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_slice_all, this));
+    /**
+     * @api {get} /slice Get all the slices and its containing IDs (LLMEC internally-used ID)
+     * @apiName GetSlices
+     * @apiGroup Slice
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:9999/slice
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
+     *     ]
+     */
+    Pistache::Rest::Routes::Get(router, "/slice/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_slice_by_id, this));
+    /**
+     * @api {get} /slice/:id Get one indicated slice and its containing IDs (LLMEC internally-used ID)
+     * @apiName GetSliceByID
+     * @apiGroup Slice
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:9999/slice/0
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
+     *     ]
+     */
   }
 
   void Ue_rest_calls::add_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -608,5 +634,21 @@ namespace north_api {
     response.send(Pistache::Http::Code::Ok, resp);
     return;
   }
+
+  void Ue_rest_calls::get_slice_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+    auto id = request.param(":id").as<int>();
+    json slice = ue_manager->get_slice(id);
+    std::string resp = slice.dump();
+    response.send(Pistache::Http::Code::Ok, resp);
+  }
+
+  void Ue_rest_calls::get_slice_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+    json slices = ue_manager->get_slice_all();
+    std::string resp = slices.dump();
+    response.send(Pistache::Http::Code::Ok, resp);
+  }
+
 }
 }

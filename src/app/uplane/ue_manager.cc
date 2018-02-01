@@ -177,6 +177,22 @@ bool Ue_manager::delete_bearer_all() {
   return true;
 }
 
+json Ue_manager::get_slice(uint64_t id) {
+  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+  json response = context_manager->get_slice_group(id);
+  return response;
+}
+
+json Ue_manager::get_slice_all() {
+  json response;
+  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+  std::vector<uint64_t> slice_id_list = context_manager->get_slice_id_list();
+  for (auto each:slice_id_list)
+    response[std::to_string(each)] = context_manager->get_slice_group(each);
+
+  return response;
+}
+
 Ue_manager* Ue_manager::instance = 0;
 
 void Ue_manager::create_instance(llmec::core::eps::OFInterface &of_interface)

@@ -60,13 +60,16 @@ class Context_manager {
 
     /* Clean all tables */
     bool clean();
+
+    /* ID related */
     std::vector<uint64_t> get_id_list();
+    std::vector<uint64_t> get_slice_id_list();
     bool id_exist(uint64_t id);
 
     /* Get the value by key for those 3 tables */
     json get_bearer_context(uint64_t id);
     uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
-    std::set<uint64_t> get_slice_group(uint64_t slice_id);
+    json get_slice_group(uint64_t slice_id);
 
     /* Useful function to dump the tables */
     void imsi_mapping_dump();
