@@ -165,9 +165,9 @@ namespace north_api {
      *
      * @apiError ServiceUnavailable Switch connection lost.
      */
-    Pistache::Rest::Routes::Post(router, "/bearer/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_redirect_bearer, this));
+    Pistache::Rest::Routes::Post(router, "/bearer/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_redirect_bearer_by_id, this));
     /**
-     * @api {post} /bearer/redirect/:id Redirect specific traffic flow for one bearer.
+     * @api {post} /bearer/redirect/:id Redirect specific traffic flow for one bearer. [Default]
      * @apiName RedirectBearer
      * @apiGroup User
      *
@@ -184,15 +184,81 @@ namespace north_api {
      * @apiError BadRequest Payload format error or empty.
      * @apiError ServiceUnavailable Switch connection lost.
      */
-    Pistache::Rest::Routes::Delete(router, "/bearer/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_redirect_bearer, this));
+    Pistache::Rest::Routes::Post(router, "/bearer/redirect/id/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_redirect_bearer_by_id, this));
     /**
-     * @api {delete} /bearer/redirect/:id Remove the redirect flow for one bearer.
+     * @api {post} /bearer/redirect/id/:id Redirect specific traffic flow for one bearer.
+     * @apiName RedirectBearerByID
+     * @apiGroup User
+     *
+     * @apiParam {String} from where the to-be-redirected traffic is coming from
+     * @apiParam {String} to where the to-be-redirected traffic is going to
+     *
+     * @apiExample Example usage:
+     *     curl -X POST http://127.0.0.1:9999/bearer/redirect/id/1 -d '{"from":"192.168.12.3", "to":"192.168.12.1"}'
+     * @apiParam {Number} id ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError BadRequest Payload format error or empty.
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
+    Pistache::Rest::Routes::Post(router, "/bearer/redirect/imsi_bearer/:imsi_bearer", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_redirect_bearer_by_imsi_epsbearerid, this));
+    /**
+     * @api {post} /bearer/redirect/imsi_bearer/:imsi_bearer Redirect specific traffic flow for one bearer by IMSI and bearer ID.
+     * @apiName RedirectBearerByIMSIandBearerID
+     * @apiGroup User
+     *
+     * @apiParam {String} from where the to-be-redirected traffic is coming from
+     * @apiParam {String} to where the to-be-redirected traffic is going to
+     *
+     * @apiExample Example usage:
+     *     curl -X POST http://127.0.0.1:9999/bearer/redirect/imsi_bearer/208950000000009,1 -d '{"from":"192.168.12.3", "to":"192.168.12.1"}'
+     * @apiParam {String} imsi_bearer ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError BadRequest Payload format error or empty.
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
+    Pistache::Rest::Routes::Delete(router, "/bearer/redirect/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_redirect_bearer_by_id, this));
+    /**
+     * @api {delete} /bearer/redirect/:id Remove the redirect flow for one bearer. [Default]
      * @apiName RemoveRedirectBearer
      * @apiGroup User
      *
      * @apiParam {Number} id ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)
      * @apiExample Example usage:
      *     curl -X DELETE http://127.0.0.1:9999/bearer/redirect/1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
+    Pistache::Rest::Routes::Delete(router, "/bearer/redirect/id/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_redirect_bearer_by_id, this));
+    /**
+     * @api {delete} /bearer/redirect/id/:id Remove the redirect flow for one bearer by ID.
+     * @apiName RemoveRedirectBearerByID
+     * @apiGroup User
+     *
+     * @apiParam {Number} id ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)
+     * @apiExample Example usage:
+     *     curl -X DELETE http://127.0.0.1:9999/bearer/redirect/id/1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     * @apiError ServiceUnavailable Switch connection lost.
+     */
+    Pistache::Rest::Routes::Delete(router, "/bearer/redirect/imsi_bearer/:imsi_bearer", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_redirect_bearer_by_imsi_epsbearerid, this));
+    /**
+     * @api {delete} /bearer/redirect/imsi_bearer/:imsi_bearer Remove the redirect flow for one bearer by IMSI and bearer ID.
+     * @apiName RemoveRedirectBearerByIMSIandBearerID
+     * @apiGroup User
+     *
+     * @apiParam {String} imsi_bearer ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)
+     * @apiExample Example usage:
+     *     curl -X DELETE http://127.0.0.1:9999/bearer/redirect/imsi_bearer/208950000000009,1
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *
@@ -259,7 +325,7 @@ namespace north_api {
     return;
   }
 
-  void Ue_rest_calls::add_redirect_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+  void Ue_rest_calls::add_redirect_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     std::string resp;
     if (request.body().empty()) {
@@ -295,11 +361,110 @@ namespace north_api {
     return;
   }
 
-  void Ue_rest_calls::delete_redirect_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+  void Ue_rest_calls::add_redirect_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+    std::string resp;
+    if (request.body().empty()) {
+      resp = "Payload is empty. Redirect information required.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
+    auto imsi_bearer = request.param(":imsi_bearer").as<std::string>();
+    std::string imsi, bearer;
+    std::vector<std::string> splited;
+    llmec::util::Utility::split_string(imsi_bearer, splited, ",");
+    if (splited.size() != 2) {
+      resp = "Format error.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
+    /* simple guess to provide flexibility. Reject afterwards if no id is found */
+    if (splited[0].length() == 14 || splited[0].length() == 15)
+      imsi = splited[0], bearer = splited[1];
+    else
+      imsi = splited[1], bearer = splited[0];
+
+    spdlog::get("ll-mec")->debug("Imsi:{} bearer id:{}", imsi, bearer);
+    uint64_t id;
+    uint64_t bearer_id = std::stoul(bearer, nullptr, 10);
+    spdlog::get("ll-mec")->debug("Get UE by imsi:{} and bearer id:{}", imsi, bearer_id);
+    if ((id = context_manager->get_id(imsi, bearer_id)) == 0) {
+      resp = "Imsi or bearer_id invalid.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
+    json payload = json::parse(request.body());
+    if ( (payload["from"].empty() || !payload["from"].is_string())
+        || (payload["to"].empty() || !payload["to"].is_string())
+        ) {
+      resp = "Format error.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
+
+    std::string from = payload["from"];
+    std::string to = payload["to"];
+
+    json context = {
+      {"from", from},
+      {"to", to}
+    };
+
+    if (ue_manager->add_redirect_bearer(id, context) == false) {
+      resp = "Switch connection lost or no such bearer is found.";
+      response.send(Pistache::Http::Code::Service_Unavailable, resp);
+      return;
+    }
+    resp = "OK";
+    response.send(Pistache::Http::Code::Ok, resp);
+    return;
+  }
+
+  void Ue_rest_calls::delete_redirect_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     /* Take eps_bearer_id as ue_id */
     auto id = request.param(":id").as<int>();
     std::string resp;
+    if (ue_manager->delete_redirect_bearer(id) == false) {
+      resp = "Switch connection lost or no such bearer is found.";
+      response.send(Pistache::Http::Code::Service_Unavailable, resp);
+      return;
+    }
+    resp = "OK";
+    response.send(Pistache::Http::Code::Ok, resp);
+    return;
+  }
+
+  void Ue_rest_calls::delete_redirect_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+    std::string resp;
+    /* Take eps_bearer_id as ue_id */
+    auto imsi_bearer = request.param(":imsi_bearer").as<std::string>();
+    std::string imsi, bearer;
+    std::vector<std::string> splited;
+    llmec::util::Utility::split_string(imsi_bearer, splited, ",");
+    if (splited.size() != 2) {
+      resp = "Format error.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
+    /* simple guess to provide flexibility. Reject afterwards if no id is found */
+    if (splited[0].length() == 14 || splited[0].length() == 15)
+      imsi = splited[0], bearer = splited[1];
+    else
+      imsi = splited[1], bearer = splited[0];
+
+    spdlog::get("ll-mec")->debug("Imsi:{} bearer id:{}", imsi, bearer);
+    uint64_t id;
+    uint64_t bearer_id = std::stoul(bearer, nullptr, 10);
+    spdlog::get("ll-mec")->debug("Get UE by imsi:{} and bearer id:{}", imsi, bearer_id);
+    if ((id = context_manager->get_id(imsi, bearer_id)) == 0) {
+      resp = "Imsi or bearer_id invalid.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
     if (ue_manager->delete_redirect_bearer(id) == false) {
       resp = "Switch connection lost or no such bearer is found.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
