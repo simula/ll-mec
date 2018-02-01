@@ -105,7 +105,7 @@ namespace north_api {
      * @api {get} /bearer/imsi_bearer/:imsi_bearer Get one specific bearer context by IMSI and EPS Bearer ID.
      * @apiName GetBearerByIMSIandBearerID
      * @apiGroup User
-     * @apiParam {String} imsi_bearer IMSI and Bearer ID are concatenated by comma to from an indentity of bearer, e.g. 208950000000009,1
+     * @apiParam {String} imsi_bearer IMSI and EPS bearer ID are concatenated by comma to from an indentity of bearer, e.g. 208950000000009,1
      * @apiExample Example usage:
      *     curl -X GET http://127.0.0.1:9999/bearer/imsi_bearer/208950000000009,1
      * @apiSuccessExample Success-Response:
@@ -141,10 +141,10 @@ namespace north_api {
      */
     Pistache::Rest::Routes::Delete(router, "/bearer/imsi_bearer/:imsi_bearer", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_bearer_by_imsi_epsbearerid, this));
     /**
-     * @api {delete} /bearer/imsi_bearer/:imsi_bearer Remove one specific bearer context by its IMSI and bearer ID.
+     * @api {delete} /bearer/imsi_bearer/:imsi_bearer Remove one specific bearer context by its IMSI and EPS bearer ID.
      * @apiName DeleteBearerByIMSIandBearerID
      * @apiGroup User
-     * @apiParam {String} imsi_bearer IMSI and Bearer ID are concatenated by comma to from an indentity of bearer, e.g. 208950000000009,1
+     * @apiParam {String} imsi_bearer IMSI and EPS bearer ID are concatenated by comma to from an indentity of bearer, e.g. 208950000000009,1
      * @apiExample Example usage:
      *     curl -X DELETE http://127.0.0.1:9999/bearer/imsi_bearer/208950000000009,1
      * @apiSuccessExample Success-Response:
@@ -205,7 +205,7 @@ namespace north_api {
      */
     Pistache::Rest::Routes::Post(router, "/bearer/redirect/imsi_bearer/:imsi_bearer", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::add_redirect_bearer_by_imsi_epsbearerid, this));
     /**
-     * @api {post} /bearer/redirect/imsi_bearer/:imsi_bearer Redirect specific traffic flow for one bearer by IMSI and bearer ID.
+     * @api {post} /bearer/redirect/imsi_bearer/:imsi_bearer Redirect specific traffic flow for one bearer by IMSI and EPS bearer ID.
      * @apiName RedirectBearerByIMSIandBearerID
      * @apiGroup User
      *
@@ -252,7 +252,7 @@ namespace north_api {
      */
     Pistache::Rest::Routes::Delete(router, "/bearer/redirect/imsi_bearer/:imsi_bearer", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_redirect_bearer_by_imsi_epsbearerid, this));
     /**
-     * @api {delete} /bearer/redirect/imsi_bearer/:imsi_bearer Remove the redirect flow for one bearer by IMSI and bearer ID.
+     * @api {delete} /bearer/redirect/imsi_bearer/:imsi_bearer Remove the redirect flow for one bearer by IMSI and EPS bearer ID.
      * @apiName RemoveRedirectBearerByIMSIandBearerID
      * @apiGroup User
      *
@@ -273,9 +273,10 @@ namespace north_api {
      *     curl -X GET http://127.0.0.1:9999/slice
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
-     *     [
-     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
-     *     ]
+     *     {
+     *       "1":[2],
+     *       "4":[1]
+     *     }
      */
     Pistache::Rest::Routes::Get(router, "/slice/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_slice_by_id, this));
     /**
@@ -283,12 +284,12 @@ namespace north_api {
      * @apiName GetSliceByID
      * @apiGroup Slice
      * @apiExample Example usage:
-     *     curl -X GET http://127.0.0.1:9999/slice/0
+     *     curl -X GET http://127.0.0.1:9999/slice/1
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
-     *     [
-     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
-     *     ]
+     *     {
+     *       "1":[2]
+     *     }
      */
   }
 
