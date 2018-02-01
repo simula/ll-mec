@@ -56,6 +56,15 @@ import signal
 
 import ipcalc
 
+NUM_UES=10
+NUM_ENBS=2
+DEFAULT_EPS_BEARER=5
+NUM_EPS_BEARERS_PER_UE=2
+NUM_SLICE=2
+NUM_TRIALS=3
+
+
+
 
 def sigint_handler(signum,frame):
     print 'Exiting, wait for the timer to expire... Bye'
@@ -76,17 +85,31 @@ class test_app(object):
         self.status = 0
         self.op_mode = op_mode
         
-        self.ul_teid=1
-        self.dl_teid = 0x8d3ded37
-        self.ue_ip = '172.16.0.0/27'
-        self.enb_ip = '192.168.12.79'
-        self.remote_ip= '193.55.113.118'
-        self.local_ip= '192.168.12.200'
+        self.ul_teid = 0x0
+        self.dl_teid = 0x0
+        self.ue_drb  = 5
+        self.ue_imsi = 208950000000000
+#       self.ue_ip = '172.16.0.0/27'
+#        self.ue_ip = '172.16.0.0/24' # 255 
+        self.ue_ip = '172.16.0.0/20'  # 4094 
+
+        self.enb_ip = '192.168.12.79/30'
+
+        self.remote_ip = '193.55.113.118'
+
+        self.mec_ip = '192.168.12.100/20'
+
+        self.num_added_ues = 0
+        self.num_redirected_ues = 0
+        self.num_removed_redirected_ues = 0
+        self.num_removed_ues = 0
+        
+        
         self.py3_flag = version_info[0] > 2 
 
-    def get_status(self, um, fm):
+    def get_status(self, bm, fm):
         fm.flow_status()
-        um.ue_status()
+        bm.get_all_bearer_context()
 
         self.log.info('Total number of applied UEs ' + str(fm.get_num_ues()))
         self.log.info('Total number of applied rules ' + str(fm.get_num_rules()))
@@ -99,13 +122,75 @@ class test_app(object):
             fm.get_num_packets(ue_id,dir='dl')
             print '-----------------------------------------------------------------------------------------'
 
-        for ue_id in range(0, um.get_num_ues()) :
+        for ue_id in range(0, bm.get_num_ues()) :
             print ue_id
-            self.log.info('UE id ' + str(ue_id) + ', IMSI=' + um.stats_data[ue_id]['imsi'] + ', s1 uplink tunnel ID=' + str(um.stats_data[ue_id]['s1_ul_teid']) + ', s1 downlink tunnel ID=' + str(um.stats_data[ue_id]['s1_dl_teid']))
+            self.log.info('UE id ' + str(ue_id) + ', IMSI=' + bm.stats_data[ue_id]['imsi'] + ', s1 uplink tunnel ID=' + str(bm.stats_data[ue_id]['s1_ul_teid']) + ', s1 downlink tunnel ID=' + str(bm.stats_data[ue_id]['s1_dl_teid']))
             print '-----------------------------------------------------------------------------------------'
-            
+
+    def add_ue_bearer(self, bm):
         
-    def cmd(self, um, fm):
+        
+        ue_network = ipcalc.Network(self.ue_ip)
+        ue_host_first = ue_network.host_first()
+        ue_addresses = (ue_host_first + i for i in range(ue_network.size()-2))
+
+        enb_network = ipcalc.Network(self.enb_ip)
+        enb_host_first = enb_network.host_first()
+        enb_addresses = (enb_host_first + i for i in range(enb_network.size()-2))
+        
+        
+        #self.log.info('add ue bearer for ' + str(ue_network.size()-2) + ' UEs' )
+        for enb in range(0, NUM_ENBS-1) :
+            enb_address=next(enb_addresses)
+            for ue in range(0, NUM_UES-1) :
+                for drb in range(0, NUM_EPS_BEARERS_PER_UE-1):
+                    self.log.info('adding UE ' + str(ue) + ' bearer' + str(drb) + ' for eNB ' +str(enb))
+                    slice_id = drb % NUM_SLICE
+                        
+                    state=bm.add_ue_bearer_rule(imsi=str(self.ue_imsi+ue),eps_drb=str(self.ue_drb+drb),slice_id=str(slice_id), ul_teid=str(ue+drb), dl_teid=str(ue+drb),ue_ip=str(next(ue_addresses)), enb_ip=str(enb_address))
+                    
+                    if state == 'connected':
+                        self.num_added_ues+=1
+                              
+    def redirect_ue_bearer(self, bm):
+
+        mec_network = ipcalc.Network(self.mec_ip)
+        mec_host_first = mec_network.host_first()
+        mec_addresses = (mec_host_first + i for i in range(mec_network.size()-2))
+
+             
+        #self.log.info('redirecting ue bearer for ' + str(mec_network.size()-2) + ' UEs' )
+        for mec_id in range(1, self.num_added_ues+1) :
+            self.log.info('redirecting UE bearer assocaited with mec id ' + str(mec_id))
+            self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
+            
+            state=bm.redirect_ue_bearer_rule_by_mec_id(mec_id=mec_id,remote_ip=self.remote_ip,mec_ip=str(next(mec_addresses)))
+            if state == 'connected':
+                self.num_redirected_ues+=1
+                        
+    def remove_redirected_ue_bearer(self, bm):
+
+        
+        for mec_id in range(1, self.num_redirected_ues+1) :
+            self.log.info('removing redirected UE bearer assocaited with mec id ' + str(mec_id))
+            self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
+            
+            state=bm.remove_redirected_ue_bearer_by_mecid(mec_id=mec_id)
+            if state == 'connected':
+                self.num_removed_redirected_ues+=1
+                
+    def remove_ue_bearer(self, bm):
+
+        
+        for mec_id in range(1, self.num_added_ues+1) :
+            self.log.info('removing UE bearer assocaited with mec id ' + str(mec_id))
+            self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
+            
+            state=bm.remove_ue_bearer_by_id(mec_id=mec_id)
+            if state == 'connected':
+                self.num_removed_ues+=1          
+                
+    def cmd(self, bm, fm):
         user_in=''
         try:
             if self.py3_flag:
@@ -130,7 +215,7 @@ class test_app(object):
             self.log.info('redirecting flows towards MEC apps for ' + str(network.size()-2) + ' UEs' )
             for i in range(0, network.size()-2) :
                 
-                um.redirect_ue_rule(ul_teid=str(self.ul_teid), dl_teid=str(self.dl_teid),ue_ip=str(next(addresses)),enb_ip=self.enb_ip, remote_ip=self.remote_ip, local_ip=self.local_ip)
+                bm.redirect_ue_rule(ul_teid=str(self.ul_teid), dl_teid=str(self.dl_teid),ue_ip=str(next(addresses)),enb_ip=self.enb_ip, remote_ip=self.remote_ip, local_ip=self.local_ip)
                 self.ul_teid+=1
                 self.dl_teid+=1
                 if  2* i + 2 < network.size()-2 : 
@@ -143,7 +228,7 @@ class test_app(object):
         else :
           self.log.debug('no command entered')
         
-        t2 = Timer(5, self.cmd,kwargs=dict(um=um,fm=fm))
+        t2 = Timer(5, self.cmd,kwargs=dict(bm=bm,fm=fm))
         t2.start()        
 
       
@@ -152,12 +237,25 @@ class test_app(object):
         
      
         
-    def run(self, um, fm):
+    def run(self, bm, fm):
         log.info('2. Reading the status of the underlying flows')
         
-        test_app.get_status(um, fm)
+        self.get_status(bm, fm)
+
+        self.add_ue_bearer(bm)
+
+        self.redirect_ue_bearer(bm)
+
+        self.remove_redirected_ue_bearer(bm)
+
+        self.remove_ue_bearer(bm)
+
+        log.info('num added ue bearer ' + str(self.num_added_ues))
+        log.info('num redirected ue bearer ' + str(self.num_redirected_ues))
+        log.info('num removed redirected ue bearer ' + str(self.num_removed_redirected_ues))
+        log.info('num removed ue bearer ' + str(self.num_removed_ues))
         
-        t1 = Timer(3, self.run,kwargs=dict(um=um, fm=fm))
+        t1 = Timer(10, self.run,kwargs=dict(bm=bm, fm=fm))
         t1.start()        
                   
    
@@ -193,14 +291,15 @@ if __name__ == '__main__':
                                 url=args.url,
                                 port=args.port,
                                 op_mode=args.op_mode)
-    um = llmec_sdk.ue_manager(log=log,
-                              url=args.url,
-                              port=args.port,
-                              op_mode=args.op_mode)
+    bm = llmec_sdk.bearer_manager(log=log,
+                                  url=args.url,
+                                  port=args.port,
+                                  op_mode=args.op_mode)
     fm.flow_status()
-    um.ue_status()
-
-    t1 = Timer(3, test_app.run,kwargs=dict(um=um, fm=fm))
+    bm.get_all_bearer_context()
+    #test_app.run(bm,fm)
+    
+    t1 = Timer(10, test_app.run,kwargs=dict(bm=bm, fm=fm))
     t1.start()
 
 
