@@ -124,8 +124,7 @@ class test_app(object):
             print '-----------------------------------------------------------------------------------------'
 
         for ue_id in range(0, bm.get_num_ues()) :
-            print ue_id
-            self.log.info('UE id ' + str(ue_id) + ', IMSI=' + bm.stats_data[ue_id]['imsi'] + ', s1 uplink tunnel ID=' + str(bm.stats_data[ue_id]['s1_ul_teid']) + ', s1 downlink tunnel ID=' + str(bm.stats_data[ue_id]['s1_dl_teid']))
+            self.log.info('UE id ' + str(ue_id) + ', IMSI=' + bm.bearer_context[ue_id]['imsi'] + ', s1 uplink tunnel ID=' + str(bm.bearer_context[ue_id]['s1_ul_teid']) + ', s1 downlink tunnel ID=' + str(bm.bearer_context[ue_id]['s1_dl_teid']))
             print '-----------------------------------------------------------------------------------------'
 
     def add_ue_bearer(self, bm):
@@ -148,7 +147,7 @@ class test_app(object):
                     self.log.info('adding UE ' + str(ue) + ' bearer' + str(drb) + ' for eNB ' +str(enb))
                     slice_id = drb % NUM_SLICE
                         
-                    state=bm.add_ue_bearer_rule(imsi=str(self.ue_imsi+ue),eps_drb=str(self.ue_drb+drb),slice_id=str(slice_id), ul_teid=str(ue+drb), dl_teid=str(ue+drb),ue_ip=str(next(ue_addresses)), enb_ip=str(enb_address))
+                    state=bm.add_ue_bearer_rule(imsi=str(self.ue_imsi+ue),eps_drb=self.ue_drb+drb,slice_id=slice_id, ul_teid=str(ue+drb), dl_teid=str(ue+drb),ue_ip=str(next(ue_addresses)), enb_ip=str(enb_address))
 
                     if state == 'connected':
                         self.num_added_ues+=1
@@ -169,7 +168,7 @@ class test_app(object):
         #self.log.info('redirecting ue bearer for ' + str(mec_network.size()-2) + ' UEs' )
 #        for mec_id in range(1, self.num_added_ues+1) :
 
-        for mec_id in range(1, ((NUM_EPS_BEARERS_PER_UE-1)*NUM_UES)) :
+        for mec_id in range(1, NUM_UES) :
             self.log.info('redirecting UE bearer assocaited with mec id ' + str(mec_id))
             #self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
             
@@ -181,7 +180,7 @@ class test_app(object):
 
         
        # for mec_id in range(1, self.num_redirected_ues+1) :
-        for mec_id in range(1, ((NUM_EPS_BEARERS_PER_UE-1)*NUM_UES)) :
+        for mec_id in range(1, NUM_UES) :
             self.log.info('removing redirected UE bearer assocaited with mec id ' + str(mec_id))
             #self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
             
@@ -192,7 +191,7 @@ class test_app(object):
     def remove_ue_bearer(self, bm):
 
         
-       for mec_id in range(1, ((NUM_EPS_BEARERS_PER_UE-1)*NUM_UES)) :
+       for mec_id in range(1, NUM_UES) :
             self.log.info('removing UE bearer assocaited with mec id ' + str(mec_id))
             #self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
             

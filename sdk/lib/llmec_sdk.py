@@ -71,7 +71,7 @@ class llmec_rest_api(object):
     
     flow_flush='/flow/flush'
 
-    flow_stats='/stats/flows'
+    flow_stats='/stats'
 
 class bearer_manager(object):
     def __init__(self, log, url='http://localhost', port='9999', op_mode='test'):
@@ -99,7 +99,7 @@ class bearer_manager(object):
        
     # data: {"eps_bearer_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "slice_id":"0x1", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}
 
-    def add_ue_bearer_rule(self, imsi='208950000000001',eps_drb='0x1', slice_id='0x1', ul_teid='0x1', dl_teid='0x8d3ded37',ue_ip='172.16.0.2',enb_ip='192.168.12.79'):
+    def add_ue_bearer_rule(self, imsi='208950000000001',eps_drb=0x1, slice_id=0x1, ul_teid='0x1', dl_teid='0x8d3ded37',ue_ip='172.16.0.2',enb_ip='192.168.12.79'):
 
         url = self.url+self.bearer_api 
         data= {'eps_bearer_id':eps_drb, 'slice_id':slice_id, 'imsi':imsi,  's1_ul_teid': ul_teid, 's1_dl_teid' : dl_teid, 'ue_ip': ue_ip, 'enb_ip' : enb_ip}
@@ -115,7 +115,7 @@ class bearer_manager(object):
                 self.log.debug('Data ' + str(data))
                 req = requests.post(url,json.dumps(data),headers={'Content-Type': 'application/x-www-form-urlencoded'})
                 if req.status_code == 200 :
-                    self.log.error('successfully added a UE specific rule' )
+                    self.log.debug('successfully added a UE specific rule' )
                     status='connected'
                 else :
                     self.log.error('Request error code : ' + req.status_code)
@@ -219,7 +219,7 @@ class bearer_manager(object):
         return len(self.bearer_context)
     
     def get_num_bearers(self):
-        return len(self.bearer_context)
+        return len(self.bearer_context)*2
     
     def redirect_ue_bearer_rule_by_mec_id(self, mec_id, remote_ip='172.16.0.2',mec_ip='192.168.12.79'):
         """!@brief redirect ue bearer from a remote server to a local server 
@@ -279,7 +279,7 @@ class bearer_manager(object):
                
                 req = requests.post(url,json.dumps(data),headers={'Content-Type': 'application/x-www-form-urlencoded'})
                 if req.status_code == 200 :
-                    self.log.error('successfully redirected the UE bearer' )
+                    self.log.debug('successfully redirected the UE bearer' )
                     status='connected'
                 else :
                     self.log.error('Request error code : ' + req.status_code)
@@ -308,11 +308,10 @@ class bearer_manager(object):
             
         elif self.op_mode == 'sdk' : 
             try :
-                self.log.debug('POST ' + str(url))
-                self.log.debug('Data ' + str(data))
+                self.log.debug('DELETE ' + str(url))
                 req = requests.delete(url)
                 if req.status_code == 200 :
-                    self.log.error('successfully deleted beare(s)' )
+                    self.log.debug('successfully deleted beare(s)' )
                     status='connected'
                 else :
                     self.log.error('Request error code : ' + req.status_code)
@@ -336,10 +335,10 @@ class bearer_manager(object):
             status='connected'
         elif self.op_mode == 'sdk' : 
             try :
-                self.log.debug('DELET ' + str(url))
+                self.log.debug('DELETE ' + str(url))
                 req = requests.delete(url)
                 if req.status_code == 200 :
-                    self.log.error('successfully deleted U Ebeare(s)' )
+                    self.log.debug('successfully deleted U Ebeare(s)' )
                     status='connected'
                 else :
                     self.log.error('Request error code : ' + req.status_code)
@@ -362,15 +361,14 @@ class bearer_manager(object):
         elif self.op_mode == 'sdk' : 
             try :
                 self.log.debug('DELETE ' + str(url))
-                self.log.debug('Data ' + str(data))
                 req = requests.delete(url)
                 if req.status_code == 200 :
-                    self.log.error('successfully deleted UE bearer(s)' )
+                    self.log.debug('successfully deleted UE redirect bearer(s)' )
                     status='connected'
                 else :
                     self.log.error('Request error code : ' + req.status_code)
             except :
-                self.log.error('Failed to delete UE bearer(s)' )
+                self.log.error('Failed to delete UE redirect bearer(s)' )
 
         else :
             self.log.warn('Unknown operation mode ' + op_mode )
@@ -389,12 +387,12 @@ class bearer_manager(object):
                 self.log.debug('DELETE ' + str(url))
                 req = requests.delete(url)
                 if req.status_code == 200 :
-                    self.log.error('successfully deleted UE bearer(s)' )
+                    self.log.debug('successfully deleted UE redirect bearer(s)' )
                     status='connected'
                 else :
                     self.log.error('Request error code : ' + req.status_code)
             except :
-                self.log.error('Failed to delete UE bearer(s)' )
+                self.log.error('Failed to delete UE redirect bearer(s)' )
 
         else :
             self.log.warn('Unknown operation mode ' + op_mode )
@@ -462,78 +460,51 @@ class flow_manager(object):
         return len(self.stats_data)
         
     def get_num_ues(self):
-        return self.get_num_rules()/2
+        return self.get_num_rules()
 
-    def get_num_bytes(self, ue_id=0, dir='UL'):
+    def get_num_bytes(self, ue_id=0, dir='ul'):
         index=0
         flow_dir='upstream'
         if dir == 'dl' or dir == 'DL' :
-            index=2*ue_id + 1
             flow_dir='downstream'
-        if dir == 'ul' or dir == 'UL' :
-            index=2*ue_id
 
-        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' byte count: ' + str(self.stats_data[index]['byte_count']))    
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' byte count: ' + str(self.stats_data[index][dir]['byte_count']))    
 
-        return self.stats_data[index]['byte_count']
+        return self.stats_data[index][dir]['byte_count']
 
-    def get_num_packets(self, ue_id=0, dir='UL'):
+    def get_num_packets(self, ue_id=0, dir='ul'):
         index=0
         flow_dir='upstream'
         if dir == 'dl' or dir == 'DL' :
-            index=2*ue_id + 1
             flow_dir='downstream'
-        if dir == 'ul' or dir == 'UL' :
-            index=2*ue_id
             
-        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' packet count: ' + str(self.stats_data[index]['packet_count']))    
-        return self.stats_data[index]['packet_count']
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' packet count: ' + str(self.stats_data[index][dir]['packet_count']))    
+        return self.stats_data[index][dir]['packet_count']
 
-    def get_flow_life_time(self, ue_id=0, dir='UL'):
+    def get_flow_life_time(self, ue_id=0, dir='ul'):
         index=0
         flow_dir='upstream'
         if dir == 'dl' or dir == 'DL' :
-            index=2*ue_id + 1
             flow_dir='downstream'
-        if dir == 'ul' or dir == 'UL' :
-            index=2*ue_id
             
-        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow lifetime: ' + str(self.stats_data[index]['duration_sec']))    
-        return self.stats_data[index]['duration_sec']
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow lifetime: ' + str(self.stats_data[index][dir]['duration_sec']))    
+        return self.stats_data[index][dir]['duration_sec']
 
-    def get_flow_priority(self, ue_id=0, dir='UL'):
+    def get_flow_priority(self, ue_id=0, dir='ul'):
         index=0
         flow_dir='upstream'
         if dir == 'dl' or dir == 'DL' :
-            index=2*ue_id + 1
             flow_dir='downstream'
-        if dir == 'ul' or dir == 'UL' :
-            index=2*ue_id
 
-        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow priority: ' + str(self.stats_data[index]['priority']))    
-        return self.stats_data[index]['priority']
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow priority: ' + str(self.stats_data[index][dir]['priority']))    
+        return self.stats_data[index][dir]['priority']
 
-    def get_flow_in_port(self, ue_id=0, dir='UL'):
+    def get_flow_table_id(self, ue_id=0, dir='ul'):
         index=0
         flow_dir='upstream'
         if dir == 'dl' or dir == 'DL' :
-            index=2*ue_id + 1
             flow_dir='downstream'
-        if dir == 'ul' or dir == 'UL' :
-            index=2*ue_id
 
-        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow in port: ' + str(self.stats_data[index]['in_port']))    
-        return self.stats_data[index]['in_port']
-
-    def get_flow_table_id(self, ue_id=0, dir='UL'):
-        index=0
-        flow_dir='upstream'
-        if dir == 'dl' or dir == 'DL' :
-            index=2*ue_id + 1
-            flow_dir='downstream'
-        if dir == 'ul' or dir == 'UL' :
-            index=2*ue_id
-
-        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow table id: ' + str(self.stats_data[index]['flow_table_id']))    
-        return self.stats_data[index]['flow_table_id']
+        self.log.info('UE id ' + str(ue_id) + ' : ' + flow_dir + ' flow table id: ' + str(self.stats_data[index][dir]['flow_table_id']))    
+        return self.stats_data[index][dir]['flow_table_id']
 
