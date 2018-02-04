@@ -58,8 +58,9 @@ import ipcalc
 
 NUM_UES=10
 NUM_ENBS=2
-DEFAULT_EPS_BEARER=5
 NUM_EPS_BEARERS_PER_UE=2
+
+DEFAULT_EPS_BEARER=5
 NUM_SLICE=2
 NUM_TRIALS=3
 
@@ -148,10 +149,16 @@ class test_app(object):
                     slice_id = drb % NUM_SLICE
                         
                     state=bm.add_ue_bearer_rule(imsi=str(self.ue_imsi+ue),eps_drb=str(self.ue_drb+drb),slice_id=str(slice_id), ul_teid=str(ue+drb), dl_teid=str(ue+drb),ue_ip=str(next(ue_addresses)), enb_ip=str(enb_address))
-                    
+
                     if state == 'connected':
                         self.num_added_ues+=1
-                              
+                    # testing if the UE is actually added
+                    state = bm.get_ue_bearer_context(imsi=str(self.ue_imsi+ue),eps_drb=str(self.ue_drb+drb))
+                    if state == 'connected':
+                        self.log.info('got context for the UE bearer assocaited with mec id')
+                    else:
+                        self.log.warn('failed to get UE bearer assocaited with mec id ')
+                        
     def redirect_ue_bearer(self, bm):
 
         mec_network = ipcalc.Network(self.mec_ip)
@@ -160,9 +167,11 @@ class test_app(object):
 
              
         #self.log.info('redirecting ue bearer for ' + str(mec_network.size()-2) + ' UEs' )
-        for mec_id in range(1, self.num_added_ues+1) :
+#        for mec_id in range(1, self.num_added_ues+1) :
+
+        for mec_id in range(1, ((NUM_EPS_BEARERS_PER_UE-1)*NUM_UES)) :
             self.log.info('redirecting UE bearer assocaited with mec id ' + str(mec_id))
-            self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
+            #self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
             
             state=bm.redirect_ue_bearer_rule_by_mec_id(mec_id=mec_id,remote_ip=self.remote_ip,mec_ip=str(next(mec_addresses)))
             if state == 'connected':
@@ -171,9 +180,10 @@ class test_app(object):
     def remove_redirected_ue_bearer(self, bm):
 
         
-        for mec_id in range(1, self.num_redirected_ues+1) :
+       # for mec_id in range(1, self.num_redirected_ues+1) :
+        for mec_id in range(1, ((NUM_EPS_BEARERS_PER_UE-1)*NUM_UES)) :
             self.log.info('removing redirected UE bearer assocaited with mec id ' + str(mec_id))
-            self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
+            #self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
             
             state=bm.remove_redirected_ue_bearer_by_mecid(mec_id=mec_id)
             if state == 'connected':
@@ -182,9 +192,9 @@ class test_app(object):
     def remove_ue_bearer(self, bm):
 
         
-        for mec_id in range(1, self.num_added_ues+1) :
+       for mec_id in range(1, ((NUM_EPS_BEARERS_PER_UE-1)*NUM_UES)) :
             self.log.info('removing UE bearer assocaited with mec id ' + str(mec_id))
-            self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
+            #self.log.debug(bm.get_ue_bearer_context_by_mecid(mec_id))
             
             state=bm.remove_ue_bearer_by_id(mec_id=mec_id)
             if state == 'connected':
