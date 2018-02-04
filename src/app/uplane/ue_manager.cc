@@ -52,7 +52,7 @@ bool Ue_manager::add_bearer(json context)
 
   uint64_t id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
 
-  spdlog::get("ll-mec")->info("bearer {}", id);
+  spdlog::get("ll-mec")->debug("bearer {}", id);
   /* Bearer already exists. Remove it and then add (Overwrite) */
   if (id != 0) {
     context_manager->delete_bearer(id);
@@ -191,6 +191,23 @@ json Ue_manager::get_slice_all() {
     response[std::to_string(each)] = context_manager->get_slice_group(each);
 
   return response;
+}
+
+std::vector<uint64_t> Ue_manager::get_bearer_id_list() {
+  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+  std::vector<uint64_t> bearer_id_list = context_manager->get_id_list();
+  return bearer_id_list;
+}
+
+uint64_t Ue_manager::get_id(std::string imsi, uint64_t eps_bearer_id) {
+  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+  uint64_t id = context_manager->get_id(imsi, eps_bearer_id);
+  return id;
+}
+
+bool Ue_manager::id_exist(uint64_t id) {
+  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+  return context_manager->id_exist(id);
 }
 
 Ue_manager* Ue_manager::instance = 0;

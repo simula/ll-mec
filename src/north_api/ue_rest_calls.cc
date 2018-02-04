@@ -390,7 +390,6 @@ namespace north_api {
 
   void Ue_rest_calls::add_redirect_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
     std::string resp;
     if (request.body().empty()) {
       resp = "Payload is empty. Redirect information required.";
@@ -416,7 +415,7 @@ namespace north_api {
     uint64_t id;
     uint64_t bearer_id = std::stoul(bearer, nullptr, 10);
     spdlog::get("ll-mec")->debug("Get UE by imsi:{} and bearer id:{}", imsi, bearer_id);
-    if ((id = context_manager->get_id(imsi, bearer_id)) == 0) {
+    if ((id = ue_manager->get_id(imsi, bearer_id)) == 0) {
       resp = "Imsi or bearer_id invalid.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
@@ -465,7 +464,6 @@ namespace north_api {
 
   void Ue_rest_calls::delete_redirect_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
     std::string resp;
     /* Take eps_bearer_id as ue_id */
     auto imsi_bearer = request.param(":imsi_bearer").as<std::string>();
@@ -487,7 +485,7 @@ namespace north_api {
     uint64_t id;
     uint64_t bearer_id = std::stoul(bearer, nullptr, 10);
     spdlog::get("ll-mec")->debug("Get UE by imsi:{} and bearer id:{}", imsi, bearer_id);
-    if ((id = context_manager->get_id(imsi, bearer_id)) == 0) {
+    if ((id = ue_manager->get_id(imsi, bearer_id)) == 0) {
       resp = "Imsi or bearer_id invalid.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
@@ -512,7 +510,6 @@ namespace north_api {
 
   void Ue_rest_calls::get_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
     std::string resp;
     auto imsi_bearer = request.param(":imsi_bearer").as<std::string>();
     std::string imsi, bearer;
@@ -533,7 +530,7 @@ namespace north_api {
     uint64_t id;
     uint64_t bearer_id = std::stoul(bearer, nullptr, 10);
     spdlog::get("ll-mec")->debug("Get UE by imsi:{} and bearer id:{}", imsi, bearer_id);
-    if ((id = context_manager->get_id(imsi, bearer_id)) == 0) {
+    if ((id = ue_manager->get_id(imsi, bearer_id)) == 0) {
       resp = "Imsi or bearer_id invalid.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
@@ -553,7 +550,6 @@ namespace north_api {
 
   void Ue_rest_calls::delete_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
     std::string resp;
 
     /* the expected format is "imsi,bearer_id" */
@@ -575,7 +571,7 @@ namespace north_api {
 
     uint64_t id;
     uint64_t bearer_id = std::stoul(bearer, nullptr, 10);
-    if ((id = context_manager->get_id(imsi, bearer_id)) == 0) {
+    if ((id = ue_manager->get_id(imsi, bearer_id)) == 0) {
       resp = "Imsi or bearer_id invalid.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
@@ -593,7 +589,6 @@ namespace north_api {
 
   void Ue_rest_calls::delete_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
     std::string resp;
 
     /* the expected format is "imsi,bearer_id" */
@@ -607,7 +602,7 @@ namespace north_api {
     }
 
     /* ID not exist */
-    if (context_manager->id_exist(id) == false) {
+    if (ue_manager->id_exist(id) == false) {
       resp = "ID invalid.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;

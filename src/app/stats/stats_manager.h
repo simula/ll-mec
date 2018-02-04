@@ -26,6 +26,11 @@
 
 #include "app.h"
 #include "controller.h"
+#include "json.h"
+
+#include <mutex>
+
+using json = nlohmann::json;
 
 namespace llmec {
 namespace app {
@@ -36,9 +41,12 @@ class Stats_manager : public llmec::app::App {
     Stats_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
     void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
-    std::shared_ptr<std::vector<fluid_msg::of13::FlowStats>> get_flow_stats();
-  protected:
-    std::shared_ptr<std::vector<fluid_msg::of13::FlowStats>> flow_stats_;
+    json get_flow_stats(uint64_t id);
+  private:
+    /* flow_stats protected by mutex lock */
+    std::mutex flow_stats_lock;
+    /* OVS cookie is the key here and filled previously with MEC ID in UE manager */
+    std::map<uint64_t, json> flow_stats_;
 };
 
 } // namespace stats

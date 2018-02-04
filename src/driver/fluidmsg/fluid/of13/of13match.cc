@@ -1,5 +1,7 @@
 #include "of13match.hh"
 #include <algorithm>
+#include <iostream>
+#include "stdio.h"
 #include "fluid/util/util.h"
 
 namespace fluid_msg {

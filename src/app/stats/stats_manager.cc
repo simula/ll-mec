@@ -39,15 +39,35 @@ void Stats_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
   if (ev->get_type() == llmec::core::eps::EVENT_MULTIPART_REPLY) {
     fluid_msg::of13::MultipartReplyFlow reply;
     reply.unpack(((llmec::core::eps::MultipartReplyEvent*)ev)->data_);
-    this->flow_stats_ = std::make_shared<std::vector<fluid_msg::of13::FlowStats>>(reply.flow_stats());
+    this->flow_stats_lock.lock();
+    for (auto each:reply.flow_stats()) {
+      json flow_stats;
+      flow_stats["table_id"] = each.table_id();
+      flow_stats["duration_sec"] = each.duration_sec();
+      flow_stats["priority"] = each.priority();
+      flow_stats["packet_count"] = each.packet_count();
+      flow_stats["byte_count"] = each.byte_count();
+      /* Cookie is used as the identities in OVS and filled with MEC id in UE manager */
+      if (each.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_TUNNEL_ID) != NULL)
+        this->flow_stats_[each.cookie()]["ul"] = flow_stats;
+      else
+        this->flow_stats_[each.cookie()]["dl"] = flow_stats;
+    }
+    this->flow_stats_lock.unlock();
   }
 }
 
-std::shared_ptr<std::vector<fluid_msg::of13::FlowStats>> Stats_manager::get_flow_stats() {
-  return this->flow_stats_;
+json Stats_manager::get_flow_stats(uint64_t id) {
+  json response;
+  this->flow_stats_lock.lock();
+  if (this->flow_stats_.count(id) > 0)
+    response = this->flow_stats_[id];
+  this->flow_stats_lock.unlock();
+  return response;
 }
+
 void Stats_manager::start() {
-  spdlog::get("ll-mec")->info("Stats manager started");
+  spdlog::get("ll-mec")->debug("Stats manager started");
   while (true) {
     llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);

@@ -71,6 +71,15 @@ class Ue_manager : public llmec::app::App {
     /* Return all slices information in JSON array */
     json get_slice_all();
 
+    /* Get the bearer id list */
+    std::vector<uint64_t> get_bearer_id_list();
+
+    /* Get the id by IMSI and bearer */
+    uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
+
+    /* Check if ID exists in LLMEC context */
+    bool id_exist(uint64_t id);
+
   private:
     static Ue_manager* instance;
     Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
