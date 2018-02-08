@@ -91,11 +91,13 @@ if __name__ == "__main__":
             latency = latency + (ue_time[i] / ue_counts[i])
             data.append(ue_time[i]/ue_counts[i])
             c = c + ue_counts[i]
-	    #print(data)
-    sdev=numpy.std(data)
+
+    sdev = 0
+    if data:
+      sdev = numpy.std(data)
 
     # Outputing
-    ping_file = open(config.ue_traffic_generator, 'w')
+    ping_file = open(config.log_output_file, 'w')
     ping_file.truncate()
     print("Average latency:%f, Ping drop: %f\n"%(latency/config.N_UE, float(total_counts-c)/float(total_counts)))
     ping_file.write("%f %f\n" % (latency*1000/config.N_UE, sdev/1000))
