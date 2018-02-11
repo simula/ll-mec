@@ -31,4 +31,4 @@ number_of_sending_process = 1
 number_of_receiving_thread = 1
 
 # Log
-log_output_file = "ue_traffic_generator.log"
+log_output_file = "llmec-tester.log"
