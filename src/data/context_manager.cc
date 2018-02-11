@@ -143,6 +143,7 @@ bool Context_manager::clean()
   this->bearer_context.clear();
   this->imsi_mapping.clear();
   this->slice_group.clear();
+  this->bag_of_occupied_ids.clear();
   this->context_lock.unlock();
 }
 
