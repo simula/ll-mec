@@ -1,12 +1,15 @@
 #!/usr/bin/python
 
-# Numbers of UE
+# general settings
 N_UE = 1
+redirect_rate = 0.9
 
 # Nodes address
-generator_address = "192.168.12.242"
-generator_interface = "enp3s0"
-S1U_address = "10.10.10.1"
+generator_address = "192.168.111.1"
+generator_interface = "vboxnet0"
+S1U_address = "192.168.111.10"
+llmec_address = "127.0.0.1"
+llmec_northbound_port = "9999"
 
 # Interface ports
 GTPv1_user_port = 2152
@@ -25,7 +28,7 @@ ping_dst = "8.8.8.8"
 
 # Multi-process settings
 number_of_sending_process = 1
-number_of_receiving_process = 1
+number_of_receiving_thread = 1
 
 # Log
 log_output_file = "ue_traffic_generator.log"
