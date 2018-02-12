@@ -34,6 +34,8 @@
 #include <fluid/of10msg.hh>
 #include <fluid/of13msg.hh>
 
+#include "metadata.h"
+
 //LL-MEC OpenFlow interface
 namespace llmec {
 namespace core {
@@ -44,10 +46,10 @@ class OFInterface {
     void install_flow_mod(fluid_msg::of10::PacketIn &pi, fluid_base::OFConnection* of_conn, uint64_t src, uint64_t dst, uint16_t out_port);
     void install_flow_mod(fluid_msg::of13::PacketIn &pi, fluid_base::OFConnection* of_conn, uint64_t src, uint64_t dst, uint16_t out_port);
     void install_default_flow(fluid_base::OFConnection* of_conn);
-    void install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel_id);
-    void install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, std::string UE_ip, uint64_t dl_tunnel_id, std::string ENB_ip);
-    void redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel_id, std::string from, std::string to);
-    void redirect_edge_service_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, std::string UE_ip, uint64_t dl_tunnel_id, std::string ENB_ip, std::string from, std::string to);
+    void install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel_id, Metadata metadata);
+    void install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, std::string UE_ip, uint64_t dl_tunnel_id, std::string ENB_ip, Metadata Metadata);
+    void redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel_id, std::string from, std::string to, Metadata metadata);
+    void redirect_edge_service_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, std::string UE_ip, uint64_t dl_tunnel_id, std::string ENB_ip, std::string from, std::string to, Metadata metadata);
     void get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid, uint8_t table_id, uint64_t cookie, uint64_t cookie_mask);
     void flush_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id);
 };

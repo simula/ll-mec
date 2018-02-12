@@ -115,12 +115,15 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel) {
+void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel, Metadata metadata) {
   Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
   fluid_msg::of13::InPort in_port(llmec_config->X["ovs_switch"]["s1u_port"].get<int>());
   fluid_msg::of13::TUNNELId ul_tunnel_id(ul_tunnel);
+  /* IPv4 packet, Not intend to deal with the field dependency */
+  fluid_msg::of13::EthType eth_type(0x0800);
+  m.add_oxm_field(eth_type);
   m.add_oxm_field(in_port);
   m.add_oxm_field(ul_tunnel_id);
 
@@ -142,6 +145,8 @@ void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, 
   auto out = fluid_msg::EthAddress(llmec_config->X["gateway"]["mac"].get<std::string>());
   fluid_msg::of13::ApplyActions act;
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::EthDst(out)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPDSCP(metadata.ipdscp)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPECN(metadata.ipecn)));
   act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["external_port"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();
@@ -149,7 +154,7 @@ void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, 
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip) {
+void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip, Metadata metadata) {
   Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
@@ -182,6 +187,8 @@ void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, 
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELId(dl_tunnel_id)));
   fluid_msg::IPAddress enb_ip_addr(ENB_ip);
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELDst(enb_ip_addr)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPDSCP(metadata.ipdscp)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPECN(metadata.ipecn)));
   act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["s1u_port"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();
@@ -189,7 +196,7 @@ void OFInterface::install_default_UE_dl_flow(fluid_base::OFConnection* of_conn, 
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel, std::string from, std::string to) {
+void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel, std::string from, std::string to, Metadata metadata) {
   Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
@@ -222,6 +229,8 @@ void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_con
   fluid_msg::of13::ApplyActions act;
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::EthDst(out)));
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPv4Dst(to)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPDSCP(metadata.ipdscp)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPECN(metadata.ipecn)));
   act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["external_port"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();
@@ -229,7 +238,7 @@ void OFInterface::redirect_edge_service_ul_flow(fluid_base::OFConnection* of_con
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-void OFInterface::redirect_edge_service_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip, std::string from, std::string to) {
+void OFInterface::redirect_edge_service_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip, std::string from, std::string to, Metadata metadata) {
   Conf* llmec_config = Conf::getInstance();
   uint8_t* buffer;
   fluid_msg::of13::Match m;
@@ -265,6 +274,8 @@ void OFInterface::redirect_edge_service_dl_flow(fluid_base::OFConnection* of_con
   fluid_msg::IPAddress enb_ip_addr(ENB_ip);
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELDst(enb_ip_addr)));
   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPv4Src(from)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPDSCP(metadata.ipdscp)));
+  act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPECN(metadata.ipecn)));
   act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["s1u_port"].get<int>(), 1024));
   fm.add_instruction(act);
   buffer = fm.pack();

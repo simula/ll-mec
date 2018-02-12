@@ -52,6 +52,7 @@ namespace north_api {
      *
      * @apiParam {Number} eps_bearer_id EPS bearer ID
      * @apiParam {Number} slice_id (optional) Slice ID. default = 0
+     * @apiParam {Number} tos (optional) Type of service includeing DSCP and ECN. default = 0
      * @apiParam {String} imsi IMSI
      * @apiParam {String} s1_ul_teid S1 downlink tunnel ID
      * @apiParam {String} s1_dl_teid S1 uplink tunnel ID
@@ -75,8 +76,8 @@ namespace north_api {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"slice_id":0,"id":1,"ue_ip":"172.16.0.1"},
-     *      {"enb_ip":"192.168.0.3","imsi":"208950000000001","eps_bearer_id":5,"s1_dl_teid":2,"s1_ul_teid":1,"slice_id":0,"id":2,"ue_ip":"172.16.0.2"}
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0,"id":1,"ue_ip":"172.16.0.1"},
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000001","eps_bearer_id":5,"s1_dl_teid":2,"s1_ul_teid":1, "tos":0, "slice_id":0,"id":2,"ue_ip":"172.16.0.2"}
      *     ]
      */
     Pistache::Rest::Routes::Get(router, "/bearer/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_bearer_by_id, this));
@@ -90,7 +91,7 @@ namespace north_api {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"slice_id":0,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
+     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
      *     ]
      */
     Pistache::Rest::Routes::Get(router, "/bearer/id/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_bearer_by_id, this));
@@ -104,7 +105,7 @@ namespace north_api {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"slice_id":0,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
+     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
      *     ]
      */
     Pistache::Rest::Routes::Get(router, "/bearer/imsi_bearer/:imsi_bearer", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_bearer_by_imsi_epsbearerid, this));
@@ -118,7 +119,7 @@ namespace north_api {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3,"eps_bearer_id":1,"ue_ip":"172.16.0.1"}
+     *      {"id":1,"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0, "eps_bearer_id":1,"ue_ip":"172.16.0.1"}
      *     ]
      */
     Pistache::Rest::Routes::Delete(router, "/bearer", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_bearer_all, this));
@@ -178,6 +179,7 @@ namespace north_api {
      * @apiName RedirectBearer
      * @apiGroup User
      *
+     * @apiParam {Number} tos (optional) Type of service includeing DSCP and ECN. default = 0
      * @apiParam {String} from where the to-be-redirected traffic is coming from
      * @apiParam {String} to where the to-be-redirected traffic is going to
      *
@@ -197,6 +199,7 @@ namespace north_api {
      * @apiName RedirectBearerByID
      * @apiGroup User
      *
+     * @apiParam {Number} tos (optional) Type of service includeing DSCP and ECN. default = 0
      * @apiParam {String} from where the to-be-redirected traffic is coming from
      * @apiParam {String} to where the to-be-redirected traffic is going to
      *
@@ -216,6 +219,7 @@ namespace north_api {
      * @apiName RedirectBearerByIMSIandBearerID
      * @apiGroup User
      *
+     * @apiParam {Number} tos (optional) Type of service includeing DSCP and ECN. default = 0
      * @apiParam {String} from where the to-be-redirected traffic is coming from
      * @apiParam {String} to where the to-be-redirected traffic is going to
      *
@@ -337,6 +341,15 @@ namespace north_api {
       }
       slice_id = payload["slice_id"].get<int>();
     }
+    uint8_t tos = 0;
+    if (!payload["tos"].empty()) {
+      if (!payload["tos"].is_number()) {
+        resp = "ToS is not a valid number.";
+        response.send(Pistache::Http::Code::Bad_Request, resp);
+        return;
+      }
+      tos = payload["tos"].get<int>();
+    }
     spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}", eps_bearer_id, imsi);
 
     /* Create a new json to have clean content */
@@ -347,7 +360,8 @@ namespace north_api {
       {"s1_dl_teid", s1_dl_teid},
       {"ue_ip", ue_ip},
       {"enb_ip", enb_ip},
-      {"slice_id", slice_id}
+      {"slice_id", slice_id},
+      {"tos", tos}
     };
     if (ue_manager->add_bearer(context) == false) {
       resp = "Switch connection lost.";
@@ -380,9 +394,19 @@ namespace north_api {
     std::string from = payload["from"];
     std::string to = payload["to"];
 
+    uint8_t tos = 0;
+    if (!payload["tos"].empty()) {
+      if (!payload["tos"].is_number()) {
+        resp = "ToS is not a valid number.";
+        response.send(Pistache::Http::Code::Bad_Request, resp);
+        return;
+      }
+      tos = payload["tos"].get<int>();
+    }
     json context = {
       {"from", from},
-      {"to", to}
+      {"to", to},
+      {"tos", tos}
     };
 
     if (ue_manager->add_redirect_bearer(id, context) == false) {
@@ -439,9 +463,19 @@ namespace north_api {
     std::string from = payload["from"];
     std::string to = payload["to"];
 
+    uint8_t tos = 0;
+    if (!payload["tos"].empty()) {
+      if (!payload["tos"].is_number()) {
+        resp = "ToS is not a valid number.";
+        response.send(Pistache::Http::Code::Bad_Request, resp);
+        return;
+      }
+      tos = payload["tos"].get<int>();
+    }
     json context = {
       {"from", from},
-      {"to", to}
+      {"to", to},
+      {"tos", tos}
     };
 
     if (ue_manager->add_redirect_bearer(id, context) == false) {

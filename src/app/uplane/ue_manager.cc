@@ -32,6 +32,7 @@
 #include "ue_manager.h"
 #include "context_manager.h"
 #include "spdlog.h"
+#include "metadata.h"
 
 namespace llmec {
 namespace app {
@@ -73,8 +74,15 @@ bool Ue_manager::add_bearer(json context)
     spdlog::get("ll-mec")->info("Add UE bearer {}: {}", id, context.dump());
   }
 
-  this->of_interface.install_default_UE_ul_flow(of_conn_, id, context["s1_ul_teid"].get<int>());
-  this->of_interface.install_default_UE_dl_flow(of_conn_, id, context["ue_ip"].get<std::string>(), context["s1_dl_teid"].get<int>(), context["enb_ip"].get<std::string>());
+  Metadata metadata;
+  if (!context["tos"].empty()) {
+    metadata.ipdscp = (uint8_t)((context["tos"].get<int>() & 0xFC) >> 2);
+    metadata.ipecn = (uint8_t) context["tos"].get<int>() & 0x3;
+  }
+
+  
+  this->of_interface.install_default_UE_ul_flow(of_conn_, id, context["s1_ul_teid"].get<int>(), metadata);
+  this->of_interface.install_default_UE_dl_flow(of_conn_, id, context["ue_ip"].get<std::string>(), context["s1_dl_teid"].get<int>(), context["enb_ip"].get<std::string>(), metadata);
   return true;
 }
 
@@ -97,8 +105,13 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, json context) {
   context_manager->add_redirect_bearer(id, context);
   json bearer = context_manager->get_bearer_context(id);
 
-  this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>());
-  this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>());
+  Metadata metadata;
+  if (!context["tos"].empty()) {
+    metadata.ipdscp = (uint8_t)((context["tos"].get<int>() & 0xFC) >> 2);
+    metadata.ipecn = (uint8_t) context["tos"].get<int>() & 0x3;
+  }
+  this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+  this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
 
   spdlog::get("ll-mec")->info("Redirect bearer id={} from {} to {}", id, context["from"].get<std::string>(), context["to"].get<std::string>());
   return true;
@@ -119,8 +132,13 @@ bool Ue_manager::delete_redirect_bearer(uint64_t id) {
 
   json bearer = context_manager->get_bearer_context(id);
   this->of_interface.flush_flow(of_conn_, id);
-  this->of_interface.install_default_UE_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>());
-  this->of_interface.install_default_UE_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>());
+  Metadata metadata;
+  if (!bearer["tos"].empty()) {
+    metadata.ipdscp = (bearer["tos"].get<uint8_t>() & 0xFC) >> 2;
+    metadata.ipecn = bearer["tos"].get<uint8_t>() & 0x3;
+  }
+  this->of_interface.install_default_UE_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), metadata);
+  this->of_interface.install_default_UE_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), metadata);
 
   /* Remove redirect information in UE context */
   context_manager->delete_redirect_bearer(id);

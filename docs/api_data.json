@@ -80,7 +80,7 @@
   {
     "type": "get",
     "url": "/stats/id/:id",
-    "title": "Get the traffic flow statistic by ID.",
+    "title": "Get the traffic flow statistic by ID. [Default]",
     "name": "GetFlowsByID",
     "group": "Stats",
     "examples": [
@@ -132,7 +132,7 @@
   {
     "type": "get",
     "url": "/stats/imsi_bearer/:imsi_bearer",
-    "title": "Get the traffic flow statistic by IMSI and EPS bearer ID.",
+    "title": "Get the traffic flow statistic by IMSI and EPS bearer ID. [Default]",
     "name": "GetFlowsByIMSIandBearerID",
     "group": "Stats",
     "examples": [
@@ -177,6 +177,13 @@
             "optional": false,
             "field": "slice_id",
             "description": "<p>(optional) Slice ID. default = 0</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "tos",
+            "description": "<p>(optional) Type of service includeing DSCP and ECN. default = 0</p>"
           },
           {
             "group": "Parameter",
@@ -475,7 +482,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"slice_id\":0,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
+          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3, \"tos\":0, \"slice_id\":0,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
           "type": "json"
         }
       ]
@@ -514,7 +521,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"slice_id\":0,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
+          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3, \"tos\":0, \"slice_id\":0,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
           "type": "json"
         }
       ]
@@ -553,7 +560,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
+          "content": "HTTP/1.1 200 OK\n[\n {\"id\":1,\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3, \"tos\":0, \"slice_id\":0, \"eps_bearer_id\":1,\"ue_ip\":\"172.16.0.1\"}\n]",
           "type": "json"
         }
       ]
@@ -579,7 +586,7 @@
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "HTTP/1.1 200 OK\n[\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3,\"slice_id\":0,\"id\":1,\"ue_ip\":\"172.16.0.1\"},\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000001\",\"eps_bearer_id\":5,\"s1_dl_teid\":2,\"s1_ul_teid\":1,\"slice_id\":0,\"id\":2,\"ue_ip\":\"172.16.0.2\"}\n]",
+          "content": "HTTP/1.1 200 OK\n[\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000009\",\"eps_bearer_id\":5,\"s1_dl_teid\":4,\"s1_ul_teid\":3, \"tos\":0, \"slice_id\":0,\"id\":1,\"ue_ip\":\"172.16.0.1\"},\n {\"enb_ip\":\"192.168.0.3\",\"imsi\":\"208950000000001\",\"eps_bearer_id\":5,\"s1_dl_teid\":2,\"s1_ul_teid\":1, \"tos\":0, \"slice_id\":0,\"id\":2,\"ue_ip\":\"172.16.0.2\"}\n]",
           "type": "json"
         }
       ]
@@ -597,6 +604,13 @@
     "parameter": {
       "fields": {
         "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "tos",
+            "description": "<p>(optional) Type of service includeing DSCP and ECN. default = 0</p>"
+          },
           {
             "group": "Parameter",
             "type": "String",
@@ -670,6 +684,13 @@
         "Parameter": [
           {
             "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "tos",
+            "description": "<p>(optional) Type of service includeing DSCP and ECN. default = 0</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "String",
             "optional": false,
             "field": "from",
@@ -739,6 +760,13 @@
     "parameter": {
       "fields": {
         "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "tos",
+            "description": "<p>(optional) Type of service includeing DSCP and ECN. default = 0</p>"
+          },
           {
             "group": "Parameter",
             "type": "String",
