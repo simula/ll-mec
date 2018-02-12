@@ -141,12 +141,12 @@ target_link_libraries(CORE EPS)
 #APP
 
 set(SGWC_DIR "${APP_DIR}/sgwc")
-set(SWITCH_DIR "${APP_DIR}/basic_switch")
+set(SWITCH_DIR "${APP_DIR}/switch_manager")
 set(STATS_DIR "${APP_DIR}/stats")
 set(UPLANE_DIR "${APP_DIR}/uplane")
 set(APP_src_files
   ${SGWC_DIR}/sgwc.cc
-  ${SWITCH_DIR}/basic_switch.cc
+  ${SWITCH_DIR}/switch_manager.cc
   ${STATS_DIR}/stats_manager.cc
   ${UPLANE_DIR}/ue_manager.cc
   )

@@ -34,13 +34,12 @@
 
 namespace llmec {
 namespace app {
-namespace basic_switch {
+namespace switch_manager {
 
-class Basic_switch : public llmec::app::App {
+class Switch_manager : public llmec::app::App {
   public:
-    Basic_switch(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
+    Switch_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
     void event_callback(llmec::core::eps::ControllerEvent* ev);
-    std::unordered_set<int> get_switch_list();
     void start() override;
   private:
     std::unordered_set<int> switch_set_;

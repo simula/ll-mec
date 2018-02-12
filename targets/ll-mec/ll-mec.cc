@@ -34,7 +34,7 @@
 
 #include "controller.h"
 #include "sgwc.h"
-#include "basic_switch.h"
+#include "switch_manager.h"
 #include "stats_manager.h"
 #include "ue_manager.h"
 #include "of_interface.h"
@@ -87,14 +87,14 @@ int main(int argc, char **argv){
   llmec::core::eps::OFInterface of_interface;
 
   //Initialize application
-  auto basic_switch = std::make_shared<llmec::app::basic_switch::Basic_switch>(of_interface);
+  auto switch_manager = std::make_shared<llmec::app::switch_manager::Switch_manager>(of_interface);
   auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
   llmec::app::uplane::Ue_manager::create_instance(of_interface);
   llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
 //  auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
 
   //Register event for application
-  ctrl->register_for_event(basic_switch, llmec::core::eps::EVENT_SWITCH_UP);
+  ctrl->register_for_event(switch_manager, llmec::core::eps::EVENT_SWITCH_UP);
   ctrl->register_for_event(stats_manager, llmec::core::eps::EVENT_MULTIPART_REPLY);
 
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);

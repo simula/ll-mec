@@ -37,6 +37,39 @@
 namespace llmec {
 namespace data {
 
+bool Context_manager::add_switch(int switch_id)
+{
+  this->context_lock.lock();
+  this->switch_set.insert(switch_id);
+  this->context_lock.unlock();
+  return true;
+}
+
+bool Context_manager::delete_switch(int switch_id)
+{
+  this->context_lock.lock();
+  this->switch_set.erase(switch_id);
+  this->context_lock.unlock();
+  return true;
+}
+
+int Context_manager::nums_switch()
+{
+  int size = 0;
+  this->context_lock.lock();
+  size = this->switch_set.size();
+  this->context_lock.unlock();
+  return size;
+}
+
+std::unordered_set<int> Context_manager::get_switch_set()
+{
+  std::unordered_set<int> switch_set;
+  this->context_lock.lock();
+  switch_set = this->switch_set;
+  this->context_lock.unlock();
+  return switch_set;
+}
 bool Context_manager::add_bearer(json context)
 {
   if (this->sanitize(context) == false)

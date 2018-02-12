@@ -29,24 +29,31 @@
 
 
 #include <iostream>
-#include "basic_switch.h"
+#include "switch_manager.h"
 #include "spdlog.h"
+#include "context_manager.h"
 
 namespace llmec {
 namespace app {
-namespace basic_switch {
+namespace switch_manager {
 
-void Basic_switch::event_callback(llmec::core::eps::ControllerEvent* ev) {
+void Switch_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
+  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
   if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_UP) {
     this->of_interface.install_default_flow(ev->of_conn_);
     spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
-    switch_set_.insert(ev->of_conn_->get_id());
+    //switch_set_.insert(ev->of_conn_->get_id());
+    context_manager->add_switch(ev->of_conn_->get_id());
+  }
+  if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_DOWN) {
+    /* the switch id, mec id are not related together for the moment */
+    //this->of_interface.flush_flow(ev->of_conn_->get_id());
+    spdlog::get("ll-mec")->info("Switch id={} flushed flow", ev->of_conn_->get_id());
+    //switch_set_.insert(ev->of_conn_->get_id());
+    context_manager->delete_switch(ev->of_conn_->get_id());
   }
 }
-std::unordered_set<int> Basic_switch::get_switch_list() {
-  return this->switch_set_;
-}
-void Basic_switch::start() {
+void Switch_manager::start() {
   while(true){
     //std::cout<<"Switch"<<std::endl;
   }

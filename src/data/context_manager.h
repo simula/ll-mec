@@ -64,6 +64,15 @@ class Context_manager {
     /* Remove redirect information from one existing bearer */
     bool delete_redirect_bearer(uint64_t id);
 
+    /* Add the switch connection id */
+    bool add_switch(int switch_id);
+
+    /* Remove the switch connection id */
+    bool delete_switch(int switch_id);
+
+    /* Return the number of connected switches */
+    int nums_switch();
+
     /* Clean all tables */
     bool clean();
 
@@ -76,6 +85,7 @@ class Context_manager {
     json get_bearer_context(uint64_t id);
     uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
     json get_slice_group(uint64_t slice_id);
+    std::unordered_set<int> get_switch_set();
 
     /* Useful function to dump the tables */
     void imsi_mapping_dump();
@@ -99,6 +109,10 @@ class Context_manager {
 
     /* slice_id <-> set<id> */
     std::map<uint64_t, std::set<uint64_t>> slice_group;
+
+    /* set of switches connected to this ll-mec controller */
+    std::unordered_set<int> switch_set;
+
 };
 
 } // namespace data

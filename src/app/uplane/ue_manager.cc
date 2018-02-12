@@ -51,12 +51,7 @@ void Ue_manager::start()
 bool Ue_manager::add_bearer(json context)
 {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
-  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-
-  /* Return if connection does not exist */
-  if (of_conn_ == nullptr || !of_conn_->is_alive())
-    return false;
 
   uint64_t id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
 
@@ -64,7 +59,12 @@ bool Ue_manager::add_bearer(json context)
   /* Bearer already exists. Remove it and then add (Overwrite) */
   if (id != 0) {
     context_manager->delete_bearer(id);
-    this->of_interface.flush_flow(of_conn_, id);
+    for (auto each:context_manager->get_switch_set()) {
+      fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+      if (of_conn_ == nullptr || !of_conn_->is_alive())
+        continue;
+      this->of_interface.flush_flow(of_conn_, id);
+    }
     context_manager->add_bearer(id, context);
     spdlog::get("ll-mec")->info("Overwrite UE bearer {}: {}", id, context.dump());
   }
@@ -94,12 +94,6 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, json context) {
     return false;
 
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
-  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
-
-
-  /* Return if connection does not exist */
-  if (of_conn_ == nullptr || !of_conn_->is_alive())
-    return false;
 
   /* Add redirect information in database */
   context_manager->add_redirect_bearer(id, context);
@@ -119,15 +113,10 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, json context) {
 
 bool Ue_manager::delete_redirect_bearer(uint64_t id) {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
-  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 
   /* No such ue context */
   if (context_manager->id_exist(id) == false)
-    return false;
-
-  /* Return if connection does not exist */
-  if (of_conn_ == nullptr || !of_conn_->is_alive())
     return false;
 
   json bearer = context_manager->get_bearer_context(id);
@@ -164,18 +153,18 @@ json Ue_manager::get_bearer_all() {
 
 bool Ue_manager::delete_bearer(uint64_t id) {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
-  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-
-  /* Return if connection does not exist */
-  if (of_conn_ == nullptr || !of_conn_->is_alive())
-    return false;
 
   /* Remove the ue context */
   context_manager->delete_bearer(id);
 
   /* Flush the bearer */
-  this->of_interface.flush_flow(of_conn_, id);
+  for (auto each:context_manager->get_switch_set()) {
+    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+    if (of_conn_ == nullptr || !of_conn_->is_alive())
+      continue;
+    this->of_interface.flush_flow(of_conn_, id);
+  }
 
   spdlog::get("ll-mec")->info("Removed UE id={}", id);
 
@@ -184,17 +173,17 @@ bool Ue_manager::delete_bearer(uint64_t id) {
 
 bool Ue_manager::delete_bearer_all() {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
-  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-
-  /* Return if connection does not exist */
-  if (of_conn_ == nullptr || !of_conn_->is_alive())
-    return false;
 
   /* flush flow for each ue and clear the map */
   std::vector<uint64_t> id_list = context_manager->get_id_list();
-  for (auto each:id_list) {
-    this->of_interface.flush_flow(of_conn_, each);
+  for (auto id:id_list) {
+    for (auto switch_id:context_manager->get_switch_set()) {
+    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(switch_id);
+    if (of_conn_ == nullptr || !of_conn_->is_alive())
+      continue;
+      this->of_interface.flush_flow(of_conn_, id);
+    }
   }
   context_manager->clean();
 
