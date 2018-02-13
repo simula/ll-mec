@@ -81,8 +81,13 @@ bool Ue_manager::add_bearer(json context)
   }
 
   
-  this->of_interface.install_default_UE_ul_flow(of_conn_, id, context["s1_ul_teid"].get<int>(), metadata);
-  this->of_interface.install_default_UE_dl_flow(of_conn_, id, context["ue_ip"].get<std::string>(), context["s1_dl_teid"].get<int>(), context["enb_ip"].get<std::string>(), metadata);
+  for (auto each:context_manager->get_switch_set()) {
+    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+    if (of_conn_ == nullptr || !of_conn_->is_alive())
+      continue;
+    this->of_interface.install_default_UE_ul_flow(of_conn_, id, context["s1_ul_teid"].get<int>(), metadata);
+    this->of_interface.install_default_UE_dl_flow(of_conn_, id, context["ue_ip"].get<std::string>(), context["s1_dl_teid"].get<int>(), context["enb_ip"].get<std::string>(), metadata);
+  }
   return true;
 }
 
@@ -104,8 +109,13 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, json context) {
     metadata.ipdscp = (uint8_t)((context["tos"].get<int>() & 0xFC) >> 2);
     metadata.ipecn = (uint8_t) context["tos"].get<int>() & 0x3;
   }
-  this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
-  this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+  for (auto each:context_manager->get_switch_set()) {
+    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+    if (of_conn_ == nullptr || !of_conn_->is_alive())
+      continue;
+    this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+    this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+  }
 
   spdlog::get("ll-mec")->info("Redirect bearer id={} from {} to {}", id, context["from"].get<std::string>(), context["to"].get<std::string>());
   return true;
@@ -120,14 +130,24 @@ bool Ue_manager::delete_redirect_bearer(uint64_t id) {
     return false;
 
   json bearer = context_manager->get_bearer_context(id);
-  this->of_interface.flush_flow(of_conn_, id);
+  for (auto each:context_manager->get_switch_set()) {
+    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+    if (of_conn_ == nullptr || !of_conn_->is_alive())
+      continue;
+    this->of_interface.flush_flow(of_conn_, id);
+  }
   Metadata metadata;
   if (!bearer["tos"].empty()) {
     metadata.ipdscp = (bearer["tos"].get<uint8_t>() & 0xFC) >> 2;
     metadata.ipecn = bearer["tos"].get<uint8_t>() & 0x3;
   }
-  this->of_interface.install_default_UE_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), metadata);
-  this->of_interface.install_default_UE_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), metadata);
+  for (auto each:context_manager->get_switch_set()) {
+    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+    if (of_conn_ == nullptr || !of_conn_->is_alive())
+      continue;
+    this->of_interface.install_default_UE_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), metadata);
+    this->of_interface.install_default_UE_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), metadata);
+  }
 
   /* Remove redirect information in UE context */
   context_manager->delete_redirect_bearer(id);
