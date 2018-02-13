@@ -41,8 +41,6 @@ class Switch_manager : public llmec::app::App {
     Switch_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
     void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
-  private:
-    std::unordered_set<int> switch_set_;
 };
 
 } // namespace basic_switch
