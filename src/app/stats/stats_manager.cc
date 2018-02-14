@@ -43,6 +43,7 @@ namespace stats {
 
 void Stats_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
   if (ev->get_type() == llmec::core::eps::EVENT_MULTIPART_REPLY) {
+//    spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
     fluid_msg::of13::MultipartReplyFlow reply;
     reply.unpack(((llmec::core::eps::MultipartReplyEvent*)ev)->data_);
     this->flow_stats_lock.lock();
@@ -58,6 +59,9 @@ void Stats_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
         this->flow_stats_[each.cookie()]["ul"] = flow_stats;
       else
         this->flow_stats_[each.cookie()]["dl"] = flow_stats;
+      this->flow_stats_[each.cookie()]["switch_id"] = ev->of_conn_->get_id();
+      this->bearers_switch_[each.cookie()] = ev->of_conn_->get_id();
+      this->switch_bearers_[ev->of_conn_->get_id()].insert(each.cookie());
     }
     this->flow_stats_lock.unlock();
   }

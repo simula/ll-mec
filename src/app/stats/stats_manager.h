@@ -53,6 +53,8 @@ class Stats_manager : public llmec::app::App {
     std::mutex flow_stats_lock;
     /* OVS cookie is the key here and filled previously with MEC ID in UE manager */
     std::map<uint64_t, json> flow_stats_;
+    std::map<uint64_t, uint64_t> bearers_switch_;
+    std::map<uint64_t, std::set<uint64_t>> switch_bearers_;
 };
 
 } // namespace stats
