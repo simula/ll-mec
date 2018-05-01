@@ -1,4 +1,5 @@
 /*
+ * Copyright 2016-2018 Eurecom and Mosaic5G Platforms Authors
  * Licensed to the Mosaic5G under one or more contributor license
  * agreements. See the NOTICE file distributed with this
  * work for additional information regarding copyright ownership.
@@ -20,12 +21,13 @@
  */
 
 /*!
-  \file
-  \brief
-  \author
-  \company
-  \email:
+  \file meta.h
+  \brief IP packet meta data information
+  \author Anta Huang and N. Nikaein
+  \company Eurecom
+  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
 */
+
 
 #ifndef __METADATA_H__
 #define __METADATA_H__

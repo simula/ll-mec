@@ -1,4 +1,5 @@
 /*
+ * Copyright 2016-2018 Eurecom and Mosaic5G Platforms Authors
  * Licensed to the Mosaic5G under one or more contributor license
  * agreements. See the NOTICE file distributed with this
  * work for additional information regarding copyright ownership.
@@ -18,13 +19,12 @@
  * For more information about the Mosaic5G:
  *  	contact@mosaic5g.io
  */
-
 /*!
-  \file
-  \brief
-  \author
-  \company
-  \email:
+  \file ue_manager.h
+  \brief managing the users and bearers, and their associations to different slices 
+  \author Anta Huang and N. Nikaein
+  \company Eurecom
+  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
 */
 
 #ifndef __UE_MANAGER_H__
