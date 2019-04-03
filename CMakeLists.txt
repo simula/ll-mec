@@ -180,6 +180,33 @@ set(NORTH_API_include_files
   )
 add_library(NORTH_API ${NORTH_API_src_files})
 
+#MP1_API
+
+set(MP1_API_DIR "${LL_MEC_SRC}/mp1")
+set(MP1_API_src_files
+  ${MP1_API_DIR}/api/DefaultApi.cpp
+  ${MP1_API_DIR}/impl/DefaultApiImpl.cpp
+  ${MP1_API_DIR}/model/Ecgi.cpp
+  ${MP1_API_DIR}/model/Helpers.cpp
+  ${MP1_API_DIR}/model/InlineResponse200.cpp
+  ${MP1_API_DIR}/model/InlineResponse400.cpp
+  ${MP1_API_DIR}/model/InlineResponse403.cpp
+  ${MP1_API_DIR}/model/ModelBase.cpp
+  ${MP1_API_DIR}/model/Plmn.cpp
+  ${MP1_API_DIR}/model/PlmnInfo.cpp
+  ${MP1_API_DIR}/model/ProblemDetails.cpp
+  ${MP1_API_DIR}/model/TimeStamp.cpp
+  
+  )
+set(MP1_API_include_files
+  ${MP1_API_DIR}/api
+  ${MP1_API_DIR}/impl
+  ${MP1_API_DIR}/model
+  )
+add_library(MP1_API ${MP1_API_src_files})
+#target_link_libraries(MP1_API CORE)
+
+
 # spdlog header files
 set(SPDLOG_include_dir "${DRIVER_DIR}/spdlog")
 
@@ -193,6 +220,7 @@ include_directories(
   ${UTIL_include_files}
   ${DATA_include_files}
   ${NORTH_API_include_files}
+  ${MP1_API_include_files}
   ${PISTACHE_include_files}
   ${SPDLOG_include_dir}
   ${Event_INCLUDE_DIRS}
@@ -217,6 +245,7 @@ target_link_libraries(ll-mec
   UTIL
   DATA
   NORTH_API
+  MP1_API
   PISTACHE
   )
 #target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)
