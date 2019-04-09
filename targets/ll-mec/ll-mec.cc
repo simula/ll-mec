@@ -46,10 +46,11 @@
 #include "input_parser.h"
 #include "conf.h"
 #include "spdlog.h"
+#include "mp1-api-server.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
-
+using namespace org::openapitools::server::api;
 int main(int argc, char **argv){
   /* Initialize logger*/
   auto console = spdlog::stdout_color_mt(LOG_NAME);
@@ -114,6 +115,14 @@ int main(int argc, char **argv){
 
   rest_manager.init(1);
   std::thread rest_manager_app(&llmec::north_api::Rest_manager::start, rest_manager);
+
+  //start mp1-api
+   Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(8888));
+   Mp1_manager mp1_manager(addr_mp1);
+   mp1_manager.init(2);
+   mp1_manager.start();
+   mp1_manager.shutdown();
+
 
   //Controller start
   ctrl->start(true);

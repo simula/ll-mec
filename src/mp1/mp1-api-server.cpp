@@ -59,19 +59,18 @@ void Mp1_manager::init(size_t thr) {
 	auto opts = Pistache::Http::Endpoint::options()
 	.threads(thr);
 	m_httpEndpoint->init(opts);
-
 	DefaultApiserver->init();
-	m_httpEndpoint->setHandler(m_router->handler());
 
 }
 void Mp1_manager::start(){
-	    m_httpEndpoint->serve();
+	m_httpEndpoint->setHandler(m_router->handler());
+	m_httpEndpoint->serve();
 }
 void Mp1_manager::shutdown(){
 	m_httpEndpoint->shutdown();
 }
 
-
+/*
 int main() {
 #ifdef __linux__
     std::vector<int> sigs{SIGQUIT, SIGINT, SIGTERM, SIGHUP};
@@ -85,4 +84,4 @@ int main() {
     mp1_manager.shutdown();
 
 }
-
+*/

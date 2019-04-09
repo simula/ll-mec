@@ -184,6 +184,7 @@ add_library(NORTH_API ${NORTH_API_src_files})
 
 set(MP1_API_DIR "${LL_MEC_SRC}/mp1")
 set(MP1_API_src_files
+  ${MP1_API_DIR}/mp1-api-server.cpp
   ${MP1_API_DIR}/api/DefaultApi.cpp
   ${MP1_API_DIR}/impl/DefaultApiImpl.cpp
   ${MP1_API_DIR}/model/Ecgi.cpp
@@ -202,6 +203,7 @@ set(MP1_API_include_files
   ${MP1_API_DIR}/api
   ${MP1_API_DIR}/impl
   ${MP1_API_DIR}/model
+  ${MP1_API_DIR}
   )
 add_library(MP1_API ${MP1_API_src_files})
 #target_link_libraries(MP1_API CORE)
