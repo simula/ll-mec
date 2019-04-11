@@ -18,19 +18,110 @@ paths:
       description: Gets information on existing E-RABs that are associated with a specific
         mobile edge application instance
       operationId: rab_infoGET
+      #parameters:
+      #  - $ref: "#/components/parameters/Query.AppInsId"
+      #  - $ref: "#/components/parameters/Query.CellId"
+      #  - $ref: "#/components/parameters/Query.UeIpv4Address"
+      #  - $ref: "#/components/parameters/Query.UeIpv6Address"
+      #  - $ref: "#/components/parameters/Query.NatedIpAddress"
+      #  - $ref: "#/components/parameters/Query.GtpTeId"
+      #  - $ref: "#/components/parameters/Query.ErabId"
+      #  - $ref: "#/components/parameters/Query.Qci"
+      #  - $ref: "#/components/parameters/Query.ErabMbrDl"
+      #  - $ref: "#/components/parameters/Query.ErabMbrUl"
+      #  - $ref: "#/components/parameters/Query.ErabGbrDl"
+      #  - $ref: "#/components/parameters/Query.ErabGbrUl"
       parameters:
-        - $ref: "#/components/parameters/Query.AppInsId"
-        - $ref: "#/components/parameters/Query.CellId"
-        - $ref: "#/components/parameters/Query.UeIpv4Address"
-        - $ref: "#/components/parameters/Query.UeIpv6Address"
-        - $ref: "#/components/parameters/Query.NatedIpAddress"
-        - $ref: "#/components/parameters/Query.GtpTeId"
-        - $ref: "#/components/parameters/Query.ErabId"
-        - $ref: "#/components/parameters/Query.Qci"
-        - $ref: "#/components/parameters/Query.ErabMbrDl"
-        - $ref: "#/components/parameters/Query.ErabMbrUl"
-        - $ref: "#/components/parameters/Query.ErabGbrDl"
-        - $ref: "#/components/parameters/Query.ErabGbrUl"            
+        - name: app_ins_id #Query.AppInsId
+          in: query
+          description: Application instance identifier
+          required: false
+          schema:
+            type: string       
+        - name: cell_id #Query.CellId
+          in: query
+          required: false
+          description: E-UTRAN Cell Identity as a bit string (size (28)), as defined in ETSI TS 136 413
+          schema:
+            type: array
+            items:
+               type: string             
+        - name: ue_ipv4_address #Query.UeIpv4Address
+          in: query
+          description: Comma separated list of IE IPv4 addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: ue_ipv6_address #Query.UeIpv6Address:
+          in: query
+          description: Comma separated list of IE IPv6 addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+    
+        - name: nated_ip_address #Query.NatedIpAddress:
+          in: query
+          description: Comma separated list of IE NATed IP addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: gtp_teid #Query.GtpTeId
+          in: query
+          description: Comma separated list of GTP TEID addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string   
+        - name: erab_id #Query.ErabId:
+          in: query
+          description: E-RAB identifier
+          required: false
+          schema:
+            type: integer
+            format: uint32
+        - name: qci #Query.Qci:
+          in: query
+          description: QoS Class Identifier as defined in ETSI TS 123 401
+          required: false
+          schema:
+            type: integer
+            format: uint32            
+        - name: erab_gbr_dl #Query.ErabGbrDl:
+          in: query
+          description: Guaranteed downlink E-RAB Bit Rate as defined in ETSI TS 123 401
+          required: false
+          schema:
+            type: integer
+            format: uint32
+        - name: erab_gbr_ul #Query.ErabGbrUl:
+          in: query
+          description: Guaranteed uplink E-RAB Bit Rate as defined in ETSI TS 123 401
+          required: false
+          schema:
+            type: integer
+            format: uint32    
+        
+        - name: erab_mbr_dl #Query.ErabMbrDl:
+          in: query
+          description: Maximum downlink E-RAB Bit Rate as defined in ETSI TS 123 401
+          required: false
+          schema:
+            type: integer
+            format: uint32    
+        - name: erab_mbr_ul #Query.ErabMbrUl:
+          in: query
+          description: Maximum uplink E-RAB Bit Rate as defined in ETSI TS 123 401
+          required: false
+          schema:
+            type: integer
+            format: uint32         
       responses:
         "200":
           description: Successful response to rab_info request
@@ -219,14 +310,75 @@ paths:
       description: Gets information on existing E-RABs that are associated with a specific
         mobile edge application instance
       operationId: s1_bearer_infoGET
+      #parameters:
+      #  - $ref: "#/components/parameters/Query.TempUeId"
+      #  - $ref: "#/components/parameters/Query.UeIpv4Address"
+      #  - $ref: "#/components/parameters/Query.UeIpv6Address"
+      #  - $ref: "#/components/parameters/Query.NatedIpAddress"
+      #  - $ref: "#/components/parameters/Query.GtpTeId"
+      #  - $ref: "#/components/parameters/Query.CellId"
+      #  - $ref: "#/components/parameters/Query.ErabIdArr"
       parameters:
-        - $ref: "#/components/parameters/Query.TempUeId"
-        - $ref: "#/components/parameters/Query.UeIpv4Address"
-        - $ref: "#/components/parameters/Query.UeIpv6Address"
-        - $ref: "#/components/parameters/Query.NatedIpAddress"
-        - $ref: "#/components/parameters/Query.GtpTeId"
-        - $ref: "#/components/parameters/Query.CellId"
-        - $ref: "#/components/parameters/Query.ErabIdArr"
+      #Query.TempUeId          
+        - name: temp_ue_id
+          in: query
+          description: The temporary identifier allocated for the specific UE as defined in ETSI TS 136 413
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: ue_ipv4_address #Query.UeIpv4Address
+          in: query
+          description: Comma separated list of IE IPv4 addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: ue_ipv6_address #Query.UeIpv6Address:
+          in: query
+          description: Comma separated list of IE IPv6 addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: nated_ip_address #Query.NatedIpAddress:
+          in: query
+          description: Comma separated list of IE NATed IP addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+        - name: gtp_teid #Query.GtpTeId
+          in: query
+          description: Comma separated list of GTP TEID addresses as defined for the type for AssociateId
+          required: false
+          schema:
+            type: array
+            items:
+              type: string   
+        - name: cell_id #Query.CellId
+          in: query
+          required: false
+          description: E-UTRAN Cell Identity as a bit string (size (28)), as defined in ETSI TS 136 413
+          schema:
+            type: array
+            items:
+               type: string             
+    
+        - name: erab_id #Query.ErabIdArr:
+          in: query
+          description: E-RAB identifier
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+              format: uint32
+          
       responses:
         "200":
           description: Successful response to s1_bearer_info request
