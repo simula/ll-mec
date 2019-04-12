@@ -11,7 +11,7 @@
 */
 
 
-#include "ErabQosParameters_qci.h"
+#include "ErabQosParametersQci.h"
 
 namespace org {
 namespace openapitools {
