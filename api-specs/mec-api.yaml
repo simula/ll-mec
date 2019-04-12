@@ -155,39 +155,28 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - url
+                - mec_ipaddr
+                - mec-macaddr
+                - type
               properties:
                 url:
-                  title: Service URL
-                  description: All DNS requests from UEs for this name will be resolved
-                    to the IP address of a specific MEC application instance.
-                  example: sfr.fr
-                  type: string
-                mec-ipaddr:
-                  title: MEC application instance IP address
-                  description: The IP address of the MEC application instance to which
-                    traffic will be redirected.
-                  example: 192.168.0.200
-                  type: string
-                mec-macaddr:
-                  title: MEC application instance MAC address
-                  description: The MAC address of the MEC application instance's network
-                    interface. (This is necessary due to the redirection mechanism's
-                    internal workings and might be become optional in future versions.)
-                  example: 52:54:00:12:34:bb
-                  type: string
+                  $ref: "#/components/schemas/url"           
+                mec_ipaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"        
+                mec_macaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"                
                 type:
-                  title: Redirection type
-                  description: The type of redirection. Should have the value of *1*.
-                    (This field is reserved and is not used in this version. However,
-                    it has to have a valid value.)
-                  example: 1
-                  type: integer
-              required:
-              - url
-              - mec-ipaddr
-              - mec-macaddr
-              - type
+                  $ref: "#/components/schemas/type"
+
+              example:
+                url: sfr.fr
+                mec_ipaddr: 192.168.0.100
+                mec_macaddr: 52:54:00:12:34:bb
+                type: 1
         required: true
+        
     delete:
       responses:
         '200':
@@ -220,38 +209,26 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - url
+                - mec_ipaddr
+                - mec-macaddr
+                - type
               properties:
                 url:
-                  title: Service URL
-                  description: All DNS requests from UEs for this name will be resolved
-                    to the IP address of a specific MEC application instance.
-                  example: sfr.fr
-                  type: string
-                mec-ipaddr:
-                  title: MEC application instance IP address
-                  description: The IP address of the MEC application instance to which
-                    traffic will be redirected.
-                  example: 192.168.0.200
-                  type: string
-                mec-macaddr:
-                  title: MEC application instance MAC address
-                  description: The MAC address of the MEC application instance's network
-                    interface. (This is necessary due to the redirection mechanism's
-                    internal workings and might be become optional in future versions.)
-                  example: 52:54:00:12:34:bb
-                  type: string
+                  $ref: "#/components/schemas/url"           
+                mec_ipaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"        
+                mec_macaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"                
                 type:
-                  title: Redirection type
-                  description: The type of redirection. Should have the value of *1*.
-                    (This field is reserved and is not used in this version. However,
-                    it has to have a valid value.)
-                  example: 1
-                  type: integer
-              required:
-              - url
-              - mec-ipaddr
-              - mec-macaddr
-              - type
+                  $ref: "#/components/schemas/type"
+
+              example:
+                url: sfr.fr
+                mec_ipaddr: 192.168.0.200
+                mec_macaddr: 52:54:00:12:34:bb
+                type: 1
         required: true
 
 components:
@@ -288,9 +265,8 @@ components:
       description: 'The transport protocol of the traffic flows to redirect
                     (1: TCP, 2: UDP, 0: any)'
       example: 1
-      type: integer                   
-        
-
+      type: integer                 
+    
     mec_ipaddr:
       title: MEC application instance IP address
       description: The IP address of the MEC application instance to which
@@ -304,8 +280,7 @@ components:
                     interface. (This is necessary due to the redirection mechanism's
                     internal workings and might be become optional in future versions.)
       example: 52:54:00:12:34:cc
-      type: string
-                          
+      type: string         
                              
     type:
       title: Redirection type
@@ -314,7 +289,13 @@ components:
                     However, it has to have a valid value.)
       example: 2
       type: integer
-      
+    url:
+      title: Service URL
+      description: All DNS requests from UEs for this name will be resolved
+                    to the IP address of a specific MEC application instance.
+      example: sfr.fr
+      type: string
+                     
     post_mp1_traffic_imsi: 
       type: object
       required:
@@ -329,7 +310,7 @@ components:
         ue_list:
           $ref: "#/components/schemas/ue_list" 
         service_ip:
-          $ref: "#/components/schemas/service_id"
+          $ref: "#/components/schemas/service_ip"
         port:
           $ref: "#/components/schemas/port"           
         transport:
@@ -355,7 +336,7 @@ components:
         ue_list:
           $ref: "#/components/schemas/ue_list" 
         service_ip:
-          $ref: "#/components/schemas/service_id"
+          $ref: "#/components/schemas/service_ip"
         port:
           $ref: "#/components/schemas/port"           
         transport:

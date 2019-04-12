@@ -12,6 +12,8 @@ externalDocs:
 security:
   - OauthSecurity:
       - all
+servers:
+  - url: http://localhost:9090/rni/v1
 paths:
   /queries/rab_info:
     get:
