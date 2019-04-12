@@ -1,0 +1,3 @@
+#Step 1: Convert RNIS API (RniAPI.yaml) (from https://forge.etsi.org/gitlab/mec/gs012-rnis-api) from Swagger2.0 to OpenAPI3.0 (https://blog.runscope.com/posts/tutorial-upgrading-swagger-2-api-definition-to-openapi-3)
+#Step 2: Fix issue related to multiple reference paramters (in path/query)
+  

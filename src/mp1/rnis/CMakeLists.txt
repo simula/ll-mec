@@ -19,7 +19,7 @@ include_directories(api)
 include_directories(impl)
 
 set(MP1_API_SERVER_SOURCES
-mp1-api-server.cpp
+rnis-api-server.cpp
     ${MODEL_SOURCES}
     ${MP1_API_SOURCES})
 

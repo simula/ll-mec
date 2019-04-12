@@ -1,9 +1,9 @@
 openapi: 3.0.0
 info:
   title: MEC Platform
-  version: undefined
+  version: 1.0
 servers:
-- url: http://localhost/api
+- url: http://localhost/api/v1/
 paths:
   '/platform':
     post:
