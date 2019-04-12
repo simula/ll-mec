@@ -7,6 +7,14 @@ servers:
 paths:
   '/platform':
     post:
+      description: |
+        Reset the virtual switch.
+
+        First deletes all flows and then adds the default ones. In particular:
+        * Default low priority rule for traffic originating from the LOCAL port of the switch, which is directed towards the Internet (or external networks)
+        * Rules for communication (IP+ARP) between the local OVS host and the SGi
+        * Rule for rewriting the dst MAC for packets coming from the UEs so that they reach the SGi (NAT box).
+      operationId: post_platform
       responses:
         '200':
           description: Virtual switch reset
@@ -26,17 +34,28 @@ paths:
                   result: 400
                   description: Error adding default rule for Internet/external traffic
                   code: 5
-      description: |
-        Reset the virtual switch.
 
-        First deletes all flows and then adds the default ones. In particular:
-        * Default low priority rule for traffic originating from the LOCAL port of the switch, which is directed towards the Internet (or external networks)
-        * Rules for communication (IP+ARP) between the local OVS host and the SGi
-        * Rule for rewriting the dst MAC for packets coming from the UEs so that they reach the SGi (NAT box).
-      operationId: POST_platform
       
   '/mp1/traffic/imsi':
     post:
+      description: "Mp1 interface for activating traffic redirection by traffic type
+        for a specific list of UEs.\n\nThis API endpoint allows a MEC application
+        to request traffic redirection \nfor a list of UEs (identified by their IMSIs).
+        The caller of this function needs\nto specify the IP address-port-protocol
+        tuple that characterizes the service, \nand the IP-MAC addresses of the MEC
+        server (also the type of the service and\nthe UE list). \n\nIf a UE is not
+        already connected, the openflow rules will not be added at the\ntime this
+        function is called. Rather, they will be recorded in the database and\nwhen
+        the SPGW will notify the MEC platform that the UE is attached, they will be
+        \npushed to the OVS. If the UE is already connected, however, the redirection
+        rules will be directly installed by this function.\n"
+      operationId: post_mp1_traffic_imsi
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/mp1_traffic_imsi"           
+              required: true    
       responses:
         '200':
           description: Added IMSI list
@@ -63,26 +82,21 @@ paths:
                   result: 400
                   description: Not implemented service type
                   x-type: 5
-      description: "Mp1 interface for activating traffic redirection by traffic type
-        for a specific list of UEs.\n\nThis API endpoint allows a MEC application
-        to request traffic redirection \nfor a list of UEs (identified by their IMSIs).
-        The caller of this function needs\nto specify the IP address-port-protocol
-        tuple that characterizes the service, \nand the IP-MAC addresses of the MEC
-        server (also the type of the service and\nthe UE list). \n\nIf a UE is not
-        already connected, the openflow rules will not be added at the\ntime this
-        function is called. Rather, they will be recorded in the database and\nwhen
-        the SPGW will notify the MEC platform that the UE is attached, they will be
-        \npushed to the OVS. If the UE is already connected, however, the redirection
-        rules will be directly installed by this function.\n"
-      operationId: POST_mp1-traffic-imsi
+               
+        
+    delete:
+      description: |
+        Mp1 interface for uninstalling traffic redirection by type.
+
+        Disable redirection by traffic type for the specified list of UEs. For now, the request body needs to carry
+        the full information about the redirection rule. (Support for deleting a redirection rule by id is to be added.)
+      operationId: delete_mp1_traffic_imsi
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/post_mp1_traffic_imsi"           
-              required: true             
-        
-    delete:
+              $ref: "#/components/schemas/mp1_traffic_imsi"           
+              required: true 
       responses:
         '200':
           description: ''
@@ -109,47 +123,16 @@ paths:
                   result: 400
                   description: Not implemented service type
                   x-type: 5
-      description: |
-        Mp1 interface for uninstalling traffic redirection by type.
-
-        Disable redirection by traffic type for the specified list of UEs. For now, the request body needs to carry
-        the full information about the redirection rule. (Support for deleting a redirection rule by id is to be added.)
-      operationId: DELETE_mp1-traffic-imsi
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/delete_mp1_traffic_imsi"           
-              required: true 
-              
+             
  
   "/mp1/traffic/all":
     post:
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                example:
-                  result: 200
-                  description: Redirection URL added successfully
-                  url: sfr.fr
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                example:
-                  result: 400
-                  description: Failed to re-configure DNS server (-2)
-                  url: sfr.fr
       description: "Mp1 interface for installing traffic redirection by name.\n\nThis
         function reconfigures the DNS server operated by the MEC platform\nso that
         it resolves the given name to the IP address of a MEC server.\nAlso, the necessary
         openflow rules for redirection will be installed. \nRedirection applies to
         all UEs.\n"
-      operationId: POST_mp1-traffic-all
+      operationId: post_mp1_traffic_all
       requestBody:
         content:
           application/json:
@@ -175,9 +158,7 @@ paths:
                 mec_ipaddr: 192.168.0.100
                 mec_macaddr: 52:54:00:12:34:bb
                 type: 1
-        required: true
-        
-    delete:
+        required: true        
       responses:
         '200':
           description: ''
@@ -186,7 +167,7 @@ paths:
               schema:
                 example:
                   result: 200
-                  description: Redirection URL deleted successfully
+                  description: Redirection URL added successfully
                   url: sfr.fr
         '400':
           description: ''
@@ -195,15 +176,16 @@ paths:
               schema:
                 example:
                   result: 400
-                  description: Wrong service type for URL-based redirection
-                  url: sfr.fr
+                  description: Failed to re-configure DNS server (-2)
+                  url: sfr.fr        
+    delete:
       description: |
         Mp1 interface for deactivating traffic redirection by name.
 
         This function removes the respective entries by the MEC platform database,
         reconfigures the DNS server to stop resolving requests for the given
         name to the MEC application instance, and removes the related openflow rules.
-      operationId: DELETE_mp1-traffic-all
+      operationId: delete_mp1_traffic_all
       requestBody:
         content:
           application/json:
@@ -230,7 +212,25 @@ paths:
                 mec_macaddr: 52:54:00:12:34:bb
                 type: 1
         required: true
-
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  result: 200
+                  description: Redirection URL deleted successfully
+                  url: sfr.fr
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                example:
+                  result: 400
+                  description: Wrong service type for URL-based redirection
+                  url: sfr.fr     
 components:
   schemas:             
                   
@@ -296,7 +296,7 @@ components:
       example: sfr.fr
       type: string
                      
-    post_mp1_traffic_imsi: 
+    mp1_traffic_imsi: 
       type: object
       required:
         - ue_list
@@ -322,40 +322,7 @@ components:
         type:
           $ref: "#/components/schemas/type" 
           
-    delete_mp1_traffic_imsi:    
-      type: object
-      required:
-        - ue_list
-        - service_ip
-        - port
-        - transport
-        - mec_ipaddr
-        - mec_macaddr
-        - type
-      properties:
-        ue_list:
-          $ref: "#/components/schemas/ue_list" 
-        service_ip:
-          $ref: "#/components/schemas/service_ip"
-        port:
-          $ref: "#/components/schemas/port"           
-        transport:
-          $ref: "#/components/schemas/transport"  
-        mec_ipaddr:
-          $ref: "#/components/schemas/mec_ipaddr"                     
-        mec_macaddr:
-          $ref: "#/components/schemas/mec_macaddr"   
-        type:
-          $ref: "#/components/schemas/type" 
-          
-          
-  responses: {}
-  parameters: {}
-  examples: {}
-  requestBodies: {}
-  headers: {}
-  securitySchemes: {}
-  links: {}
-  callbacks: {}
+       
+
 
   
