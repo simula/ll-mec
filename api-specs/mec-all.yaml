@@ -16,7 +16,7 @@ security:
 servers:
   - url: http://localhost:9090/mp1/v1
 paths:
-#Additional APIs (from Pantelis)
+#Additional APIs 
   '/platform':
     post:
       description: |
@@ -114,22 +114,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - url
-                - mec_ipaddr
-                - mec-macaddr
-                - type
-              properties:
-                url:
-                  $ref: "#/components/schemas/url"           
-                mec_ipaddr:
-                  $ref: "#/components/schemas/mec_ipaddr"        
-                mec_macaddr:
-                  $ref: "#/components/schemas/mec_ipaddr"                
-                type:
-                  $ref: "#/components/schemas/type"
-
+              $ref: "#/components/schemas/mp1_traffic" 
               example:
                 url: sfr.fr
                 mec_ipaddr: 192.168.0.100
@@ -160,23 +145,8 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              type: object
-              required:
-                - url
-                - mec_ipaddr
-                - mec-macaddr
-                - type
-              properties:
-                url:
-                  $ref: "#/components/schemas/url"           
-                mec_ipaddr:
-                  $ref: "#/components/schemas/mec_ipaddr"        
-                mec_macaddr:
-                  $ref: "#/components/schemas/mec_ipaddr"                
-                type:
-                  $ref: "#/components/schemas/type"
-
+            schema:                       
+              $ref: "#/components/schemas/mp1_traffic" 
               example:
                 url: sfr.fr
                 mec_ipaddr: 192.168.0.200
@@ -315,12 +285,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - RabInfo
-                properties:
-                  RabInfo:
-                    $ref: "#/components/schemas/RabInfo"
+                #type: object
+                #required:
+                #  - RabInfo
+                #properties:
+                #  RabInfo:
+                $ref: "#/components/schemas/RabInfo"
               examples:
                 response:
                   value:
@@ -353,57 +323,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   /queries/plmn_info:
     get:
@@ -411,17 +381,25 @@ paths:
         specific mobile edge application instance
       operationId: plmn_infoGET
       parameters:
-        - $ref: "#/components/parameters/Query.AppInsIdArr"
+        #- $ref: "#/components/parameters/Query.AppInsIdArr"
+        - name: app_ins_id
+          in: query
+          description: Application instance identifier
+          required: true
+          schema:
+            type: array
+            items:
+              type: string
       responses:
         "200":
           description: Successful response to rab_info request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  PlmnInfo:
-                    $ref: "#/components/schemas/PlmnInfo"
+                #type: object
+                #properties:
+                #  PlmnInfo:
+                $ref: "#/components/schemas/PlmnInfo"
               examples:
                 response:
                   value:
@@ -440,57 +418,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   /queries/s1_bearer_info:
     get:
@@ -572,12 +550,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - S1BearerInfo
-                properties:
-                  S1BearerInfo:
-                    $ref: "#/components/schemas/S1BearerInfo"
+                #type: object
+                #required:
+                #  - S1BearerInfo
+                #properties:
+                #  S1BearerInfo:
+                $ref: "#/components/schemas/S1BearerInfo"
               examples:
                 response:
                   value:
@@ -631,57 +609,57 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   /subscriptions/:
     get:
@@ -694,12 +672,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -713,106 +691,106 @@ paths:
                             subscriptionType: MEAS_TIMING_ADVANCE
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                # ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   /subscriptions/cell_change:
     get:
@@ -826,12 +804,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -845,106 +823,106 @@ paths:
                             subscriptionType: CELL_CHANGE
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
     post:
       description: Creates a subscription to cell change notifications from Radio Network
@@ -954,10 +932,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                CellChangeSubscription:
-                  $ref: "#/components/schemas/CellChangeSubscriptionPost"
+              #type: object
+              #properties:
+              #  CellChangeSubscription:
+              $ref: "#/components/schemas/CellChangeSubscriptionPost"
         description: >-
           Use to creates a subscription to cell change notifications based on
           the
@@ -969,10 +947,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  CellChangeSubscription:
-                    $ref: "#/components/schemas/CellChangeSubscription"
+                #type: object
+                #properties:
+                #  CellChangeSubscription:
+                $ref: "#/components/schemas/CellChangeSubscription"
               examples:
                 response:
                   value:
@@ -995,119 +973,113 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  CellChangeSubscription:
-                    $ref: "#/components/schemas/CellChangeSubscription"
+                #type: object
+                #properties:
+                #  CellChangeSubscription:
+                $ref: "#/components/schemas/CellChangeSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #required:
+                #  - ProblemDetails
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "415":
           description: Unsupported Media Type
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -1122,16 +1094,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   "/subscriptions/cell_change/{subscriptionId}":
     get:
@@ -1145,12 +1111,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - CellChangeSubscription
-                properties:
-                  CellChangeSubscription:
-                    $ref: "#/components/schemas/CellChangeSubscription"
+                #type: object
+                #required:
+                #  - CellChangeSubscription
+                #properties:
+                #  CellChangeSubscription:
+                $ref: "#/components/schemas/CellChangeSubscription"
               examples:
                 response:
                   value:
@@ -1173,106 +1139,66 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - CellChangeSubscription
-                properties:
-                  CellChangeSubscription:
-                    $ref: "#/components/schemas/CellChangeSubscription"
+                #type: object
+                #required:
+                #  - CellChangeSubscription
+                #properties:
+                #  CellChangeSubscription:
+                $ref: "#/components/schemas/CellChangeSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     put:
       description: Updates a subscription to cell change notifications from Radio Network
         Information Service
@@ -1283,10 +1209,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                CellChangeSubscription:
-                  $ref: "#/components/schemas/CellChangeSubscription"
+              #type: object
+              #properties:
+              #  CellChangeSubscription:
+              $ref: "#/components/schemas/CellChangeSubscription"
         description: Use to creates a subscription to cell change notifications based on
           the filter criteria
         required: true
@@ -1296,10 +1222,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  CellChangeSubscription:
-                    $ref: "#/components/schemas/CellChangeSubscription"
+                #type: object
+                #properties:
+                #  CellChangeSubscription:
+                $ref: "#/components/schemas/CellChangeSubscription"
               examples:
                 response:
                   value:
@@ -1322,119 +1248,73 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  CellChangeSubscription:
-                    $ref: "#/components/schemas/CellChangeSubscription"
+                #type: object
+                #properties:
+                #  CellChangeSubscription:
+                $ref: "#/components/schemas/CellChangeSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "412":
           description: Precondition failed
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -1449,16 +1329,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     delete:
       description: Method to delete a subscription
       operationId: CellChange_subscriptionsSubscrIdDELETE
@@ -1480,12 +1354,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -1499,106 +1373,66 @@ paths:
                             subscriptionType: S1_BEARER
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
     post:
       description: Creates a subscription to S1 bearer notifications from Radio Network
@@ -1608,10 +1442,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                S1BearerSubscription:
-                  $ref: "#/components/schemas/S1BearerSubscriptionPost"
+              #type: object
+              #properties:
+              #  S1BearerSubscription:
+              $ref: "#/components/schemas/S1BearerSubscriptionPost"
         description: Use to creates a subscription to S1 Bearer notifications based on the
           filter criteria
         required: true
@@ -1621,10 +1455,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  S1BearerSubscription:
-                    $ref: "#/components/schemas/S1BearerSubscription"
+                #type: object
+                #properties:
+                #  S1BearerSubscription:
+                $ref: "#/components/schemas/S1BearerSubscription"
               examples:
                 response:
                   value:
@@ -1647,119 +1481,73 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  S1BearerSubscription:
-                    $ref: "#/components/schemas/S1BearerSubscription"
+                #type: object
+                #properties:
+                #  S1BearerSubscription:
+                $ref: "#/components/schemas/S1BearerSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "415":
           description: Unsupported Media Type
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -1774,16 +1562,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   "/subscriptions/s1_bearer/{subscriptionId}":
     get:
@@ -1798,10 +1580,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  S1BearerSubscription:
-                    $ref: "#/components/schemas/S1BearerSubscription"
+                #type: object
+                #properties:
+                #S1BearerSubscription:
+                $ref: "#/components/schemas/S1BearerSubscription"
               examples:
                 response:
                   value:
@@ -1824,104 +1606,64 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  S1BearerSubscription:
-                    $ref: "#/components/schemas/S1BearerSubscription"
+                #type: object
+                #properties:
+                #  S1BearerSubscription:
+                $ref: "#/components/schemas/S1BearerSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     put:
       description: Updates a subscription to S1 bearer notifications from Radio Network
         Information Service
@@ -1932,10 +1674,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                S1BearerSubscription:
-                  $ref: "#/components/schemas/S1BearerSubscription"
+              #type: object
+              #properties:
+              #  S1BearerSubscription:
+              $ref: "#/components/schemas/S1BearerSubscription"
         description: Use to creates a subscription to S1 Bearer notifications based on the
           filter criteria
         required: true
@@ -1945,10 +1687,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  S1BearerSubscription:
-                    $ref: "#/components/schemas/S1BearerSubscription"
+                #type: object
+                #properties:
+                #  S1BearerSubscription:
+                $ref: "#/components/schemas/S1BearerSubscription"
               examples:
                 response:
                   value:
@@ -1971,25 +1713,19 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  S1BearerSubscription:
-                    $ref: "#/components/schemas/S1BearerSubscription"
+                #type: object
+                #properties:
+                #  S1BearerSubscription:
+                $ref: "#/components/schemas/S1BearerSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -2074,16 +1810,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -2129,12 +1859,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -2148,42 +1878,30 @@ paths:
                             subscriptionType: MEAS_REPORT_UE
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -2257,10 +1975,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                MeasTaSubscription:
-                  $ref: "#/components/schemas/MeasTaSubscriptionPost"
+              #type: object
+              #properties:
+              #  MeasTaSubscription:
+              $ref: "#/components/schemas/MeasTaSubscriptionPost"
         description: Use to creates a subscription to UE Timing Advance notifications based
           on the filter criteria
         required: true
@@ -2271,10 +1989,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  MeasTaSubscription:
-                    $ref: "#/components/schemas/MeasTaSubscription"
+                #type: object
+                #properties:
+                #  MeasTaSubscription:
+                $ref: "#/components/schemas/MeasTaSubscription"
               examples:
                 response:
                   value:
@@ -2297,40 +2015,28 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  MeasTaSubscription:
-                    $ref: "#/components/schemas/MeasTaSubscription"
+                #type: object
+                #properties:
+                #  MeasTaSubscription:
+                $ref: "#/components/schemas/MeasTaSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -2400,16 +2106,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -2448,12 +2148,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - MeasTaSubscription
-                properties:
-                  MeasTaSubscription:
-                    $ref: "#/components/schemas/MeasTaSubscription"
+                #type: object
+                #required:
+                #  - MeasTaSubscription
+                #properties:
+                #  MeasTaSubscription:
+                $ref: "#/components/schemas/MeasTaSubscription"
               examples:
                 response:
                   value:
@@ -2476,42 +2176,30 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - MeasTaSubscription
-                properties:
-                  MeasTaSubscription:
-                    $ref: "#/components/schemas/MeasTaSubscription"
+                #type: object
+                #required:
+                #  - MeasTaSubscription
+                #properties:
+                #  MeasTaSubscription:
+                $ref: "#/components/schemas/MeasTaSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -2586,10 +2274,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                MeasTaSubscription:
-                  $ref: "#/components/schemas/MeasTaSubscription"
+              #type: object
+              #properties:
+              #  MeasTaSubscription:
+              $ref: "#/components/schemas/MeasTaSubscription"
         description: Use to creates a subscription to UE Timing Advance notifications based
           on the filter criteria
         required: true
@@ -2600,10 +2288,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  MeasTaSubscription:
-                    $ref: "#/components/schemas/MeasTaSubscription"
+                #type: object
+                #properties:
+                #  MeasTaSubscription:
+                $ref: "#/components/schemas/MeasTaSubscription"
               examples:
                 response:
                   value:
@@ -2626,40 +2314,28 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  MeasTaSubscription:
-                    $ref: "#/components/schemas/MeasTaSubscription"
+                #type: object
+                #properties:
+                #  MeasTaSubscription:
+                $ref: "#/components/schemas/MeasTaSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -2729,16 +2405,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -2784,12 +2454,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -2803,42 +2473,30 @@ paths:
                             subscriptionType: MEAS_REPORT_UE
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -2912,10 +2570,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                MeasRepUeSubscription:
-                  $ref: "#/components/schemas/MeasRepUeSubscriptionPost"
+              #type: object
+              #properties:
+              #  MeasRepUeSubscription:
+              $ref: "#/components/schemas/MeasRepUeSubscriptionPost"
         description: Use to creates a subscription to UE measurement report notifications
           based on the filter criteria
         required: true
@@ -2926,10 +2584,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  MeasRepUeSubscription:
-                    $ref: "#/components/schemas/MeasRepUeSubscription"
+                #type: object
+                #properties:
+                #  MeasRepUeSubscription:
+                $ref: "#/components/schemas/MeasRepUeSubscription"
               examples:
                 response:
                   value:
@@ -2952,40 +2610,28 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  MeasRepUeSubscription:
-                    $ref: "#/components/schemas/MeasRepUeSubscription"
+                #type: object
+                #properties:
+                #  MeasRepUeSubscription:
+                $ref: "#/components/schemas/MeasRepUeSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -3055,16 +2701,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -3104,12 +2744,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - MeasRepUeSubscription
-                properties:
-                  MeasRepUeSubscription:
-                    $ref: "#/components/schemas/MeasRepUeSubscription"
+                #type: object
+                #required:
+                #  - MeasRepUeSubscription
+                #properties:
+                #  MeasRepUeSubscription:
+                $ref: "#/components/schemas/MeasRepUeSubscription"
               examples:
                 response:
                   value:
@@ -3132,42 +2772,30 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - MeasRepUeSubscription
-                properties:
-                  MeasRepUeSubscription:
-                    $ref: "#/components/schemas/MeasRepUeSubscription"
+                #type: object
+                #required:
+                #  - MeasRepUeSubscription
+                #properties:
+                #  MeasRepUeSubscription:
+                $ref: "#/components/schemas/MeasRepUeSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -3242,10 +2870,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                MeasRepUeSubscription:
-                  $ref: "#/components/schemas/MeasRepUeSubscription"
+              #type: object
+              #properties:
+              #  MeasRepUeSubscription:
+              $ref: "#/components/schemas/MeasRepUeSubscription"
         description: Use to creates a subscription to UE measurement report notifications
           based on the filter criteria
         required: true
@@ -3256,10 +2884,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  MeasRepUeSubscription:
-                    $ref: "#/components/schemas/MeasRepUeSubscription"
+                #type: object
+                #properties:
+                #  MeasRepUeSubscription:
+                $ref: "#/components/schemas/MeasRepUeSubscription"
               examples:
                 response:
                   value:
@@ -3282,40 +2910,28 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  MeasRepUeSubscription:
-                    $ref: "#/components/schemas/MeasRepUeSubscription"
+                #type: object
+                #properties:
+                #  MeasRepUeSubscription:
+                $ref: "#/components/schemas/MeasRepUeSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -3440,12 +3056,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -3459,42 +3075,30 @@ paths:
                             subscriptionType: RAB_ESTABLISHMENT
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -3568,10 +3172,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                RabEstSubscription:
-                  $ref: "#/components/schemas/RabEstSubscriptionPost"
+              #type: object
+              #properties:
+              #  RabEstSubscription:
+              $ref: "#/components/schemas/RabEstSubscriptionPost"
         description: Use to creates a subscription to RAB establishment notifications based
           on the filter criteria
         required: true
@@ -3581,10 +3185,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  RabEstSubscription:
-                    $ref: "#/components/schemas/RabEstSubscription"
+                #type: object
+                #properties:
+                #  RabEstSubscription:
+                $ref: "#/components/schemas/RabEstSubscription"
               examples:
                 response:
                   value:
@@ -3607,40 +3211,28 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  RabEstSubscription:
-                    $ref: "#/components/schemas/RabEstSubscription"
+                #type: object
+                #properties:
+                #  RabEstSubscription:
+                $ref: "#/components/schemas/RabEstSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -3758,12 +3350,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - RabEstSubscription
-                properties:
-                  RabEstSubscription:
-                    $ref: "#/components/schemas/RabEstSubscription"
+                #type: object
+                #required:
+                #  - RabEstSubscription
+                #properties:
+                #  RabEstSubscription:
+                $ref: "#/components/schemas/RabEstSubscription"
               examples:
                 response:
                   value:
@@ -3786,42 +3378,30 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - RabEstSubscription
-                properties:
-                  RabEstSubscription:
-                    $ref: "#/components/schemas/RabEstSubscription"
+                #type: object
+                #required:
+                #  - RabEstSubscription
+                #properties:
+                #  RabEstSubscription:
+                $ref: "#/components/schemas/RabEstSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -3896,10 +3476,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                RabEstSubscription:
-                  $ref: "#/components/schemas/RabEstSubscription"
+              #type: object
+              #properties:
+              #  RabEstSubscription:
+              $ref: "#/components/schemas/RabEstSubscription"
         description: Use to creates a subscription to RAB establishment notifications based
           on the filter criteria
         required: true
@@ -3909,10 +3489,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  RabEstSubscription:
-                    $ref: "#/components/schemas/RabEstSubscription"
+                #type: object
+                #properties:
+                #  RabEstSubscription:
+                $ref: "#/components/schemas/RabEstSubscription"
               examples:
                 response:
                   value:
@@ -3935,40 +3515,28 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  RabEstSubscription:
-                    $ref: "#/components/schemas/RabEstSubscription"
+                #type: object
+                #properties:
+                #  RabEstSubscription:
+                $ref: "#/components/schemas/RabEstSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
@@ -4091,14 +3659,14 @@ paths:
           description: Response body contains the list of links to requestors rab_mod
             subscriptions.
           content:
-            application/json:
+            application/json:              
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -4112,27 +3680,22 @@ paths:
                             subscriptionType: RAB_MODIFICATION
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
+              
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -4221,10 +3784,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                RabModSubscription:
-                  $ref: "#/components/schemas/RabModSubscriptionPost"
+              #type: object
+              #properties:
+              #  RabModSubscription:
+              $ref: "#/components/schemas/RabModSubscriptionPost"
         description: Use to creates a subscription to RAB Modification notifications based
           on the filter criteria
         required: true
@@ -4234,10 +3797,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  RabModSubscription:
-                    $ref: "#/components/schemas/RabModSubscription"
+                #type: object
+                #properties:
+                #  RabModSubscription:
+                $ref: "#/components/schemas/RabModSubscription"
               examples:
                 response:
                   value:
@@ -4260,25 +3823,19 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  RabModSubscription:
-                    $ref: "#/components/schemas/RabModSubscription"
+                #type: object
+                #properties:
+                #  RabModSubscription:
+                $ref: "#/components/schemas/RabModSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -4411,12 +3968,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - RabModSubscription
-                properties:
-                  RabModSubscription:
-                    $ref: "#/components/schemas/RabModSubscription"
+                #type: object
+                #required:
+                #  - RabModSubscription
+                #properties:
+                #  RabModSubscription:
+                $ref: "#/components/schemas/RabModSubscription"
               examples:
                 response:
                   value:
@@ -4439,27 +3996,21 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - RabModSubscription
-                properties:
-                  RabModSubscription:
-                    $ref: "#/components/schemas/RabModSubscription"
+                #type: object
+                #required:
+                #  - RabModSubscription
+                #properties:
+                #  RabModSubscription:
+                $ref: "#/components/schemas/RabModSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -4549,10 +4100,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                RabModSubscription:
-                  $ref: "#/components/schemas/RabModSubscription"
+              #type: object
+              #properties:
+              #  RabModSubscription:
+              $ref: "#/components/schemas/RabModSubscription"
         description: Use to creates a subscription to RAB Modification notifications based
           on the filter criteria
         required: true
@@ -4562,10 +4113,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  RabModSubscription:
-                    $ref: "#/components/schemas/RabModSubscription"
+                #type: object
+                #properties:
+                #  RabModSubscription:
+                $ref: "#/components/schemas/RabModSubscription"
               examples:
                 response:
                   value:
@@ -4588,25 +4139,19 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  RabModSubscription:
-                    $ref: "#/components/schemas/RabModSubscription"
+                #type: object
+                #properties:
+                #  RabModSubscription:
+                $ref: "#/components/schemas/RabModSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -4746,12 +4291,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -4765,27 +4310,21 @@ paths:
                             subscriptionType: RAB_RELEASE
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -4874,10 +4413,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                RabRelSubscription:
-                  $ref: "#/components/schemas/RabRelSubscriptionPost"
+              #type: object
+              #properties:
+              #  RabRelSubscription:
+              $ref: "#/components/schemas/RabRelSubscriptionPost"
         description: Use to creates a subscription to RAB Release notifications based on
           the filter criteria
         required: true
@@ -4887,10 +4426,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  RabRelSubscription:
-                    $ref: "#/components/schemas/RabRelSubscription"
+                #type: object
+                #properties:
+                #  RabRelSubscription:
+                $ref: "#/components/schemas/RabRelSubscription"
               examples:
                 response:
                   value:
@@ -4913,25 +4452,19 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  RabRelSubscription:
-                    $ref: "#/components/schemas/RabRelSubscription"
+                #type: object
+                #properties:
+                #  RabRelSubscription:
+                $ref: "#/components/schemas/RabRelSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -5064,12 +4597,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - RabRelSubscription
-                properties:
-                  RabRelSubscription:
-                    $ref: "#/components/schemas/RabRelSubscription"
+                #type: object
+                #required:
+                #  - RabRelSubscription
+                #properties:
+                #  RabRelSubscription:
+                $ref: "#/components/schemas/RabRelSubscription"
               examples:
                 response:
                   value:
@@ -5092,27 +4625,21 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - RabRelSubscription
-                properties:
-                  RabRelSubscription:
-                    $ref: "#/components/schemas/RabRelSubscription"
+                #type: object
+                #required:
+                #  - RabRelSubscription
+                #properties:
+                #  RabRelSubscription:
+                $ref: "#/components/schemas/RabRelSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
@@ -5141,57 +4668,34 @@ paths:
                     $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     put:
       description: Updates a subscription to RAB Release notifications from Radio Network
         Information Service
@@ -5202,10 +4706,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                RabRelSubscription:
-                  $ref: "#/components/schemas/RabRelSubscription"
+              #type: object
+              #properties:
+              #  RabRelSubscription:
+              $ref: "#/components/schemas/RabRelSubscription"
         description: Use to creates a subscription to RAB Release notifications based on
           the filter criteria
         required: true
@@ -5215,10 +4719,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  RabRelSubscription:
-                    $ref: "#/components/schemas/RabRelSubscription"
+                #type: object
+                #properties:
+                #  RabRelSubscription:
+                $ref: "#/components/schemas/RabRelSubscription"
               examples:
                 response:
                   value:
@@ -5241,119 +4745,73 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  RabRelSubscription:
-                    $ref: "#/components/schemas/RabRelSubscription"
+                #type: object
+                #properties:
+                #  RabRelSubscription:
+                $ref: "#/components/schemas/RabRelSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "412":
           description: Precondition failed
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -5368,16 +4826,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     delete:
       description: Method to delete a subscription
       operationId: RabRel_subscriptionsSubscrIdDELETE
@@ -5399,12 +4851,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
               examples:
                 response:
                   value:
@@ -5418,106 +4870,66 @@ paths:
                             subscriptionType: CA_RECONF
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - SubscriptionLinkList
-                properties:
-                  SubscriptionLinkList:
-                    $ref: "#/components/schemas/SubscriptionLinkList"
+                #type: object
+                #required:
+                #  - SubscriptionLinkList
+                #properties:
+                #  SubscriptionLinkList:
+                $ref: "#/components/schemas/SubscriptionLinkList"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
     post:
       description: Creates a subscription to Carrier Aggregation Reconfiguration
@@ -5527,10 +4939,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                CaReConfSubscription:
-                  $ref: "#/components/schemas/CaReConfSubscriptionPost"
+              #type: object
+              #properties:
+              #  CaReConfSubscription:
+              $ref: "#/components/schemas/CaReConfSubscriptionPost"
         description: Use to creates a subscription to Carrier Aggregation Reconfiguration
           notifications based on the filter criteria
         required: true
@@ -5541,10 +4953,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  CaReConfSubscription:
-                    $ref: "#/components/schemas/CaReConfSubscription"
+                #type: object
+                #properties:
+                #  CaReConfSubscription:
+                $ref: "#/components/schemas/CaReConfSubscription"
               examples:
                 response:
                   value:
@@ -5566,113 +4978,70 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  CaReConfSubscription:
-                    $ref: "#/components/schemas/CaReConfSubscription"
+                #type: object
+                #properties:
+                #  CaReConfSubscription:
+                $ref: "#/components/schemas/CaReConfSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "415":
           description: Unsupported Media Type
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
                 type: object
@@ -5693,16 +5062,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   "/subscriptions/ca_reconf/{subscriptionId}":
     get:
@@ -5718,12 +5081,12 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - CaReConfSubscription
-                properties:
-                  CaReConfSubscription:
-                    $ref: "#/components/schemas/CaReConfSubscription"
+                #type: object
+                #required:
+                #  - CaReConfSubscription
+                #properties:
+                #  CaReConfSubscription:
+                $ref: "#/components/schemas/CaReConfSubscription"
               examples:
                 response:
                   value:
@@ -5745,106 +5108,73 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - CaReConfSubscription
-                properties:
-                  CaReConfSubscription:
-                    $ref: "#/components/schemas/CaReConfSubscription"
+                #type: object
+                #required:
+                #  - CaReConfSubscription
+                #properties:
+                #  CaReConfSubscription:
+                $ref: "#/components/schemas/CaReConfSubscription"
+                     
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                #type: object
+                #properties:
+                #  ProblemDetails:
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     put:
       description: Updates a subscription to Carrier Aggregation Reconfiguration
         notifications from Radio Network Information Service
@@ -5855,10 +5185,10 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                CaReConfSubscription:
-                  $ref: "#/components/schemas/CaReConfSubscription"
+              #type: object
+              #properties:
+              #  CaReConfSubscription:
+              $ref: "#/components/schemas/CaReConfSubscription"
         description: Use to creates a subscription to Carrier Aggregation Reconfiguration
           notifications based on the filter criteria
         required: true
@@ -5869,10 +5199,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  CaReConfSubscription:
-                    $ref: "#/components/schemas/CaReConfSubscription"
+                #type: object
+                #properties:
+                #  CaReConfSubscription:
+                $ref: "#/components/schemas/CaReConfSubscription"
               examples:
                 response:
                   value:
@@ -5894,119 +5224,73 @@ paths:
                         nanoSeconds: 0
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  CaReConfSubscription:
-                    $ref: "#/components/schemas/CaReConfSubscription"
+                #type: object
+                #properties:
+                #  CaReConfSubscription:
+                $ref: "#/components/schemas/CaReConfSubscription"
         "400":
           description: Bad Request
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "412":
           description: Precondition failed
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -6021,16 +5305,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     delete:
       description: Method to delete a subscription
       operationId: CaReConf_subscriptionsSubscrIdDELETE
@@ -6054,13 +5332,13 @@ components:
       schema:
         type: string
         format: uri
-    Query.AppInsId:
-      name: app_ins_id
-      in: query
-      description: Application instance identifier
-      required: false
-      schema:
-        type: string
+#    Query.AppInsId:
+#      name: app_ins_id
+#      in: query
+#      description: Application instance identifier
+#      required: false
+#      schema:
+#        type: string
     Query.AppInsIdArr:
       name: app_ins_id
       in: query
@@ -6070,16 +5348,16 @@ components:
         type: array
         items:
           type: string
-    Query.UeIpv4Address:
-      name: ue_ipv4_address
-      in: query
-      description: Comma separated list of IE IPv4 addresses as defined for the type for
-        AssociateId
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
+#    Query.UeIpv4Address:
+#      name: ue_ipv4_address
+#      in: query
+#      description: Comma separated list of IE IPv4 addresses as defined for the type for
+#        AssociateId
+#      required: false
+#      schema:
+#        type: array
+#        items:
+#          type: string
     Query.UeIpv6Address:
       name: ue_ipv6_address
       in: query
@@ -6110,16 +5388,16 @@ components:
         type: array
         items:
           type: string
-    Query.CellId:
-      name: cell_id
-      in: query
-      description: E-UTRAN Cell Identity as a bit string (size (28)), as defined in ETSI TS
-        136 413
-      required: false
-      schema:
-        type: array
-        items:
-          type: string
+#    Query.CellId:
+#      name: cell_id
+#      in: query
+#      description: E-UTRAN Cell Identity as a bit string (size (28)), as defined in ETSI TS
+#        136 413
+#      required: false
+#      schema:
+#        type: array
+#        items:
+#          type: string
     Query.ErabGbrDl:
       name: erab_gbr_dl
       in: query
@@ -6257,7 +5535,24 @@ components:
                     to the IP address of a specific MEC application instance.
       type: string
       example: sfr.fr
-                     
+                    
+    mp1_traffic: 
+      type: object
+      required:
+        - url
+        - mec_ipaddr
+        - mec_macaddr
+        - type
+      properties:
+        url:
+          $ref: "#/components/schemas/url"  
+        mec_ipaddr:
+          $ref: "#/components/schemas/mec_ipaddr"                     
+        mec_macaddr:
+          $ref: "#/components/schemas/mec_macaddr"   
+        type:
+          $ref: "#/components/schemas/type"
+                                         
     mp1_traffic_imsi: 
       type: object
       required:
