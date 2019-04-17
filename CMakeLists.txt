@@ -180,33 +180,67 @@ set(NORTH_API_include_files
   )
 add_library(NORTH_API ${NORTH_API_src_files})
 
-#MP1_API
-
-set(MP1_API_DIR "${LL_MEC_SRC}/mp1")
-set(MP1_API_src_files
-  ${MP1_API_DIR}/mp1-api-server.cpp
-  ${MP1_API_DIR}/api/DefaultApi.cpp
-  ${MP1_API_DIR}/impl/DefaultApiImpl.cpp
-  ${MP1_API_DIR}/model/Ecgi.cpp
-  ${MP1_API_DIR}/model/Helpers.cpp
-  ${MP1_API_DIR}/model/InlineResponse200.cpp
-  ${MP1_API_DIR}/model/InlineResponse400.cpp
-  ${MP1_API_DIR}/model/InlineResponse403.cpp
-  ${MP1_API_DIR}/model/ModelBase.cpp
-  ${MP1_API_DIR}/model/Plmn.cpp
-  ${MP1_API_DIR}/model/PlmnInfo.cpp
-  ${MP1_API_DIR}/model/ProblemDetails.cpp
-  ${MP1_API_DIR}/model/TimeStamp.cpp
+#MP1_RNIS_API
+set(MP1_RNIS_API_DIR "${LL_MEC_SRC}/mp1/rnis")
+set(MP1_RNIS_API_src_files_old
+  ${MP1_RNIS_API_DIR}/mp1-rnis-api.cpp
+  ${MP1_RNIS_API_DIR}/api/DefaultApi.cpp
+  ${MP1_RNIS_API_DIR}/impl/DefaultApiImpl.cpp
+  ${MP1_RNIS_API_DIR}/model/Ecgi.cpp
+  ${MP1_RNIS_API_DIR}/model/Helpers.cpp
+  ${MP1_RNIS_API_DIR}/model/InlineResponse200.cpp
+  ${MP1_RNIS_API_DIR}/model/InlineResponse400.cpp
+  ${MP1_RNIS_API_DIR}/model/InlineResponse403.cpp
+  ${MP1_RNIS_API_DIR}/model/ModelBase.cpp
+  ${MP1_RNIS_API_DIR}/model/Plmn.cpp
+  ${MP1_RNIS_API_DIR}/model/PlmnInfo.cpp
+  ${MP1_RNIS_API_DIR}/model/ProblemDetails.cpp
+  ${MP1_RNIS_API_DIR}/model/TimeStamp.cpp
+  ${MP1_RNIS_API_DIR}/model/*.cpp
   
   )
-set(MP1_API_include_files
-  ${MP1_API_DIR}/api
-  ${MP1_API_DIR}/impl
-  ${MP1_API_DIR}/model
-  ${MP1_API_DIR}
+  
+file(GLOB MP1_RNIS_API_src_files
+    ${MP1_RNIS_API_DIR}/mp1-rnis-api.cpp
+    ${MP1_RNIS_API_DIR}/model/*.cpp
+    ${MP1_RNIS_API_DIR}/api/*.cpp
+    ${MP1_RNIS_API_DIR}/impl/*.cpp
+)
+  
+  
+set(MP1_RNIS_API_include_files
+  ${MP1_RNIS_API_DIR}/api
+  ${MP1_RNIS_API_DIR}/impl
+  ${MP1_RNIS_API_DIR}/model
+  ${MP1_RNIS_API_DIR}
   )
-add_library(MP1_API ${MP1_API_src_files})
-#target_link_libraries(MP1_API CORE)
+add_library(MP1_RNIS_API ${MP1_RNIS_API_src_files})
+#target_link_libraries(MP1_RNIS_API CORE)
+
+#MP1_MEC_API
+set(MP1_MEC_API_DIR "${LL_MEC_SRC}/mp1/mec")
+set(MP1_MEC_API_src_files
+  ${MP1_MEC_API_DIR}/mp1-mec-api.cpp
+  ${MP1_MEC_API_DIR}/api/DefaultApi.cpp
+  ${MP1_MEC_API_DIR}/impl/DefaultApiImpl.cpp
+  
+  ${MP1_MEC_API_DIR}/model/DeleteMp1TrafficImsi.cpp
+  ${MP1_MEC_API_DIR}/model/Helpers.cpp
+  ${MP1_MEC_API_DIR}/model/InlineObject.cpp
+  ${MP1_MEC_API_DIR}/model/InlineObject1.cpp
+  ${MP1_MEC_API_DIR}/model/ModelBase.cpp
+  ${MP1_MEC_API_DIR}/model/Mp1TrafficImsi.cpp
+  ${MP1_MEC_API_DIR}/model/PostMp1TrafficImsi.cpp 
+  
+  )
+set(MP1_MEC_API_include_files
+  ${MP1_MEC_API_DIR}/api
+  ${MP1_MEC_API_DIR}/impl
+  ${MP1_MEC_API_DIR}/model
+  ${MP1_MEC_API_DIR}
+  )
+add_library(MP1_MEC_API ${MP1_MEC_API_src_files})
+#target_link_libraries(MP1_MEC_API CORE)
 
 
 # spdlog header files
@@ -222,7 +256,8 @@ include_directories(
   ${UTIL_include_files}
   ${DATA_include_files}
   ${NORTH_API_include_files}
-  ${MP1_API_include_files}
+  ${MP1_RNIS_API_include_files}
+  ${MP1_MEC_API_include_files}
   ${PISTACHE_include_files}
   ${SPDLOG_include_dir}
   ${Event_INCLUDE_DIRS}
@@ -247,7 +282,8 @@ target_link_libraries(ll-mec
   UTIL
   DATA
   NORTH_API
-  MP1_API
+  MP1_RNIS_API
+  MP1_MEC_API
   PISTACHE
   )
 #target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)

@@ -11,7 +11,7 @@
 */
 
 
-#include "Mp1_traffic_imsi.h"
+#include "Mp1TrafficImsi.h"
 
 namespace org {
 namespace openapitools {

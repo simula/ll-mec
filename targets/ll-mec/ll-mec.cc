@@ -46,7 +46,8 @@
 #include "input_parser.h"
 #include "conf.h"
 #include "spdlog.h"
-#include "mp1-api-server.h"
+#include "mp1-rnis-api.h"
+#include "mp1-mec-api.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
@@ -116,12 +117,12 @@ int main(int argc, char **argv){
   rest_manager.init(1);
   std::thread rest_manager_app(&llmec::north_api::Rest_manager::start, rest_manager);
 
-  //start mp1-api
+  //start Mp1 API
    Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(8888));
-   Mp1_manager mp1_manager(addr_mp1);
-   mp1_manager.init(2);
-   mp1_manager.start();
-   mp1_manager.shutdown();
+   Mp1Manager mp1Manager(addr_mp1);
+   mp1Manager.init(2);
+   mp1Manager.start();
+   mp1Manager.shutdown();
 
 
   //Controller start

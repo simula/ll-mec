@@ -11,7 +11,7 @@
 */
 
 
-#include "Inline_object_1.h"
+#include "InlineObject1.h"
 
 namespace org {
 namespace openapitools {

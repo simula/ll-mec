@@ -3,13 +3,12 @@ info:
   title: MEC Platform
   version: 1.0
 servers:
-- url: http://localhost/api/v1/
+- url: http://localhost/api/v1
 paths:
   '/platform':
     post:
       description: |
         Reset the virtual switch.
-
         First deletes all flows and then adds the default ones. In particular:
         * Default low priority rule for traffic originating from the LOCAL port of the switch, which is directed towards the Internet (or external networks)
         * Rules for communication (IP+ARP) between the local OVS host and the SGi
@@ -18,24 +17,9 @@ paths:
       responses:
         '200':
           description: Virtual switch reset
-          content:
-            application/json:
-              schema:
-                example:
-                  result: 200
-                  description: Virtual switch reset
-                  code: 0
         '400':
           description: Error adding default rule for Internet/external traffic
-          content:
-            application/json:
-              schema:
-                example:
-                  result: 400
-                  description: Error adding default rule for Internet/external traffic
-                  code: 5
-
-      
+  
   '/mp1/traffic/imsi':
     post:
       description: "Mp1 interface for activating traffic redirection by traffic type
@@ -62,32 +46,17 @@ paths:
           content:
             application/json:
               schema:
-                example:
-                  result: 200
-                  description: Added IMSI list
-                  ue_list:
-                  - '208930100001114'
-                  port: 5000
-                  transport: 1
-                  service_ip: 195.251.255.142
-                  mec_ipaddr: 192.168.0.100
-                  mec_macaddr: 52:54:00:12:34:cc
-                  x-type: 2
+                $ref: "#/components/schemas/imsi_list"   
         '400':
           description: Not implemented service type
           content:
             application/json:
               schema:
-                example:
-                  result: 400
-                  description: Not implemented service type
-                  x-type: 5
-               
+                $ref: "#/components/schemas/x-type"        
         
     delete:
       description: |
         Mp1 interface for uninstalling traffic redirection by type.
-
         Disable redirection by traffic type for the specified list of UEs. For now, the request body needs to carry
         the full information about the redirection rule. (Support for deleting a redirection rule by id is to be added.)
       operationId: delete_mp1_traffic_imsi
@@ -99,15 +68,14 @@ paths:
               required: true 
       responses:
         '200':
-          description: ''
+          description: Removed redirection by service type
           content:
             application/json:
               schema:
+                $ref: "#/components/schemas/imsi_list"  
                 example:
                   result: 200
-                  description: Removed redirection by service type
-                  ue_list:
-                  - '208930100001114'
+                  ue_list: '[208930100001114]'
                   port: 5000
                   transport: 1
                   service_ip: 195.251.255.142
@@ -115,14 +83,11 @@ paths:
                   mec_macaddr: 52:54:00:12:34:cc
                   x-type: 2
         '400':
-          description: ''
+          description: Not implemented service type
           content:
             application/json:
               schema:
-                example:
-                  result: 400
-                  description: Not implemented service type
-                  x-type: 5
+                $ref: "#/components/schemas/x-type"
              
  
   "/mp1/traffic/all":
@@ -161,23 +126,17 @@ paths:
         required: true        
       responses:
         '200':
-          description: ''
+          description: Redirection URL added successfully
           content:
             application/json:
               schema:
-                example:
-                  result: 200
-                  description: Redirection URL added successfully
-                  url: sfr.fr
+                $ref: "#/components/schemas/url"
         '400':
-          description: ''
+          description: Failed to re-configure DNS server (-2)
           content:
             application/json:
               schema:
-                example:
-                  result: 400
-                  description: Failed to re-configure DNS server (-2)
-                  url: sfr.fr        
+                $ref: "#/components/schemas/url"     
     delete:
       description: |
         Mp1 interface for deactivating traffic redirection by name.
@@ -214,23 +173,19 @@ paths:
         required: true
       responses:
         '200':
-          description: ''
+          description: Redirection URL deleted successfully
           content:
             application/json:
               schema:
-                example:
-                  result: 200
-                  description: Redirection URL deleted successfully
-                  url: sfr.fr
+                $ref: "#/components/schemas/url"
+
         '400':
-          description: ''
+          description: Wrong service type for URL-based redirection
           content:
             application/json:
               schema:
-                example:
-                  result: 400
-                  description: Wrong service type for URL-based redirection
-                  url: sfr.fr     
+                $ref: "#/components/schemas/url"
+  
 components:
   schemas:             
                   
@@ -242,16 +197,14 @@ components:
       type: array
       items: 
         type: string             
-      #example: 
-      #  ie_list: ['208930100001114', '208930100001115']
+      example: ['208930100001114', '208930100001115']
                      
     service_ip:
       title: Service IP address
       description: The original IP address of the service for which traffic
                    will be redirected to the MEC server.
       type: string
-      example: 
-        service_ip: "195.251.255.142"
+      example: 195.251.255.142
            
     port:
       title: Port
@@ -270,31 +223,31 @@ components:
     mec_ipaddr:
       title: MEC application instance IP address
       description: The IP address of the MEC application instance to which
-                   traffic will be redirected.
-      example: 192.168.0.100
+                   traffic will be redirected.      
       type: string
+      example: 192.168.0.100
                
     mec_macaddr:
       title: MEC application instance MAC address
       description: The MAC address of the MEC application instance's network
                     interface. (This is necessary due to the redirection mechanism's
                     internal workings and might be become optional in future versions.)
-      example: 52:54:00:12:34:cc
-      type: string         
+      type: string
+      example: 52:54:00:12:34:cc         
                              
     type:
       title: Redirection type
       description: The type of redirection. Should have the values *2*
                     or *3*. (This field is reserved and is not used in this version.
                     However, it has to have a valid value.)
-      example: 2
       type: integer
+      example: 2
     url:
       title: Service URL
       description: All DNS requests from UEs for this name will be resolved
                     to the IP address of a specific MEC application instance.
-      example: sfr.fr
       type: string
+      example: sfr.fr
                      
     mp1_traffic_imsi: 
       type: object
@@ -320,9 +273,36 @@ components:
         mec_macaddr:
           $ref: "#/components/schemas/mec_macaddr"   
         type:
-          $ref: "#/components/schemas/type" 
-          
-       
-
+          $ref: "#/components/schemas/type"
+    x-type:
+      type: integer      
+    imsi_list:
+      type: object
+      properties:  
+        result:
+          type: integer 
+        ue_list:
+          $ref: "#/components/schemas/ue_list" 
+        port:
+          $ref: "#/components/schemas/port"
+        transport:
+          $ref: "#/components/schemas/transport" 
+        service_ip:
+          $ref: "#/components/schemas/service_ip"    
+        mec_ipaddr:
+          $ref: "#/components/schemas/mec_ipaddr"                     
+        mec_macaddr:
+          $ref: "#/components/schemas/mec_macaddr"   
+        x-type: 
+          $ref: "#/components/schemas/x-type"  
+      example:
+        result: 200
+        ue_list: '[208930100001114]'
+        port: 5000
+        transport: 1
+        service_ip: 195.251.255.142
+        mec_ipaddr: 192.168.0.100
+        mec_macaddr: 52:54:00:12:34:cc
+        x-type: 2
 
   

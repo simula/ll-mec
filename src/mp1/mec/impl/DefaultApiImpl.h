@@ -29,10 +29,10 @@
 
 #include <pistache/optional.h>
 
-#include "Inline_object.h"
-#include "Inline_object_1.h"
-#include "Mp1_traffic_imsi.h"
-#include "Object.h"
+#include "InlineObject.h"
+#include "InlineObject1.h"
+#include "Mp1TrafficImsi.h"
+//#include "Object.h"
 
 namespace org {
 namespace openapitools {

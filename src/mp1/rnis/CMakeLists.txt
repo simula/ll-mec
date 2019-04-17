@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.2)
 
-project(mp1-api-server)
+project(mp1-rnis-api)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pg -g3" )
 
@@ -19,7 +19,7 @@ include_directories(api)
 include_directories(impl)
 
 set(MP1_API_SERVER_SOURCES
-rnis-api-server.cpp
+mp1-rnis-api.cpp
     ${MODEL_SOURCES}
     ${MP1_API_SOURCES})
 

@@ -341,11 +341,6 @@ paths:
           content:
             application/json:
               schema:
-                #type: object
-                #required:
-                #  - ProblemDetails
-                #properties:
-                #  ProblemDetails:
                 $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
@@ -1105,6 +1100,7 @@ paths:
       operationId: CellChange_subscriptionsGET
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
+
       responses:
         "200":
           description: Subscription information regarding cell change notifications
@@ -1731,80 +1727,46 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "412":
           description: Precondition failed
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
@@ -1828,16 +1790,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     delete:
       description: Method to delete a subscription
       operationId: S1Bearer_subscriptionsSubscrIdDELETE
@@ -1907,65 +1863,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
     post:
       description: Creates a subscription to UE Timing Advance notifications from Radio
@@ -2042,65 +1970,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "415":
           description: Unsupported Media Type
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
@@ -2124,16 +2024,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   "/subscriptions/ta/{subscriptionId}":
     get:
@@ -2205,65 +2099,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     put:
       description: Updates a subscription to UE Timing Advance notifications from Radio
         Network Information Service
@@ -2341,65 +2207,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "412":
           description: Precondition failed
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
@@ -2423,16 +2261,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     delete:
       description: Method to delete a subscription
       operationId: MeasTa_subscriptionsSubscrIdDELETE
@@ -2502,65 +2334,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
     post:
       description: Creates a subscription to UE measurement report notifications from Radio
@@ -2637,65 +2441,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "415":
           description: Unsupported Media Type
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
@@ -2719,16 +2495,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
   "/subscriptions/meas_rep_ue/{subscriptionId}":
     get:
@@ -2801,65 +2571,37 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "429":
           description: Too Many Requests
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
     put:
       description: Updates a subscription to UE measurement report notifications from Radio
         Network Information Service
@@ -2937,80 +2679,46 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "406":
           description: Not Acceptable
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "412":
           description: Precondition failed
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "422":
           description: Unprocessable Entity
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
               examples:
                 response:
                   value:
@@ -3104,20 +2812,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -3238,20 +2936,11 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
+
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -3407,20 +3096,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -3542,20 +3221,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -3701,35 +3370,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -3841,35 +3494,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -4016,35 +3653,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -4157,35 +3778,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -4330,35 +3935,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -4470,35 +4059,19 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "404":
           description: Not Found
           content:
@@ -4645,27 +4218,16 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
-                type: object
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
         "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                type: object
-                required:
-                  - ProblemDetails
-                properties:
-                  ProblemDetails:
-                    $ref: "#/components/schemas/ProblemDetails"
+                $ref: "#/components/schemas/ProblemDetails"
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"

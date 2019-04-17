@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.2)
 
-project(main_api_server)
+project(mp1-mec-api)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pg -g3" )
 
@@ -20,11 +20,11 @@ include_directories(api)
 include_directories(impl)
 
 set(MEC_API_SERVER_SOURCES
-main-api-server.cpp
+mp1-mec-api.cpp
     ${MODEL_SOURCES}
     ${MEC_API_SOURCES})
 
-add_executable(mec_api_server
+add_executable(${PROJECT_NAME}
 ${MEC_API_SERVER_SOURCES})
 
-target_link_libraries(mec_api_server pistache pthread)
+target_link_libraries(${PROJECT_NAME} pistache pthread)

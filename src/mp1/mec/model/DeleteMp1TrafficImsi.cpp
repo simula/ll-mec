@@ -11,7 +11,7 @@
 */
 
 
-#include "Delete_mp1_traffic_imsi.h"
+#include "DeleteMp1TrafficImsi.h"
 
 namespace org {
 namespace openapitools {

@@ -20,8 +20,8 @@
 #include <unistd.h>
 #endif
 
-#include "rnis-api-server.h"
-
+#include "mp1-rnis-api.h"
+/*
 #ifdef __linux__
 void sigHandler(int sig){
     switch(sig){
@@ -50,24 +50,25 @@ void setUpUnixSignals(std::vector<int> quitSignals) {
         sigaction(sig, &sa, nullptr);
 }
 #endif
-
+*/
 using namespace org::openapitools::server::api;
 
-void Mp1_manager::init(size_t thr) {
+void Mp1RNISManager::init(size_t thr) {
 	auto opts = Pistache::Http::Endpoint::options()
 	.threads(thr);
 	m_httpEndpoint->init(opts);
 	DefaultApiserver->init();
 
 }
-void Mp1_manager::start(){
+void Mp1RNISManager::start(){
 	m_httpEndpoint->setHandler(m_router->handler());
 	m_httpEndpoint->serve();
 }
-void Mp1_manager::shutdown(){
+void Mp1RNISManager::shutdown(){
 	m_httpEndpoint->shutdown();
 }
 
+/*
 
 int main() {
 #ifdef __linux__
@@ -76,10 +77,11 @@ int main() {
 #endif
 
     Pistache::Address addr(Pistache::Ipv4::any(), Pistache::Port(8282));
-    Mp1_manager mp1_manager(addr);
-    mp1_manager.init(2);
-    mp1_manager.start();
-    mp1_manager.shutdown();
+    Mp1RNISManager mp1RNISManager(addr);
+    mp1RNISManager.init(2);
+    mp1RNISManager.start();
+    mp1RNISManager.shutdown();
 
 }
 
+*/

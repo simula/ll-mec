@@ -21,9 +21,9 @@
 #endif
 #include "DefaultApiImpl.h"
 using namespace org::openapitools::server::api;
-class Mp1_manager {
+class Mp1RNISManager {
 public:
-	Mp1_manager(Pistache::Address address) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
+	Mp1RNISManager(Pistache::Address address) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
 		m_router = std::make_shared<Pistache::Rest::Router>();
 		DefaultApiserver = std::make_shared<DefaultApiImpl> (m_router);
 
