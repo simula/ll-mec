@@ -46,8 +46,7 @@
 #include "input_parser.h"
 #include "conf.h"
 #include "spdlog.h"
-#include "mp1-rnis-api.h"
-#include "mp1-mec-api.h"
+#include "mp1-api-server.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
