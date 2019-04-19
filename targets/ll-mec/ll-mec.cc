@@ -123,7 +123,8 @@ int main(int argc, char **argv){
    mp1Manager.start();
    mp1Manager.shutdown();
 
-
+  //start Mp2 API
+ 
   //Controller start
   ctrl->start(true);
 
