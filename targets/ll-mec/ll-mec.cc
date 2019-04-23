@@ -47,6 +47,7 @@
 #include "conf.h"
 #include "spdlog.h"
 #include "mp1-api-server.h"
+#include "mp2-api-server.h" //Mp2ManagementAPI
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
