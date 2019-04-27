@@ -105,13 +105,11 @@ void FilterCriteriaAssoc::fromJson(const nlohmann::json& val)
                 
                 if(item.is_null())
                 {
-                    m_CellId.push_back( std::string() );
+                    m_CellId.push_back("");
                 }
                 else
                 {
-                    std::string newItem;
-                   // newItem.fromJson(item);
-                    m_CellId.push_back( newItem );
+                    m_CellId.push_back( item );
                 }
                 
             }

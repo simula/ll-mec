@@ -398,8 +398,10 @@ void DefaultApi::plmn_info_get_handler(const Pistache::Rest::Request &request, P
         if(fromStringValue(appInsIdQuery.get(), value)){
             appInsId = Pistache::Some(value);
         }
+        for (const std::string& appId: value)
+        	std::cout << "appInsId: "<< appId << std::endl;
     }
-    
+
     try {
       this->plmn_info_get(appInsId, response);
     } catch (std::runtime_error & e) {

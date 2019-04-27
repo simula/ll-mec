@@ -11,6 +11,7 @@
 */
 
 #include "DefaultApiImpl.h"
+#include <fstream>
 
 namespace org {
 namespace openapitools {
@@ -78,7 +79,35 @@ void DefaultApiImpl::meas_ta_subscriptions_subscr_id_delete(const std::string &s
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::string>> &appInsId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	//TTN
+    Plmn plmn;
+    Ecgi ecgi;
+	//query PLMN info from RNIS database
+
+    //get info from default Json file
+    std::string str  = "src/mp1/inputs/mp1.json";
+    nlohmann::json jsonData =  GetJsonData(str);
+
+    plmn.fromJson(jsonData);
+    ecgi.setPlmn(plmn);
+    //get Cell id from json file
+    nlohmann::json eNB_config =  nlohmann::json (jsonData["eNB_config"]);
+    nlohmann::json eNB =  (eNB_config.at(0))["eNB"];
+    nlohmann::json cellConfig = eNB["cellConfig"];
+    nlohmann::json UE = (eNB_config.at(0))["UE"];
+    nlohmann::json ueConfig = UE["ueConfig"];
+    nlohmann::json imsi = (ueConfig.at(0))["imsi"];
+    ecgi.fromJson(cellConfig.at(0));
+
+    std::cout << "imsi: "<<imsi<<std::endl;
+    std::cout<< "MNC: "<<ecgi.getPlmn().getMnc()<<std::endl;
+    std::cout<< "MCC: "<<ecgi.getPlmn().getMcc()<<std::endl;
+     std::vector<std::string> m_CellId = ecgi.getCellId();
+     for (const std::string& str: m_CellId){
+     	std::cout<< "cellId: "<<str<<std::endl;
+    }
+
+    response.send(Pistache::Http::Code::Ok, "Do some magic with PLMN info\n");
 }
 void DefaultApiImpl::post_mp1_traffic_all(const Mp1_traffic &mp1Traffic, Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
@@ -169,6 +198,35 @@ void DefaultApiImpl::subscription_link_list_subscriptions_s1_get(Pistache::Http:
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+}
+
+nlohmann::json DefaultApiImpl::GetJsonData(std::string str)
+{
+	//load Json data from Json file to a json object
+	std::ifstream in(str);
+	//error when loading data.
+	if(!in.is_open())
+	{
+		return nullptr;
+	}
+	nlohmann::json jsonData = nlohmann::json::parse(in);
+	in.close();
+	return jsonData;
+}
+
+nlohmann::json DefaultApiImpl::GetJsonData()
+{
+    //should be updated to get data from RNIS DB
+	//load Json data from Json file to a json object
+	std::ifstream in("src/mp1/inputs/mp1.json");
+	//error when loading data.
+	if(!in.is_open())
+	{
+		return nullptr;
+	}
+	nlohmann::json jsonData = nlohmann::json::parse(in);
+	in.close();
+	return jsonData;
 }
 
 }

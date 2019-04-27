@@ -12,6 +12,7 @@
 
 
 #include "Ecgi.h"
+#include <iostream>
 
 namespace org {
 namespace openapitools {
@@ -55,18 +56,16 @@ void Ecgi::fromJson(const nlohmann::json& val)
 {
     {
         m_CellId.clear();
-                    for( const auto& item : val["cellId"] )
+        for( const auto& item : val["cellId"] )
             {
                 
                 if(item.is_null())
                 {
-                    m_CellId.push_back( std::string() );
+                    m_CellId.push_back("");
                 }
                 else
                 {
-                    std::string newItem;
-                    //newItem.fromJson(item);
-                    m_CellId.push_back( newItem );
+                    m_CellId.push_back( item );
                 }
                 
             }

@@ -117,6 +117,14 @@ public:
     void subscription_link_list_subscriptions_rr_get(Pistache::Http::ResponseWriter &response);
     void subscription_link_list_subscriptions_s1_get(Pistache::Http::ResponseWriter &response);
     void subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response);
+    /*
+     * Get Json data from a default Json file
+     */
+    nlohmann::json GetJsonData(std::string str);
+    /*
+     * Get Json data from a RNIS DB
+     */
+    nlohmann::json GetJsonData();
 
 };
 
