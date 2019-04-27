@@ -47,6 +47,7 @@
 #include "conf.h"
 #include "spdlog.h"
 #include "mp1-api-server.h"
+#include "mp2-api-server.h" //Mp2ManagementAPI
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
@@ -123,7 +124,8 @@ int main(int argc, char **argv){
    mp1Manager.start();
    mp1Manager.shutdown();
 
-
+  //start Mp2 API
+ 
   //Controller start
   ctrl->start(true);
 
