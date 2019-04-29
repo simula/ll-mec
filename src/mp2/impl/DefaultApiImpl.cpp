@@ -13,11 +13,11 @@
 #include "DefaultApiImpl.h"
 
 namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp2 {
 namespace api {
 
-using namespace org::openapitools::server::model;
+using namespace org::llmec::mp2::model;
 
 DefaultApiImpl::DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
     : DefaultApi(rtr)

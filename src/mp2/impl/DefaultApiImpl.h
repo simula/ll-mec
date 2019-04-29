@@ -35,11 +35,11 @@
 #include <string>
 
 namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp2 {
 namespace api {
 
-using namespace org::openapitools::server::model;
+using namespace org::llmec::mp2::model;
 
 class DefaultApiImpl : public org::openapitools::server::api::DefaultApi {
 public:
