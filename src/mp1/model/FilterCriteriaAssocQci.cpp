@@ -13,9 +13,8 @@
 
 #include "FilterCriteriaAssocQci.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 FilterCriteriaAssocQci::FilterCriteriaAssocQci()
@@ -210,7 +209,6 @@ void FilterCriteriaAssocQci::unsetQci()
     m_QciIsSet = false;
 }
 
-}
 }
 }
 }

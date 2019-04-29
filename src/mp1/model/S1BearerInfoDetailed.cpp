@@ -13,9 +13,8 @@
 
 #include "S1BearerInfoDetailed.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 S1BearerInfoDetailed::S1BearerInfoDetailed()
@@ -102,7 +101,6 @@ void S1BearerInfoDetailed::unsetSGwInfo()
     m_SGwInfoIsSet = false;
 }
 
-}
 }
 }
 }

@@ -52,19 +52,18 @@
 #include "SubscriptionLinkList.h"
 #include <string>
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace api {
 
-using namespace org::openapitools::server::model;
+using namespace llmec::mp1::model;
 
 class  DefaultApi {
 public:
     DefaultApi(std::shared_ptr<Pistache::Rest::Router>);
     virtual ~DefaultApi() {}
     void init();
-
+    void setFlexRANControllers(std::vector<std::pair<std::string, int>> flexRANControllers);
     const std::string base = "/mp1/v1";
 
 private:
@@ -121,7 +120,10 @@ private:
     void subscription_link_list_subscriptions_ta_get_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
     void default_api_default_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response);
 
+
     std::shared_ptr<Pistache::Rest::Router> router;
+    std::vector<std::pair<std::string, int>> m_flexRANControllers;
+
 
     /// <summary>
     /// 
@@ -579,9 +581,9 @@ private:
     /// </remarks>
     virtual void subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response) = 0;
 
+
 };
 
-}
 }
 }
 }

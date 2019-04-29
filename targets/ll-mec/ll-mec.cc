@@ -47,11 +47,11 @@
 #include "conf.h"
 #include "spdlog.h"
 #include "mp1-api-server.h"
-#include "mp2-api-server.h" //Mp2ManagementAPI
+//#include "mp2-api-server.h" //Mp2ManagementAPI
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
-using namespace org::openapitools::server::api;
+using namespace llmec::mp1::api;
 int main(int argc, char **argv){
   /* Initialize logger*/
   auto console = spdlog::stdout_color_mt(LOG_NAME);
@@ -118,11 +118,21 @@ int main(int argc, char **argv){
   std::thread rest_manager_app(&llmec::north_api::Rest_manager::start, rest_manager);
 
   //start Mp1 API
-   Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(8888));
-   Mp1Manager mp1Manager(addr_mp1);
-   mp1Manager.init(2);
-   mp1Manager.start();
-   mp1Manager.shutdown();
+  //get list of FlexRAN controllers
+  nlohmann::json flexRAN =  llmec_config->X["flexran"];
+  int numControllers = flexRAN.size();
+  std::vector<std::pair<std::string, int>> flexRANControllers;
+  for (int i=0; i <numControllers; i++ ){
+	  std::pair<std::string, int> controller = std::make_pair((flexRAN.at(i))["address"].get<std::string>().c_str(), (flexRAN.at(i))["port"].get<int>());
+	  flexRANControllers.push_back(controller);
+  }
+  Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(8888));
+  Mp1Manager mp1Manager(addr_mp1);
+  mp1Manager.init(flexRANControllers, 2);
+  //mp1Manager.start();
+  //mp1Manager.shutdown();
+  std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
+
 
   //start Mp2 API
  

@@ -13,9 +13,8 @@
 
 #include "MeasTaSubscriptionPost.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 MeasTaSubscriptionPost::MeasTaSubscriptionPost()
@@ -102,7 +101,6 @@ void MeasTaSubscriptionPost::unsetExpiryDeadline()
     m_ExpiryDeadlineIsSet = false;
 }
 
-}
 }
 }
 }

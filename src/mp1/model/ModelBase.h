@@ -25,9 +25,8 @@
 #include <vector>
 #include <map>
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 class  ModelBase
@@ -131,7 +130,6 @@ public:
     }
 };
 
-}
 }
 }
 }

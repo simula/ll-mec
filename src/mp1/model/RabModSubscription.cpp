@@ -13,9 +13,8 @@
 
 #include "RabModSubscription.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 RabModSubscription::RabModSubscription()
@@ -112,7 +111,6 @@ void RabModSubscription::unsetExpiryDeadline()
     m_ExpiryDeadlineIsSet = false;
 }
 
-}
 }
 }
 }

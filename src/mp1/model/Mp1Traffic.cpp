@@ -13,9 +13,8 @@
 
 #include "Mp1Traffic.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Mp1_traffic::Mp1_traffic()
@@ -96,7 +95,6 @@ void Mp1_traffic::setType(int32_t const value)
     
 }
 
-}
 }
 }
 }

@@ -13,9 +13,8 @@
 
 #include "CaReConfSubscriptionPost.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 CaReConfSubscriptionPost::CaReConfSubscriptionPost()
@@ -102,7 +101,6 @@ void CaReConfSubscriptionPost::unsetExpiryDeadline()
     m_ExpiryDeadlineIsSet = false;
 }
 
-}
 }
 }
 }

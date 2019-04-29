@@ -13,9 +13,8 @@
 
 #include "Plmn.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Plmn::Plmn()
@@ -72,7 +71,6 @@ void Plmn::setMnc(std::string const& value)
     
 }
 
-}
 }
 }
 }

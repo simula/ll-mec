@@ -13,12 +13,11 @@
 #include "DefaultApiImpl.h"
 #include <fstream>
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace api {
 
-using namespace org::openapitools::server::model;
+using namespace llmec::mp1::model;
 
 DefaultApiImpl::DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
     : DefaultApi(rtr)
@@ -229,7 +228,6 @@ nlohmann::json DefaultApiImpl::GetJsonData()
 	return jsonData;
 }
 
-}
 }
 }
 }

@@ -13,9 +13,8 @@
 
 #include "CellUserInfo.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 CellUserInfo::CellUserInfo()
@@ -89,7 +88,6 @@ std::vector<UeInfo>& CellUserInfo::getUeInfo()
     return m_UeInfo;
 }
 
-}
 }
 }
 }

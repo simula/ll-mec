@@ -13,9 +13,8 @@
 
 #include "ErabQosParameters.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 ErabQosParameters::ErabQosParameters()
@@ -107,7 +106,6 @@ void ErabQosParameters::unsetQos_information()
     m_Qos_informationIsSet = false;
 }
 
-}
 }
 }
 }

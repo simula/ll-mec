@@ -13,9 +13,8 @@
 
 #include "AssociateId.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 AssociateId::AssociateId()
@@ -72,7 +71,6 @@ void AssociateId::setValue(std::string const& value)
     
 }
 
-}
 }
 }
 }

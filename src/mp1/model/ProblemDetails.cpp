@@ -13,9 +13,8 @@
 
 #include "ProblemDetails.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 ProblemDetails::ProblemDetails()
@@ -183,7 +182,6 @@ void ProblemDetails::unsetInstance()
     m_InstanceIsSet = false;
 }
 
-}
 }
 }
 }

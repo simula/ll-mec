@@ -13,9 +13,8 @@
 
 #include "S1BearerSubscriptionCriteria.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 S1BearerSubscriptionCriteria::S1BearerSubscriptionCriteria()
@@ -183,7 +182,6 @@ void S1BearerSubscriptionCriteria::unsetErabId()
     m_ErabIdIsSet = false;
 }
 
-}
 }
 }
 }

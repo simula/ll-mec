@@ -13,9 +13,8 @@
 
 #include "S1BearerSubscriptionPost.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 S1BearerSubscriptionPost::S1BearerSubscriptionPost()
@@ -134,7 +133,6 @@ void S1BearerSubscriptionPost::unsetExpiryDeadline()
     m_ExpiryDeadlineIsSet = false;
 }
 
-}
 }
 }
 }

@@ -13,9 +13,8 @@
 
 #include "InlineResponse429.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Inline_response_429::Inline_response_429()
@@ -80,7 +79,6 @@ void Inline_response_429::unsetProblemDetails()
     m_ProblemDetailsIsSet = false;
 }
 
-}
 }
 }
 }

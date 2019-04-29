@@ -13,9 +13,8 @@
 
 #include "SGwInfo.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 SGwInfo::SGwInfo()
@@ -72,7 +71,6 @@ void SGwInfo::setTunnelId(std::string const& value)
     
 }
 
-}
 }
 }
 }

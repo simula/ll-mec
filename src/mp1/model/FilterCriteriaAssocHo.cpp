@@ -13,9 +13,8 @@
 
 #include "FilterCriteriaAssocHo.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 FilterCriteriaAssocHo::FilterCriteriaAssocHo()
@@ -215,7 +214,6 @@ void FilterCriteriaAssocHo::unsetHoStatus()
     m_HoStatusIsSet = false;
 }
 
-}
 }
 }
 }

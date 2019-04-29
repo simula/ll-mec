@@ -13,9 +13,8 @@
 
 #include "MeasRepUeSubscriptionPost.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 MeasRepUeSubscriptionPost::MeasRepUeSubscriptionPost()
@@ -102,7 +101,6 @@ void MeasRepUeSubscriptionPost::unsetExpiryDeadline()
     m_ExpiryDeadlineIsSet = false;
 }
 
-}
 }
 }
 }

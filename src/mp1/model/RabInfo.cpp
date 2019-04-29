@@ -13,9 +13,8 @@
 
 #include "RabInfo.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 RabInfo::RabInfo()
@@ -150,7 +149,6 @@ void RabInfo::unsetCellUserInfo()
     m_CellUserInfoIsSet = false;
 }
 
-}
 }
 }
 }

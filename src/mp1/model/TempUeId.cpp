@@ -13,9 +13,8 @@
 
 #include "TempUeId.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 TempUeId::TempUeId()
@@ -72,7 +71,6 @@ void TempUeId::setMtmsi(std::string const& value)
     
 }
 
-}
 }
 }
 }

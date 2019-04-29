@@ -13,9 +13,8 @@
 
 #include "Mp1TrafficImsi.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Mp1_traffic_imsi::Mp1_traffic_imsi()
@@ -141,7 +140,6 @@ void Mp1_traffic_imsi::setType(int32_t const value)
     
 }
 
-}
 }
 }
 }

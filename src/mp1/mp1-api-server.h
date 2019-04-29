@@ -20,23 +20,24 @@
 #include <unistd.h>
 #endif
 #include "DefaultApiImpl.h"
-using namespace org::openapitools::server::api;
+using namespace llmec::mp1::api;
 class Mp1Manager {
 public:
-	Mp1Manager(Pistache::Address address) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
+	Mp1Manager(Pistache::Address address) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address))  {
 		m_router = std::make_shared<Pistache::Rest::Router>();
-		DefaultApiserver = std::make_shared<DefaultApiImpl> (m_router);
+		m_defaultApiserver = std::make_shared<DefaultApiImpl> (m_router);
 
 	}
-	void init(size_t thr = 1);
+	void init(std::vector<std::pair<std::string, int>> flexRANControllers, size_t thr = 1);
 	void start();
 	void shutdown();
+	int get_ran_statistics();
 
 
 private:
 	std::shared_ptr<Pistache::Http::Endpoint> m_httpEndpoint;
 	std::shared_ptr<Pistache::Rest::Router> m_router;
-	std::shared_ptr<DefaultApiImpl> DefaultApiserver;
+	std::shared_ptr<DefaultApiImpl> m_defaultApiserver;
 };
 
 

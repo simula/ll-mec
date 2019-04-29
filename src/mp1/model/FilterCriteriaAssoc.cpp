@@ -13,9 +13,8 @@
 
 #include "FilterCriteriaAssoc.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 FilterCriteriaAssoc::FilterCriteriaAssoc()
@@ -183,7 +182,6 @@ void FilterCriteriaAssoc::unsetCellId()
     m_CellIdIsSet = false;
 }
 
-}
 }
 }
 }

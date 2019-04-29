@@ -56,14 +56,13 @@
 #include "SubscriptionLinkList.h"
 #include <string>
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace api {
 
-using namespace org::openapitools::server::model;
+using namespace llmec::mp1::model;
 
-class DefaultApiImpl : public org::openapitools::server::api::DefaultApi {
+class DefaultApiImpl : public llmec::mp1::api::DefaultApi {
 public:
     DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router>);
     ~DefaultApiImpl() {}
@@ -128,7 +127,6 @@ public:
 
 };
 
-}
 }
 }
 }

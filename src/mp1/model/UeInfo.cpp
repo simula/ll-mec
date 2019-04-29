@@ -13,9 +13,8 @@
 
 #include "UeInfo.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 UeInfo::UeInfo()
@@ -125,7 +124,6 @@ std::vector<ErabQosParameters>& UeInfo::getErabInfo()
     return m_ErabInfo;
 }
 
-}
 }
 }
 }

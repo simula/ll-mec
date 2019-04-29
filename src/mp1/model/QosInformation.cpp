@@ -13,9 +13,8 @@
 
 #include "QosInformation.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 QosInformation::QosInformation()
@@ -96,7 +95,6 @@ void QosInformation::setErabGbrUl(int32_t const value)
     
 }
 
-}
 }
 }
 }

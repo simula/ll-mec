@@ -13,13 +13,12 @@
 #include "DefaultApi.h"
 #include "Helpers.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace api {
 
 using namespace org::openapitools::server::helpers;
-using namespace org::openapitools::server::model;
+using namespace llmec::mp1::model;
 
 DefaultApi::DefaultApi(std::shared_ptr<Pistache::Rest::Router> rtr) { 
     router = rtr;
@@ -404,6 +403,7 @@ void DefaultApi::plmn_info_get_handler(const Pistache::Rest::Request &request, P
 
     try {
       this->plmn_info_get(appInsId, response);
+      return;
     } catch (std::runtime_error & e) {
       //send a 400 error
       response.send(Pistache::Http::Code::Bad_Request, e.what());
@@ -1006,7 +1006,10 @@ void DefaultApi::default_api_default_handler(const Pistache::Rest::Request &requ
     response.send(Pistache::Http::Code::Not_Found, "The requested method does not exist");
 }
 
+void DefaultApi::setFlexRANControllers(std::vector<std::pair<std::string, int>> flexRANControllers){
+	m_flexRANControllers = flexRANControllers;
 }
+
 }
 }
 }

@@ -13,9 +13,8 @@
 
 #include "SubscriptionLinkList.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 SubscriptionLinkList::SubscriptionLinkList()
@@ -104,7 +103,6 @@ void SubscriptionLinkList::unsetSubscription()
     m_SubscriptionIsSet = false;
 }
 
-}
 }
 }
 }

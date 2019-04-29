@@ -14,9 +14,8 @@
 #include "Ecgi.h"
 #include <iostream>
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Ecgi::Ecgi()
@@ -88,7 +87,6 @@ std::vector<std::string>& Ecgi::getCellId()
     return m_CellId;
 }
 
-}
 }
 }
 }

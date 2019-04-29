@@ -13,9 +13,8 @@
 
 #include "S1EnbInfo.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 S1EnbInfo::S1EnbInfo()
@@ -72,7 +71,6 @@ void S1EnbInfo::setTunnelId(std::string const& value)
     
 }
 
-}
 }
 }
 }

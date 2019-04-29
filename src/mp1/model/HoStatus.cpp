@@ -13,9 +13,8 @@
 
 #include "HoStatus.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 HoStatus::HoStatus()
@@ -48,7 +47,6 @@ void HoStatus::fromJson(const nlohmann::json& val)
 
 
 
-}
 }
 }
 }

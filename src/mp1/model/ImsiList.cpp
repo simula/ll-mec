@@ -13,9 +13,8 @@
 
 #include "ImsiList.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Imsi_list::Imsi_list()
@@ -273,7 +272,6 @@ void Imsi_list::unsetX_type()
     m_X_typeIsSet = false;
 }
 
-}
 }
 }
 }

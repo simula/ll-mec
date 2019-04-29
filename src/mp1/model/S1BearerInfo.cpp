@@ -13,9 +13,8 @@
 
 #include "S1BearerInfo.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 S1BearerInfo::S1BearerInfo()
@@ -111,7 +110,6 @@ std::vector<S1UeInfo>& S1BearerInfo::getS1UeInfo()
     return m_S1UeInfo;
 }
 
-}
 }
 }
 }

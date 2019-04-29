@@ -13,9 +13,8 @@
 
 #include "EventType.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 EventType::EventType()
@@ -48,7 +47,6 @@ void EventType::fromJson(const nlohmann::json& val)
 
 
 
-}
 }
 }
 }

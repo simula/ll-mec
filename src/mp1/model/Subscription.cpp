@@ -13,9 +13,8 @@
 
 #include "Subscription.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Subscription::Subscription()
@@ -70,7 +69,6 @@ void Subscription::setSubscriptionType(SubscriptionType const& value)
     
 }
 
-}
 }
 }
 }

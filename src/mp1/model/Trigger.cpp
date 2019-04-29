@@ -13,9 +13,8 @@
 
 #include "Trigger.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 Trigger::Trigger()
@@ -48,7 +47,6 @@ void Trigger::fromJson(const nlohmann::json& val)
 
 
 
-}
 }
 }
 }

@@ -13,9 +13,8 @@
 
 #include "TimeStamp.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 TimeStamp::TimeStamp()
@@ -72,7 +71,6 @@ void TimeStamp::setNanoSeconds(int32_t const value)
     
 }
 
-}
 }
 }
 }

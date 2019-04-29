@@ -22,9 +22,8 @@
 #include "ModelBase.h"
 
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 /// <summary>
@@ -52,7 +51,6 @@ public:
 protected:
 };
 
-}
 }
 }
 }

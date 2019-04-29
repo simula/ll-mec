@@ -13,9 +13,8 @@
 
 #include "CellChangeSubscriptionPost.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace model {
 
 CellChangeSubscriptionPost::CellChangeSubscriptionPost()
@@ -102,7 +101,6 @@ void CellChangeSubscriptionPost::unsetExpiryDeadline()
     m_ExpiryDeadlineIsSet = false;
 }
 
-}
 }
 }
 }
