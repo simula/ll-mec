@@ -31,11 +31,11 @@
 #include <string>
 
 namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp2 {
 namespace api {
 
-using namespace org::openapitools::server::model;
+using namespace org::mp2::llmec::model;
 
 class  DefaultApi {
 public:

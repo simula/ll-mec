@@ -14,12 +14,14 @@
 #include "Helpers.h"
 
 namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp2 {
 namespace api {
 
+//This namespace has to remain the same. It is corelated with the Helpers.h
 using namespace org::openapitools::server::helpers;
-using namespace org::openapitools::server::model;
+//This namespace it is corelated with DefaultApi.h
+using namespace org::llmec::mp2::model;
 
 DefaultApi::DefaultApi(std::shared_ptr<Pistache::Rest::Router> rtr) { 
     router = rtr;

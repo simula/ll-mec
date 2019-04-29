@@ -53,6 +53,20 @@ public:
     void bw_allocations_get(const Pistache::Optional<std::string> &appInsId, const Pistache::Optional<std::vector<std::string>> &applicationName, const Pistache::Optional<std::vector<std::string>> &sessionId, Pistache::Http::ResponseWriter &response);
     void bw_allocations_post(const BwInfo &bwInfo, Pistache::Http::ResponseWriter &response);
 
+ 	    /*
+	
+	     * Get Json data from a default Json file
+	
+	     */
+	
+    nlohmann::json GetJsonData(std::string str);
+	
+	    /*
+	
+	     * Get Json data from a RNIS DB
+	
+	     */
+    nlohmann::json GetJsonData();
 };
 
 }

@@ -26,8 +26,8 @@
 #include <map>
 
 namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp2 {
 namespace model {
 
 class  ModelBase
