@@ -56,7 +56,7 @@ static void setUpUnixSignals(std::vector<int> quitSignals) {
 }
 #endif
 
-using namespace org::openapitools::server::api;
+using namespace org::llmec::mp2::api;
 
 int main() {
 #ifdef __linux__

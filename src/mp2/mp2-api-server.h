@@ -19,7 +19,7 @@
 #include <unistd.h>
 #endif
 #include "DefaultApiImpl.h"
-using namespace org::openapitools::server::api;
+using namespace org::llmec::mp2::api;
 class Mp2Manager {
 public:
 	Mp2Manager(Pistache::Address address) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
