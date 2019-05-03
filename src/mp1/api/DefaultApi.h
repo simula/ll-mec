@@ -51,6 +51,7 @@
 #include "S1BearerSubscriptionPost.h"
 #include "SubscriptionLinkList.h"
 #include <string>
+#include <curl/curl.h>
 
 namespace llmec {
 namespace mp1 {
@@ -63,7 +64,6 @@ public:
     DefaultApi(std::shared_ptr<Pistache::Rest::Router>);
     virtual ~DefaultApi() {}
     void init();
-    void setFlexRANControllers(std::vector<std::pair<std::string, int>> flexRANControllers);
     const std::string base = "/mp1/v1";
 
 private:
@@ -122,7 +122,7 @@ private:
 
 
     std::shared_ptr<Pistache::Rest::Router> router;
-    std::vector<std::pair<std::string, int>> m_flexRANControllers;
+
 
 
     /// <summary>

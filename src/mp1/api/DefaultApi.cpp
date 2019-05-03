@@ -17,7 +17,7 @@ namespace llmec {
 namespace mp1 {
 namespace api {
 
-using namespace org::openapitools::server::helpers;
+using namespace llmec::mp1::helpers;
 using namespace llmec::mp1::model;
 
 DefaultApi::DefaultApi(std::shared_ptr<Pistache::Rest::Router> rtr) { 
@@ -1006,9 +1006,6 @@ void DefaultApi::default_api_default_handler(const Pistache::Rest::Request &requ
     response.send(Pistache::Http::Code::Not_Found, "The requested method does not exist");
 }
 
-void DefaultApi::setFlexRANControllers(std::vector<std::pair<std::string, int>> flexRANControllers){
-	m_flexRANControllers = flexRANControllers;
-}
 
 }
 }

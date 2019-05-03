@@ -131,10 +131,6 @@ int main(int argc, char **argv){
   //get list of FlexRAN controllers
   nlohmann::json flexRAN =  llmec_config->X["flexran"];
   std::string mp1ApiMode = ((llmec_config->X["mp1_api"])["mode"]).get<std::string>().c_str();
-  if (mp1ApiMode.compare("test") == 0) {
-
-  }
-
 
   int numControllers = flexRAN.size();
   std::vector<std::pair<std::string, int>> flexRANControllers;
@@ -150,7 +146,6 @@ int main(int argc, char **argv){
   //mp1Manager.start();
   //mp1Manager.shutdown();
   std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
-
 
 
   //start Mp2 API

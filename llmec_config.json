@@ -6,7 +6,7 @@
     "secure_connection": false
   },
   "northbound_api": {
-    "port": 9999
+    "port": 9998
   },
   "gateway": {
     "mac": "00:24:9b:23:33:a6"
@@ -14,5 +14,19 @@
   "ovs_switch": {
     "s1u_port": 2,
     "external_port": 1
-  }
+  },
+  "mp1_api": {
+    "port": 8888,
+    "mode": "flexran"
+  },
+  "flexran": [
+    {
+      "address": "127.0.0.1",
+      "port": 9999
+    },
+    {
+      "address": "10.0.0.3",
+      "port": 9999
+    }
+  ]
 }

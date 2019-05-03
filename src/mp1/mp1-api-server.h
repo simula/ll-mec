@@ -20,15 +20,16 @@
 #include <unistd.h>
 #endif
 #include "DefaultApiImpl.h"
+#include "rib.h"
 using namespace llmec::mp1::api;
 class Mp1Manager {
 public:
-	Mp1Manager(Pistache::Address address) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address))  {
+	Mp1Manager(Pistache::Address address, llmec::mp1::rib::Rib& rib) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address))  {
 		m_router = std::make_shared<Pistache::Rest::Router>();
-		m_defaultApiserver = std::make_shared<DefaultApiImpl> (m_router);
+		m_defaultApiserver = std::make_shared<DefaultApiImpl> (m_router, rib);
 
 	}
-	void init(std::vector<std::pair<std::string, int>> flexRANControllers, size_t thr = 1);
+	void init(std::vector<std::pair<std::string, int>> flexRANControllers,  std::string mode, size_t thr = 1);
 	void start();
 	void shutdown();
 	int get_ran_statistics();

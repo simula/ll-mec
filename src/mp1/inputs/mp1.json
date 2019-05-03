@@ -15,7 +15,7 @@
         "cellConfig": [
           {
             "phyCellId": 0,
-            "cellId": "1",
+            "cellId": 1,
             "puschHoppingOffset": 0,
             "hoppingMode": 0,
             "nSb": 1,

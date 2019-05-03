@@ -54,17 +54,24 @@
 #include "S1BearerSubscription.h"
 #include "S1BearerSubscriptionPost.h"
 #include "SubscriptionLinkList.h"
+#include "rib.h"
 #include <string>
+
+using json = nlohmann::json;
 
 namespace llmec {
 namespace mp1 {
 namespace api {
 
 using namespace llmec::mp1::model;
-
+static std::size_t callback(
+        const char* in,
+        std::size_t size,
+        std::size_t num,
+        std::string* out);
 class DefaultApiImpl : public llmec::mp1::api::DefaultApi {
 public:
-    DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router>, llmec::mp1::rib::Rib& rib);
     ~DefaultApiImpl() {}
 
     void ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response);
@@ -118,12 +125,25 @@ public:
     void subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response);
     /*
      * Get Json data from a default Json file
+     * @param [str] Path to the default Json file
+     * @return RAN statistics
      */
-    nlohmann::json GetJsonData(std::string str);
+    json GetJsonData(std::string path);
     /*
-     * Get Json data from a RNIS DB
+     * Get RAN statistics from a FlexRAN controller
+     * @param [str] FlexRAN Controller's address
+     * @param [port] FlexRAN's port
+     * @return RAN statistics
      */
-    nlohmann::json GetJsonData();
+    json GetJsonData(std::string addr, int port);
+
+    void setFlexRANControllers(std::vector<std::pair<std::string, int>> flexRANControllers);
+    void setMode(std::string mode);
+    bool getRANStatistics(std::string FlexRANAddr, int port);
+private:
+    std::vector<std::pair<std::string, int>> m_flexRANControllers;
+    llmec::mp1::rib::Rib& m_rib;
+    std::string m_mode;
 
 };
 

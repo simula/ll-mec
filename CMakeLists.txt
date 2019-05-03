@@ -189,6 +189,7 @@ file(GLOB MP1_API_src_files
     ${MP1_API_DIR}/model/*.cpp
     ${MP1_API_DIR}/api/*.cpp
     ${MP1_API_DIR}/impl/*.cpp
+    ${MP1_API_DIR}/rib/*.cpp
 )
   
  
@@ -196,6 +197,7 @@ set(MP1_API_include_files
   ${MP1_API_DIR}/api
   ${MP1_API_DIR}/impl
   ${MP1_API_DIR}/model
+  ${MP1_API_DIR}/rib
   ${MP1_API_DIR}
   )
 add_library(MP1_API ${MP1_API_src_files})
@@ -242,5 +244,6 @@ target_link_libraries(ll-mec
   NORTH_API
   MP1_API
   PISTACHE
+  curl
   )
 #target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)

@@ -24,9 +24,8 @@
 #include <vector>
 #include <map>
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace llmec {
+namespace mp1 {
 namespace helpers {
 
     std::string toStringValue(const std::string &value);
@@ -68,7 +67,6 @@ namespace helpers {
         return fromStringValue(inStrings, value);
     }
 
-}
 }
 }
 }
