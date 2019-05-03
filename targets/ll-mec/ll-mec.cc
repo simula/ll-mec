@@ -48,6 +48,7 @@
 #include "spdlog.h"
 #include "mp1-api-server.h"
 //#include "mp2-api-server.h" //Mp2ManagementAPI
+#include "rib.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
@@ -56,6 +57,7 @@ int main(int argc, char **argv){
   /* Initialize logger*/
   auto console = spdlog::stdout_color_mt(LOG_NAME);
   spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%l] %v");
+
 
   /* initialize command arguments parser*/
   Input_parser input(argc, argv);
@@ -78,6 +80,14 @@ int main(int argc, char **argv){
       spdlog::get("ll-mec")->info("No configuration file specified. Default config path loaded");
     }
   }
+  //Set log level
+  if (input.cmd_option_exists("-l")){
+	  std::string log_level = input.get_cmd_option("-l");
+	  if (log_level.compare("debug") == 0) spdlog::set_level(spdlog::level::debug);
+	  if (log_level.compare("warn") == 0) spdlog::set_level(spdlog::level::warn);
+	  if (log_level.compare("trace") == 0) spdlog::set_level(spdlog::level::trace);
+  }
+
   llmec_config->parse_config();
 
   /* Initial the controller based on the config */
@@ -117,21 +127,30 @@ int main(int argc, char **argv){
   rest_manager.init(1);
   std::thread rest_manager_app(&llmec::north_api::Rest_manager::start, rest_manager);
 
-  //start Mp1 API
+  //Mp1 API
   //get list of FlexRAN controllers
   nlohmann::json flexRAN =  llmec_config->X["flexran"];
+  std::string mp1ApiMode = ((llmec_config->X["mp1_api"])["mode"]).get<std::string>().c_str();
+  if (mp1ApiMode.compare("test") == 0) {
+
+  }
+
+
   int numControllers = flexRAN.size();
   std::vector<std::pair<std::string, int>> flexRANControllers;
   for (int i=0; i <numControllers; i++ ){
 	  std::pair<std::string, int> controller = std::make_pair((flexRAN.at(i))["address"].get<std::string>().c_str(), (flexRAN.at(i))["port"].get<int>());
 	  flexRANControllers.push_back(controller);
   }
-  Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(8888));
-  Mp1Manager mp1Manager(addr_mp1);
-  mp1Manager.init(flexRANControllers, 2);
+  Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp1_api"]["port"].get<int>()));
+  // Create the rib
+  llmec::mp1::rib::Rib rib;
+  Mp1Manager mp1Manager(addr_mp1, rib);
+  mp1Manager.init(flexRANControllers, mp1ApiMode, 2);
   //mp1Manager.start();
   //mp1Manager.shutdown();
   std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
+
 
 
   //start Mp2 API
