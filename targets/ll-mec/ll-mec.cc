@@ -31,6 +31,7 @@
 #include <thread>
 #include <memory>
 #include <pistache/endpoint.h>
+#include <unistd.h>
 
 #include "controller.h"
 #include "sgwc.h"
@@ -49,10 +50,12 @@
 #include "mp1-api-server.h"
 //#include "mp2-api-server.h" //Mp2ManagementAPI
 #include "rib.h"
+#include "rib_updater.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
 using namespace llmec::mp1::api;
+using namespace llmec::mp1::rib;
 int main(int argc, char **argv){
   /* Initialize logger*/
   auto console = spdlog::stdout_color_mt(LOG_NAME);
@@ -83,6 +86,7 @@ int main(int argc, char **argv){
   //Set log level
   if (input.cmd_option_exists("-l")){
 	  std::string log_level = input.get_cmd_option("-l");
+	  spdlog::set_level(spdlog::level::info);
 	  if (log_level.compare("debug") == 0) spdlog::set_level(spdlog::level::debug);
 	  if (log_level.compare("warn") == 0) spdlog::set_level(spdlog::level::warn);
 	  if (log_level.compare("trace") == 0) spdlog::set_level(spdlog::level::trace);
@@ -142,10 +146,20 @@ int main(int argc, char **argv){
   // Create the rib
   llmec::mp1::rib::Rib rib;
   Mp1Manager mp1Manager(addr_mp1, rib);
-  mp1Manager.init(flexRANControllers, mp1ApiMode, 2);
+  mp1Manager.init(2);
   //mp1Manager.start();
   //mp1Manager.shutdown();
   std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
+
+
+
+  struct itimerspec its;
+  its.it_value.tv_sec = 10;
+  its.it_value.tv_nsec = 0;//100 * 1000 * 1000; //100ms
+
+  rib_updater ribUpdater(rib, its, flexRANControllers, mp1ApiMode);
+  std::thread rib_updater(&rib_updater::run, ribUpdater);
+
 
 
   //start Mp2 API

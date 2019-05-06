@@ -64,7 +64,7 @@ void Ecgi::fromJson(const nlohmann::json& val)
                 }
                 else
                 {
-                    m_CellId.push_back(std::to_string((int)item));
+                    m_CellId.push_back(item);
                 }
                 
             }

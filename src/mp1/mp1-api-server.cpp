@@ -53,14 +53,11 @@ void setUpUnixSignals(std::vector<int> quitSignals) {
 
 using namespace llmec::mp1::api;
 
-void Mp1Manager::init(std::vector<std::pair<std::string, int>> flexRANControllers,  std::string mode, size_t thr) {
+void Mp1Manager::init(size_t thr) {
 	auto opts = Pistache::Http::Endpoint::options()
 	.threads(thr);
 	m_httpEndpoint->init(opts);
 	m_defaultApiserver->init();
-	m_defaultApiserver->setMode(mode);
-	m_defaultApiserver->setFlexRANControllers(flexRANControllers);
-
 }
 void Mp1Manager::start(){
 	m_httpEndpoint->setHandler(m_router->handler());

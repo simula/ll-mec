@@ -21,57 +21,63 @@
  */
 
 /*!
-  \file rib.h
-  \brief header file of rib.cpp stores RAN Information Base from FlexRAN controllers
+  \file rib_updater.h
+  \brief header file of rib_updater.cpp to perform the update of RIB from FlexRAN controllers
   \author Tien-Thinh NGUYEN
   \company Eurecom
   \email: thinhnt1983@gmail.com
 */
 
+#include <unistd.h>
+#include "rib.h"
+#ifndef RIB_UPDATER_H_
+#define RIB_UPDATER_H_
 
-#ifndef RIB_H_
-#define RIB_H_
+using json = nlohmann::json;
 
-#include <map>
-#include <set>
-
-#include <memory>
-#include <set>
-#include <chrono>
-#include <mutex>
-#include "json.h"
 namespace llmec {
 namespace mp1 {
-
 namespace rib {
 
-class Rib {
+static std::size_t callback(
+        const char* in,
+        std::size_t size,
+        std::size_t num,
+        std::string* out);
+
+class rib_updater {
 public:
-    /*
-     * Update ue's info
-     * @param [imsi] UE's imsi
-     * @param [ueInfo] UE's info
-     */
-	bool update_ue_info(std::string imsi, nlohmann::json ueInfo);
-    /*
-     * Update ue's info
-     * @param [eNBId] eNB's Id
-     * @param [eNBInfo] eNB's info
-     */
-	bool update_eNB_info(uint64_t eNBId, nlohmann::json eNBInfo);
+	rib_updater (Rib& rib,struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode):
+		m_rib(rib), m_its(its), m_flexRANControllers (flexRANControllers), m_mode(mode){
+    }
+	void run();
+	void update_rib();
 
-	nlohmann::json get_plmn_info(const std::vector<std::string> &appInsId);
+    /*
+     * Get RAN statistics from a FlexRAN controller
+     * @param [str] FlexRAN Controller's address
+     * @param [port] FlexRAN's port
+     * @return RAN statistics
+     */
+    json getRANStatistics(std::string addr, int port);
 
+    /*
+     * Get Json data from a default Json file
+     * @param [str] Path to the default Json file
+     * @return RAN statistics
+     */
+    json getRANStatistics(std::string path);
 private:
-	std::map<uint64_t, nlohmann::json> eNBInfos;
-	std::map<std::string, nlohmann::json> ueInfos;
-    mutable std::mutex ue_info_mutex;
-    mutable std::mutex eNB_info_mutex;
+     Rib& m_rib;
+     struct itimerspec m_its;
+     std::vector<std::pair<std::string, int>> m_flexRANControllers;
+     std::string m_mode;
+
 
 };
 
 }
+}
+}
 
-}
-}
 #endif

@@ -5298,11 +5298,11 @@ components:
           $ref: "#/components/schemas/Mtmsi"
     Mmec:
       type: string
-      description: MMEC as defined in ETSI TS 136 413
+      description: MMEC (MME Code) as defined in ETSI TS 136 413
       example: "0"
     Mtmsi:
       type: string
-      description: M-TMSI as defined in ETSI TS 136 413
+      description: M-TMSI (MME Mobile Subscriber Identity) as defined in ETSI TS 136 413 
       example: "1234"
     S1EnbInfo:
       type: object

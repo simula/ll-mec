@@ -21,7 +21,7 @@ namespace api {
 
 using namespace llmec::mp1::model;
 #define DEFAULT_RIB_FILE  "src/mp1/inputs/mp1.json"
-
+#define FLEXRAN_CURL_TIMEOUT_MS 100L
 DefaultApiImpl::DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, llmec::mp1::rib::Rib& rib)
     : DefaultApi(rtr), m_rib(rib)
     { }
@@ -83,42 +83,31 @@ void DefaultApiImpl::meas_ta_subscriptions_subscr_id_delete(const std::string &s
 void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::string>> &appInsId, Pistache::Http::ResponseWriter &response) {
 
 	spdlog::get("ll-mec")->info("[MP1 API] Get PLMN info");
-	Plmn plmn;
-	Ecgi ecgi;
-	json jsonData;
-	//query PLMN info from RNIS database
-	//if test mode -> get infor from default json file
-	if (m_mode.compare("test") == 0){
-		spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info from a default Json file");
-		jsonData =  GetJsonData(DEFAULT_RIB_FILE);
-	} else { //get infor from FlexRAN
-		spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info from FlexRAN controllers");
-		for (auto i = m_flexRANControllers.begin(); i != m_flexRANControllers.end(); i++){
-			jsonData  = GetJsonData((i)->first, (i)->second);
-			if (!jsonData.empty()) break;
-		}
-	}
+
+	json jsonData = m_rib.get_plmn_info(appInsId.get());
 
 	//if information is available
 	if (!jsonData.empty()){
-		// plmn.fromJson(jsonData);
-		//ecgi.setPlmn(plmn);
-		//get Cell id from json file
-		json eNB_config =  json (jsonData["eNB_config"]);
-		json eNB =  (eNB_config.at(0))["eNB"];
-		json cellConfig = eNB["cellConfig"];
-		json UE = (eNB_config.at(0))["UE"];
-		//json ueConfig = UE["ueConfig"];
-		//json imsi = (ueConfig.at(0))["imsi"];
-		ecgi.fromJson(cellConfig.at(0));
-
-		spdlog::get("ll-mec")->debug("[MP1 API] MNC: {} ", ecgi.getPlmn().getMnc());
-		spdlog::get("ll-mec")->debug("[MP1 API] MCC: {} ", ecgi.getPlmn().getMcc());
+		Plmn plmn;
+		Ecgi ecgi;
+		try{
+			plmn.fromJson(jsonData);
+			ecgi.setPlmn(plmn);
+			ecgi.fromJson(jsonData);
+		} catch (json::exception& e){
+			std::cout << "message: " << e.what() << '\n'
+					<< "exception id: " << e.id << std::endl;
+			response.send(Pistache::Http::Code::Not_Found, "[PLMN info] No information!\n");
+		}
+		spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info,  MNC: {} ", ecgi.getPlmn().getMnc());
+		spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, MCC: {} ", ecgi.getPlmn().getMcc());
 		std::vector<std::string> m_CellId = ecgi.getCellId();
 		for (const std::string& str: m_CellId){
-			spdlog::get("ll-mec")->debug("[MP1 API] Cell ID: {} ", str);
+			spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, Cell ID: {} ", str);
 		}
+
 		response.send(Pistache::Http::Code::Ok, "Do some magic with PLMN info\n");
+
 	} else{//if there's no information, send response with Not_Found code to the app
 		spdlog::get("ll-mec")->debug("[MP1 API] No PLMN info available ");
 		response.send(Pistache::Http::Code::Not_Found, "[PLMN info] No information!\n");
@@ -214,92 +203,6 @@ void DefaultApiImpl::subscription_link_list_subscriptions_s1_get(Pistache::Http:
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
-}
-
-json DefaultApiImpl::GetJsonData(std::string path)
-{
-	//load Json data from Json file to a json object
-	std::ifstream in(path);
-	//error when loading data.
-	if(!in.is_open())
-	{
-		return nullptr;
-	}
-	json jsonData = json::parse(in);
-	in.close();
-	return jsonData;
-}
-
-json DefaultApiImpl::GetJsonData(std::string addr, int port)
-{
-	std::string readBuffer;
-	curl_global_init(CURL_GLOBAL_DEFAULT);
-	struct curl_slist *headers=NULL; // init to NULL is important
-	headers = curl_slist_append(headers, "Accept: application/json");
-	headers = curl_slist_append(headers, "Content-Type: application/json");
-	headers = curl_slist_append(headers, "charsets: utf-8");
-
-	CURL *curl = curl_easy_init();
-	std::string url = addr + ":" + std::to_string(port) + "/stats";
-	spdlog::get("ll-mec")->debug("[MP1 API] FlexRAN URL: {} ", url);
-
-	if(curl) {
-		CURLcode res;
-
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-		//curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:9999/stats" );
-		curl_easy_setopt(curl, CURLOPT_URL, url.c_str() );
-		curl_easy_setopt(curl, CURLOPT_HTTPGET,1);
-		curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 100L);
-
-		// Response information.
-		long httpCode(0);
-		std::unique_ptr<std::string> httpData(new std::string());
-
-		// Hook up data handling function.
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-		res = curl_easy_perform(curl);
-		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
-		spdlog::get("ll-mec")->debug("[MP1 API] Response from FlexRAN, HTTP code: {} ", httpCode);
-		curl_easy_cleanup(curl);
-
-		if (httpCode == 200)
-		{
-			spdlog::get("ll-mec")->debug("[MP1 API] Got successful response from FlexRAN, URL: {} ", url);
-			spdlog::get("ll-mec")->debug("[MP1 API] RAN statistics from FlexRAN: {} ", *httpData.get());
-			json jsonData = json::parse(*httpData.get() );
-			return jsonData;
-		}
-		else
-		{
-			spdlog::get("ll-mec")->debug("[MP1 API] Couldn't GET response from FlexRAN, URL: {} ", url);
-			return json(); //return an empty json
-		}
-	}
-
-	return json(); //return an empty json
-
-}
-
-void DefaultApiImpl::setFlexRANControllers(std::vector<std::pair<std::string, int>> flexRANControllers){
-	m_flexRANControllers = flexRANControllers;
-}
-void DefaultApiImpl::setMode(std::string mode){
-	m_mode = mode;
-}
-/*
- * To read content of the response from FlexRAN controller
- */
-static std::size_t callback(
-		const char* in,
-		std::size_t size,
-		std::size_t num,
-		std::string* out)
-{
-	const std::size_t totalBytes(size * num);
-	out->append(in, totalBytes);
-	return totalBytes;
 }
 }
 }

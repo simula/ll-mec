@@ -29,11 +29,9 @@ public:
 		m_defaultApiserver = std::make_shared<DefaultApiImpl> (m_router, rib);
 
 	}
-	void init(std::vector<std::pair<std::string, int>> flexRANControllers,  std::string mode, size_t thr = 1);
+	void init(size_t thr = 1);
 	void start();
 	void shutdown();
-	int get_ran_statistics();
-
 
 private:
 	std::shared_ptr<Pistache::Http::Endpoint> m_httpEndpoint;

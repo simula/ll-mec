@@ -123,27 +123,8 @@ public:
     void subscription_link_list_subscriptions_rr_get(Pistache::Http::ResponseWriter &response);
     void subscription_link_list_subscriptions_s1_get(Pistache::Http::ResponseWriter &response);
     void subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response);
-    /*
-     * Get Json data from a default Json file
-     * @param [str] Path to the default Json file
-     * @return RAN statistics
-     */
-    json GetJsonData(std::string path);
-    /*
-     * Get RAN statistics from a FlexRAN controller
-     * @param [str] FlexRAN Controller's address
-     * @param [port] FlexRAN's port
-     * @return RAN statistics
-     */
-    json GetJsonData(std::string addr, int port);
-
-    void setFlexRANControllers(std::vector<std::pair<std::string, int>> flexRANControllers);
-    void setMode(std::string mode);
-    bool getRANStatistics(std::string FlexRANAddr, int port);
 private:
-    std::vector<std::pair<std::string, int>> m_flexRANControllers;
     llmec::mp1::rib::Rib& m_rib;
-    std::string m_mode;
 
 };
 
