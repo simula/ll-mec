@@ -93,7 +93,7 @@ void rib_updater::update_rib()
 		//for the moment, get data from only one FlexRAN controller
 		for (auto i = m_flexRANControllers.begin(); i != m_flexRANControllers.end(); i++){
 			jsonData  = getRANStatistics((i)->first, (i)->second);
-			//if (!jsonData.empty()) break;
+			if (!jsonData.empty()) break;
 		}
 	} else { //get info from a default json file
 		spdlog::get("ll-mec")->debug("[RIB UPDATER] Update RIB from a default Json file");

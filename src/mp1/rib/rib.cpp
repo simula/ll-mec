@@ -83,8 +83,15 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsId){
 		int numUEConfig = (it->second).size();
 		for (int i = 0; i < numUEConfig; ++i){
 			std::string imsi = (((it->second).at(i))["imsi"]).get<std::string>().c_str();
-			plmnInfo["mcc"] = imsi.substr(0,3);
-			plmnInfo["mnc"] = imsi.substr(3,2);
+			try{
+				plmnInfo["mcc"] = imsi.substr(0,3);
+				plmnInfo["mnc"] = imsi.substr(3,2);
+			} catch (const std::out_of_range& oor) {
+				spdlog::get("ll-mec")->warn("[RIB] Could not get MCC, MNC from IMSI, use default values");
+				plmnInfo["mcc"] = "294";
+				plmnInfo["mnc"] = "84";
+			}
+
 			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["mcc"].get<std::string>().c_str());
 			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MNC {}", plmnInfo["mnc"].get<std::string>().c_str());
 		}

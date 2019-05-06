@@ -17,7 +17,7 @@
   },
   "mp1_api": {
     "port": 8888,
-    "mode": "test"    
+    "mode": "flexran"    
   },
   "flexran": [
     {
