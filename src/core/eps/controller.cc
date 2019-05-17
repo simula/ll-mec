@@ -87,6 +87,20 @@ void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type
   else if (type == 19) { //OFPT_MULTIPART_REPLY
     dispatch_event(new MultipartReplyEvent(ofconn, this, data, len));
   }
+/* ####################################################
+ * The Meters and rate limiters configuration messages.
+ * ####################################################
+ * author 	Mihai IDU
+ * company 	Eurecom
+ * email: 	idumihai16@gmail.com
+ * ####################################################
+ */
+  else if (type == 29) { //OFPT_METER_MOD
+	  dispatch_event(new MeterEvent(ofconn, this, data, len));
+ /*
+  * ####################################################
+  */
+  }
 }
 
 void Controller::register_for_event(const std::shared_ptr<llmec::app::App>& app, int event_type) {

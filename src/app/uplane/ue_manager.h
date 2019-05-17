@@ -58,7 +58,7 @@ class Ue_manager : public llmec::app::App {
 
     /* Redirect one specific bearer back if any */
     bool delete_redirect_bearer(uint64_t id);
-
+	
     /* Return one specific bearer information in JSON array */
     json get_bearer(uint64_t ue_id);
 
@@ -82,6 +82,9 @@ class Ue_manager : public llmec::app::App {
 
     /* Get the id by IMSI and bearer */
     uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
+	
+    /*Get the meterid by IMSI and bearer*/    
+    uint32_t get_meterid(std::string imsi, uint32_t eps_meter_id);
 
     /* Check if ID exists in LLMEC context */
     bool id_exist(uint64_t id);

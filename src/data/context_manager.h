@@ -53,7 +53,7 @@ class Context_manager {
     bool add_bearer(json context);
 
     /* Store the bearer with the indicated id into database */
-    bool add_bearer(uint64_t id, json context);
+    bool add_bearer(uint64_t id, uint32_t meterid, json context);
 
     /* Remove the bearer information from database */
     bool delete_bearer(uint64_t id);
@@ -84,6 +84,9 @@ class Context_manager {
     /* Get the value by key for those 3 tables */
     json get_bearer_context(uint64_t id);
     uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
+    
+    uint32_t get_meterid(std::string imsi, uint32_t eps_meter_id); //meter
+
     json get_slice_group(uint64_t slice_id);
     std::unordered_set<int> get_switch_set();
 
@@ -106,6 +109,9 @@ class Context_manager {
 
     /* pair<imsi, bearer_id> <-> id */
     std::map<std::pair<std::string, uint64_t>, uint64_t> imsi_mapping;
+
+    //meter
+    std::map<std::pair<std::string, uint32_t>, uint32_t> meter_mapping;
 
     /* slice_id <-> set<id> */
     std::map<uint64_t, std::set<uint64_t>> slice_group;

@@ -226,7 +226,7 @@ define({ "api": [
     "examples": [
       {
         "title": "Example usage:",
-        "content": "curl -X POST http://127.0.0.1:9999/bearer -d '{\"eps_bearer_id\":1, \"imsi\":\"208950000000009\", \"s1_ul_teid\":\"0x3\", \"s1_dl_teid\":\"0x4\", \"ue_ip\":\"172.16.0.2\", \"enb_ip\":\"192.168.0.3\"}'",
+        "content": "curl -X POST http://127.0.0.1:9999/bearer -d '{\"eps_bearer_id\":1,\"eps_meter_id\":2, \"imsi\":\"208950000000009\", \"s1_ul_teid\":\"0x3\", \"s1_dl_teid\":\"0x4\", \"ue_ip\":\"172.16.0.2\", \"enb_ip\":\"192.168.0.3\"}'",
         "type": "json"
       }
     ],

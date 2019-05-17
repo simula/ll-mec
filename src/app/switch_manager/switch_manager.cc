@@ -44,6 +44,8 @@ void Switch_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
   if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_UP) {
     this->of_interface.install_default_flow(ev->of_conn_);
     spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
+    //definig a default meter rule
+    this->of_interface.install_default_meter(ev->of_conn_);
     //switch_set_.insert(ev->of_conn_->get_id());
     context_manager->add_switch(ev->of_conn_->get_id());
   }

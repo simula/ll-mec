@@ -9,7 +9,7 @@
     "port": 9999
   },
   "gateway": {
-    "mac": "00:24:9b:23:33:a6"
+    "mac": "e0:d5:5e:c0:2d:05"
   },
   "ovs_switch": {
     "s1u_port": 2,

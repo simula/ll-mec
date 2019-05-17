@@ -1,0 +1,14 @@
+prefix=/home/cigarier/Desktop/Mp2-BwManagementApi/src/mp2/external
+exec_prefix=/home/cigarier/Desktop/Mp2-BwManagementApi/src/mp2/external/bin
+libdir=/home/cigarier/Desktop/Mp2-BwManagementApi/src/mp2/external/lib/
+includedir=/home/cigarier/Desktop/Mp2-BwManagementApi/src/mp2/external/include/
+
+Name: libpistache
+URL: http://pistache.io/
+Description: An elegant C++ REST framework.
+Version: 0.0.001
+Requires:
+Libs: -L'${libdir}/' -lpistache -lpthread
+Libs.private:
+Cflags: -I'${includedir}/'
+
