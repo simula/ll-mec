@@ -140,5 +140,24 @@ else if(sliceID>0 && sliceID<=16){
   633  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=3,kbps,burst,band=type=drop,rate=30000,burst_size=5000
   639  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=3,kbps,burst,band=type=drop,rate=30000,burst_size=5000
 ```
+## Testing Architecture 
+
+Figure 2. Physical and Logical Architecture of the end-to-end testing environment set-up
+![Imgur](https://i.imgur.com/jg8J1CX.jpg)
+
+In Figure 2 are presented two perspective of the testing Architecutre, as highlighted with 3 different colours as it follows:
+- light blue are highlighted the software modules that are hoasted by the PC1 named Faucheur
+- orange are highlighted the software modules that are hoasted by the PC2 named Pou
+- purpel is highlighted the software module that is hosted by the PC3.
+
+Note that the LL-MEC software module exists in two places due to test reason. 
+The LL-MEC hosted on Faucheur is the legacy version without the metering table capacity, this version was used during first set of tests in order to manualy configure the OVS-GTP using the CLI and determine if and what are the changes needed to be performed in the OVS-GTP in order to suport the metering tables.
+The LL-MEC hosted on Pou is the new version with the metering table capacity enabled. This version is capable of installing default metering table, define flows with metering rules, redirect trafic with metering table, delete metering tables and modify metering tables. All of the metering tables are suported (drop).
+
+During the test ONLY one LL-MEC software module was running. Both LL-MEC software modules accept traffic on same ports.
+ 
 
 
+## Important source of informations regarding the behaviour of the OvS
+
+https://www.mail-archive.com/ovs-discuss@openvswitch.org/msg02910.html -> it can be concluded that the OpenFlow13 for OvS v2.8.1 only supports the metering drop bands.
