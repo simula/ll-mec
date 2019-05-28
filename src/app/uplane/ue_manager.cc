@@ -21,7 +21,7 @@
  */
 /*!
   \file ue_manager.cc
-  \brief managing the users and bearers, and their associations to different slices 
+  \brief managing the users and bearers, and their associations to different slices
   \author Anta Huang and N. Nikaein
   \company Eurecom
   \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
@@ -53,18 +53,25 @@ bool Ue_manager::add_bearer(json context){
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 
   uint64_t id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
-  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(),context["eps_meter_id"].get<int>()); //get the eps_meter_id value from the json file
+  uint32_t meterrate = context["meter_rate"].get<int>();
+  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
+  uint32_t meterburstsize = context["burst_size"].get<int>();
   spdlog::get("ll-mec")->debug("bearer {}", id);
   spdlog::get("ll-mec")->debug("meter {}", meterid); //output the meterid value for the user
+  spdlog::get("ll-mec")->debug("meter rate {}", meterrate);
+  spdlog::get("ll-mec")->debug("meter burst_size {}", meterburstsize);
   /* Bearer already exists. Remove it and then add (Overwrite) */
-  if (id != 0) {
+  if (id != 0 && meterid != 0) {
     context_manager->delete_bearer(id);
     for (auto each:context_manager->get_switch_set()) {
       fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
       if (of_conn_ == nullptr || !of_conn_->is_alive())
         continue;
       this->of_interface.flush_flow(of_conn_, id);
-      this->of_interface.flush_meter(of_conn_, meterid); //deleting the meter based on meter_id
+      this->of_interface.install_default_meter_drop(of_conn_,meterid);
+//      this->of_interface.flush_meter(of_conn_, meterid); //deleting the meter based on meter_id Instead of flush the meter, just modify the values
+//modify_meter_mod(fluid_base::OFConnection* of_conn, uint16_t flags, uint32_t meter_id, uint16_t type, uint32_t rate, uint32_t burst_size, uint8_t prec_level, uint32_t experimenter)
+      this->of_interface.modify_meter_mod_drop(of_conn_, meterid, meterrate, meterburstsize);
     }
     context_manager->add_bearer(id, meterid, context); //added the meterid so it creates the bearer with the meterid associated
     spdlog::get("ll-mec")->info("Overwrite UE bearer {}: {}", id, context.dump());
@@ -73,9 +80,10 @@ bool Ue_manager::add_bearer(json context){
   else {
     context_manager->add_bearer(context);
     id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
-    meterid = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_meter_id"].get<int>()); //eps_meter_id from the json file
+    meterid = 1;
+//    uint32_t meterid = context["meter_id"].get<int>(); //eps_meter_id from the json file
     spdlog::get("ll-mec")->info("Add UE bearer {}: {}", id, context.dump());
-    spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meterid); //display the information 
+    spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meterid); //display the information
   }
 
   Metadata metadata;
@@ -84,7 +92,7 @@ bool Ue_manager::add_bearer(json context){
     metadata.ipecn = (uint8_t) context["tos"].get<int>() & 0x3;
   }
 
-  
+
   for (auto each:context_manager->get_switch_set()) {
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
     if (of_conn_ == nullptr || !of_conn_->is_alive())
@@ -94,6 +102,16 @@ bool Ue_manager::add_bearer(json context){
   }
   return true;
 }
+/*
+ *
+ *
+bool Ue_manager::modify_meter(json context){
+  llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
+  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+  uint32_t meterid = context["eps_meter_id"].get<int>(); //get the eps_meter_id value from the json file
+  this->of_interface.install_meter_mod(of_conn_, context["meter_command"].get<std::string>(), context["meter_flags"].get<std::string>(), context["eps_meter_id"].get<int>(), context["meter_type"].get<std::string>(), context["meter_rate"].get<int>(), context["meter_burst_size"].get<int>(), context["meter_prec_level"].get<int>(),context["meter_experimenter"].get<int>() );
+}
+*/
 
 bool Ue_manager::add_redirect_bearer(uint64_t id, json context) {
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
@@ -252,13 +270,13 @@ uint64_t Ue_manager::get_id(std::string imsi, uint64_t eps_bearer_id) {
   uint64_t id = context_manager->get_id(imsi, eps_bearer_id);
   return id;
 }
-
+/*
 //retrive the meterid
-uint32_t Ue_manager::get_meterid(std::string imsi, uint32_t eps_meter_id){
+uint32_t Ue_manager::get_meterid( uint32_t eps_meter_id){
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-  uint32_t meterid = context_manager->get_meterid(imsi, eps_meter_id);
+  uint32_t meterid = context_manager->get_meterid(eps_meter_id);
   return meterid;
-}
+}*/
 
 bool Ue_manager::id_exist(uint64_t id) {
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();

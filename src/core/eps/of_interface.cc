@@ -131,33 +131,47 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
  * #########################################################################################
  * Default Install Meter Mod
 */
- 
-void OFInterface::install_default_meter(fluid_base::OFConnection* of_conn) {
+
+void OFInterface::install_default_meter_drop(fluid_base::OFConnection* of_conn, uint32_t meter_id) {
   uint8_t* buffer;
-//  fluid_msg::of13::MeterBand mb(0x0001, 30000, 5000);
-//  fluid_msg::of13::MeterMod mm(42, fluid_msg::of13::OFPMC_ADD, 0x0001,0x00000000, mb);
-//  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBand(fluid_msg::of13::OFPMBT_DROP, 30000, 5000);
-  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBand(0x0001, 3000, 300000);
-//  mb1.type(fluid_msg::of13::OFPMBT_DROP);
-//  mb1.rate(30000);
-//  mb1.burst_size(5000);
-//
-  fluid_msg::of13::MeterMod mm;
-  mm.xid(42);
-  mm.command(fluid_msg::of13::OFPMC_ADD);
-  mm.flags(fluid_msg::of13::OFPMF_KBPS);
-  mm.meter_id(0x10000000);
-//  fluid_msg::of13::MeterMod *mm = new fluid_msg::of13::MeterMod(42, fluid_msg::of13::OFPMC_ADD, fluid_msg::of13::OFPMF_KBPS, 1, fluid_msg::of13::MeterBandList& mb);
+  fluid_msg::of13::MeterMod mm(42, fluid_msg::of13::OFPMC_ADD, fluid_msg::of13::OFPMF_KBPS, meter_id);
+  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDrop(1000000, 50000);
   mm.add_band(mb1);
-//  fluid_msg::of13::MeterBand mb;
-//  mb.type(fluid_msg::of13::OFPMBT_DROP);
-//  mb.rate(30000);
-//  mb.burst_size(5000);
   buffer = mm.pack();
   of_conn->send(buffer, mm.length());
   fluid_msg::OFMsg::free_buffer(buffer);
+
 }
 
+void OFInterface::install_default_meter_dscp(fluid_base::OFConnection* of_conn, uint32_t meter_id) {
+  uint8_t* buffer;
+//  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBand(uint16_t type, uint32_t rate, uint32_t burst_size);
+//fluid_msg::of13::OFPMBT_DROP         - 0x0001
+//fluid_msg::of13::OFPMBT_DSCP_REMARK  - 0x0002
+//fluid_msg::of13::OFPMBT_EXPERIMENTER - 0xFFFF of13::OFPMBT_EXPERIMENTER
+//Example: sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=6,kbps,burst,band=type=dscp_remark,rate=30000,prec_level=14,burst_size=30000
+//fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBand(uint16_t type, uint32_t rate, uint32_t burst_size, uint8_t prec_level)
+//  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDSCPRemark(777, 888);
+//MeterBandExperimenter
+//fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBand(uint16_t type, uint32_t rate, uint32_t burst_size);
+
+//  fluid_msg::of13::MeterMod mm;
+//  mm.xid(42);
+//  mm.command(fluid_msg::of13::OFPMC_ADD);
+//fluid_msg::of13::OFPMF_KBPS
+//fluid_msg::of13::OFPMF_BURST
+//  mm.flags(fluid_msg::of13::OFPMF_KBPS);
+//  mm.flags(fluid_msg::of13::OFPMF_BURST);
+//  mm.meter_id(10);
+//  fluid_msg::of13::MeterMod *mm = new fluid_msg::of13::MeterMod(42, fluid_msg::of13::OFPMC_ADD, fluid_msg::of13::OFPMF_KBPS, 1, fluid_msg::of13::MeterBandList& mb);
+  fluid_msg::of13::MeterMod mm(42, fluid_msg::of13::OFPMC_ADD, fluid_msg::of13::OFPMF_KBPS, meter_id);
+  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDSCPRemark(1000000, 50000, 50);
+  mm.add_band(mb1);
+  buffer = mm.pack();
+  of_conn->send(buffer, mm.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+
+}
 /* ######################################################
  * Installing Meter Mod
  * ######################################################
@@ -165,17 +179,25 @@ void OFInterface::install_default_meter(fluid_base::OFConnection* of_conn) {
  * company Eurecom
  * email: idumihai16@gmail.com
  * ######################################################
- * Add  a  meter  entry to switch's tables. The meter 
+ * Add  a  meter  entry to switch's tables. The meter
  * syntax is described in section Meter Syntax, below.
  * This OpenFlow13 Message it can be transformed into CLI command as below:
  * sudo ovs-ofctl -O OpenFlow13 mod-meter edge meter=uint32_t meter_id,kbps,band=type=drop,rate= uint32_t rate
- */ 
-void OFInterface::install_meter_mod(fluid_msg::of13::PacketIn &pi, fluid_base::OFConnection* ofconn, uint64_t src, uint64_t dst, uint16_t out_port, uint32_t meter_id, uint16_t type, uint16_t len, uint32_t rate, uint32_t burst_size) {
+ */
+
+void OFInterface::install_meter_mod(fluid_base::OFConnection* of_conn, uint16_t flags, uint32_t meter_id, uint16_t type, uint32_t rate, uint32_t burst_size, uint8_t prec_level, uint32_t experimenter) {
 /* Meter mod message */
   uint8_t* buffer;
-  fluid_msg::of13::MeterMod mm;
-  mm.xid(pi.xid());
-  mm.command(fluid_msg::of13::OFPMC_ADD);
+  /* Meter Band header
+	type can be OFPMBT_DROP, OFPMBT_DSCP_REMARK or OFPMBT_EXPERIMENTER
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_ADD, flags, meter_id); - to ADD a meter
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_MODIFY, flags, meter_id); - to MODIFY a meter
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_DELETE, flags, meter_id); - to DELETE a meter
+  */
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_ADD, flags, meter_id);
+//  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDrop(rate, burst_size);
+  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDrop(rate, burst_size);
+  //mm.command(fluid_msg::of13::OFPMC_ADD);
 	/*
          * kbps__0x0001
          * pkps__0x0002
@@ -183,7 +205,7 @@ void OFInterface::install_meter_mod(fluid_msg::of13::PacketIn &pi, fluid_base::O
          * stats_0x0008
          *
          */
-  mm.flags(fluid_msg::of13::OFPMF_KBPS);
+//  mm.flags(fluid_msg::of13::OFPMF_KBPS);
 	/*
 	 * General_meter_id__0x00000000-0xFFFF0000
 	 * Slow_datapath_____0xFFFFFFFD
@@ -191,47 +213,56 @@ void OFInterface::install_meter_mod(fluid_msg::of13::PacketIn &pi, fluid_base::O
 	 * All_______________0xFFFFFFFF
 	 *
 	 */
-  mm.meter_id(1);
-/* Meter Band header */
-  fluid_msg::of13::MeterBand mb;
-//  mb.xid(pi.xid());
-	/*
-	 * Drop_________0x0001
-	 * DSCP_REMARK__0x0002 
-	 * In case of this tipe of meter 
-	 * Example: sudo ovs-ofctl -O OpenFlow13 add-meter 
-	 * edge meter=6,kbps,burst,band=type=dscp_remark,
-	 * rate=30000,prec_level=14,burst_size=30000
-	 * The OpenFlow13Reply was OFPMMFC_BAD_BAND
-	 * Experimenter_0xFFFF
-	 *
-	 */
- mb.type(fluid_msg::of13::OFPMBT_DROP);
-/* The restrain is above 16 */
-// mb.len(0); 
-/* There is no restrain  */
-  mb.rate(0);
-/* There is no restrain	 */
-  mb.burst_size(0);
-//  fluid_msg::of13::EthSrc fsrc(((uint8_t*) &src) + 2);
-//  fluid_msg::of13::EthDst fdst(((uint8_t*) &dst) + 2);
-//  mb.add_oxm_field(fsrc);
-//  mb.add_oxm_field(fdst);
-//  fluid_msg::of13::OutputAction act(out_port, 1024);
-//  fluid_msg::of13::ApplyActions inst;
-//  inst.add_action(act);
-//  mb.add_instruction(inst);
-//  buffer = mb.pack();
-//  ofconn->send(buffer, mb.length());
-//  fluid_msg::OFMsg::free_buffer(buffer);
-//  fluid_msg::of13::Match m;
-  fluid_msg::of13::MultipartRequestMeter rf(1, 0x0009, fluid_msg::of13::OFPM_ALL);
-  buffer = rf.pack();
-  ofconn->send(buffer, rf.length());
+  mm.add_band(mb1);
+  buffer = mm.pack();
+  of_conn->send(buffer, mm.length());
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
-/* 
+void OFInterface::modify_meter_mod_drop(fluid_base::OFConnection* of_conn, uint32_t meter_id, uint32_t rate, uint32_t burst_size) {
+/* Meter mod message */
+  uint8_t* buffer;
+  /* Meter Band header
+	type can be OFPMBT_DROP, OFPMBT_DSCP_REMARK or OFPMBT_EXPERIMENTER
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_ADD, flags, meter_id); - to ADD a meter
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_MODIFY, flags, meter_id); - to MODIFY a meter
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_DELETE, flags, meter_id); - to DELETE a meter
+  */
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_MODIFY, fluid_msg::of13::OFPMF_KBPS, meter_id);
+  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDrop(rate, burst_size);
+  //mm.command(fluid_msg::of13::OFPMC_ADD);
+	/*
+         * kbps__0x0001
+         * pkps__0x0002
+         * burst_0x0004
+         * stats_0x0008
+         *
+         */
+//  mm.flags(fluid_msg::of13::OFPMF_KBPS);
+	/*
+	 * General_meter_id__0x00000000-0xFFFF0000
+	 * Slow_datapath_____0xFFFFFFFD
+	 * Controller________0xFFFFFFFE
+	 * All_______________0xFFFFFFFF
+	 *
+	 */
+  mm.add_band(mb1);
+  buffer = mm.pack();
+  of_conn->send(buffer, mm.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+}
+
+void OFInterface::modify_meter_mod_dscp(fluid_base::OFConnection* of_conn, uint32_t meter_id, uint32_t rate, uint32_t burst_size, uint8_t prec_level) {
+/* Meter mod message */
+  uint8_t* buffer;
+  fluid_msg::of13::MeterMod mm(43, fluid_msg::of13::OFPMC_MODIFY, fluid_msg::of13::OFPMF_KBPS, meter_id);
+  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDSCPRemark(rate, burst_size, prec_level);
+  mm.add_band(mb1);
+  buffer = mm.pack();
+  of_conn->send(buffer, mm.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+}
+/*
  * InstallDefaultMeterUEUplingFlow
  * This OpenFlow13 Message it can be transformed into CLI command as below:
  * sudo ovs-ofctl add-flow -O OpenFlow13 edge in_port=11,ul_dst=22:00:00:00:00:00,ul_src=22:11:11:11:11:11,ul_type=0x0800,actions=meter:12,output:13
@@ -511,11 +542,128 @@ void OFInterface::get_flow_stats(fluid_base::OFConnection* of_conn, uint32_t xid
 }
 
 /*
+ * The flow redirection using a meterTable
+ *
+ */
+ void OFInterface::redirect_edge_service_ul_meter_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint32_t meter_id, uint64_t ul_tunnel, std::string from, std::string to, Metadata metadata) {
+   Conf* llmec_config = Conf::getInstance();
+   uint8_t* buffer;
+   fluid_msg::of13::Match m;
+   fluid_msg::of13::InPort in_port(llmec_config->X["ovs_switch"]["s1u_port"].get<int>());
+   fluid_msg::of13::EthType eth_type(0x0800);
+   fluid_msg::of13::TUNNELId ul_tunnel_id(ul_tunnel);
+   fluid_msg::of13::IPv4Dst ip_dst(from);
+   m.add_oxm_field(in_port);
+   m.add_oxm_field(ul_tunnel_id);
+   m.add_oxm_field(eth_type);
+   m.add_oxm_field(ip_dst);
+
+   fluid_msg::of13::FlowMod fm;
+   fm.xid(43);
+   fm.cookie(flow_id);
+   fm.cookie_mask(0xffffffffffffffff);
+   fm.table_id(0);
+   fm.command(fluid_msg::of13::OFPFC_ADD);
+   fm.idle_timeout(0);
+   fm.hard_timeout(0);
+   fm.priority(2);
+   fm.buffer_id(0xffffffff);
+   fm.out_port(1);
+   fm.out_group(0);
+   fm.flags(0);
+   fm.match(m);
+
+
+   auto out = fluid_msg::EthAddress(llmec_config->X["gateway"]["mac"].get<std::string>());
+   fluid_msg::of13::ApplyActions act;
+   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::EthDst(out)));
+   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPv4Dst(to)));
+   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPDSCP(metadata.ipdscp)));
+   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::IPECN(metadata.ipecn)));
+   act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["external_port"].get<int>(), 1024));
+   fm.add_instruction(act);
+   fm.add_instruction(new fluid_msg::of13::Meter(meter_id));
+   buffer = fm.pack();
+   of_conn->send(buffer, fm.length());
+   fluid_msg::OFMsg::free_buffer(buffer);
+ }
+
+ void OFInterface::redirect_edge_service_dl_meter_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint32_t meter_id, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip, std::string from, std::string to, Metadata metadata) {
+   Conf* llmec_config = Conf::getInstance();
+   uint8_t* buffer;
+   fluid_msg::of13::Match m;
+   // By default, allow IP traffic
+   fluid_msg::of13::EthType eth_type(0x0800);
+   fluid_msg::IPAddress ue_ip_addr(UE_ip);
+   fluid_msg::of13::IPv4Dst ip_dst(ue_ip_addr);
+   fluid_msg::of13::IPv4Src ip_src(to);
+   m.add_oxm_field(eth_type);
+   m.add_oxm_field(ip_dst);
+   m.add_oxm_field(ip_src);
+
+   // Default value for fields below
+   fluid_msg::of13::FlowMod fm;
+   fm.xid(43);
+   fm.cookie(flow_id);
+   fm.cookie_mask(0xffffffffffffffff);
+   fm.table_id(0);
+   fm.command(fluid_msg::of13::OFPFC_ADD);
+   fm.idle_timeout(0);
+   fm.hard_timeout(0);
+   fm.priority(2);
+   fm.buffer_id(0xffffffff);
+   fm.out_port(1);
+   fm.out_group(0);
+   fm.flags(0);
+   fm.match(m);
+
+   auto out = fluid_msg::EthAddress(llmec_config->X["gateway"]["mac"].get<std::string>());
+   fluid_msg::of13::ApplyActions act;
+   fluid_msg::of13::TUNNELId dl_tunnel_id(dl_tunnel);
+   act.add_action(new fluid_msg::of13::SetFieldAction(new fluid_msg::of13::TUNNELId(dl_tunnel_id)));
+   act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["s1u_port"].get<int>(), 1024));
+   fm.add_instruction(act);
+   buffer = fm.pack();
+   of_conn->send(buffer, fm.length());
+   act.add_action(new fluid_msg::of13::OutputAction(llmec_config->X["ovs_switch"]["s1u_port"].get<int>(), 1024));
+   fm.add_instruction(act);
+   fm.add_instruction(new fluid_msg::of13::Meter(meter_id));
+   buffer = fm.pack();
+   of_conn->send(buffer, fm.length());
+   fluid_msg::OFMsg::free_buffer(buffer);
+ }
+
+/*
  * GetMeterTableStatus
  */
-void OFInterface::get_meter_stats(fluid_base::OFConnection* of_conn, uint32_t xid, uint32_t meter_id) {
+void OFInterface::get_meter_stats(fluid_base::OFConnection* of_conn) {
   uint8_t* buffer;
-  fluid_msg::of13::MultipartRequestMeter mrf(xid, 0x0009, fluid_msg::of13::OFPM_ALL);
+  //MultipartRequestMeter (uint32_t xid, uint16_t flags, uint32_t meter_id)
+//  fluid_msg::of13::MultipartRequestMeter mrf(43, 0x0009, fluid_msg::of13::OFPM_ALL);
+  fluid_msg::of13::MultipartRequestMeter mrf(43, 0x000a, 0xffffffff);
+  buffer = mrf.pack();
+  of_conn->send(buffer, mrf.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+}
+/*
+ * GetMeterFeaturesStatus
+ */
+void OFInterface::get_meter_features_stats(fluid_base::OFConnection* of_conn) {
+  uint8_t* buffer;
+  //MultipartRequestMeter (uint32_t xid, uint16_t flags)
+  fluid_msg::of13::MultipartRequestMeterFeatures mrf(43, 0x000b);
+  buffer = mrf.pack();
+  of_conn->send(buffer, mrf.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+}
+/*
+ * GetMeterConfigStatus
+ */
+void OFInterface::get_meter_config_stats(fluid_base::OFConnection* of_conn, uint32_t meter_id) {
+  uint8_t* buffer;
+  //MultipartRequestMeterConfig (uint32_t xid, uint16_t flags, uint32_t meter_id)
+//  fluid_msg::of13::MultipartRequestMeterConfig mrf(43, 0x000a, fluid_msg::of13::OFPM_ALL);
+  fluid_msg::of13::MultipartRequestMeterConfig mrf(43, 0x000a, meter_id);
   buffer = mrf.pack();
   of_conn->send(buffer, mrf.length());
   fluid_msg::OFMsg::free_buffer(buffer);
@@ -527,7 +675,7 @@ void OFInterface::get_meter_stats(fluid_base::OFConnection* of_conn, uint32_t xi
 void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id) {
   uint8_t* buffer;
   fluid_msg::of13::Match m;
-  
+
   // Default value for fields below
   fluid_msg::of13::FlowMod fm;
   fm.xid(43);
@@ -557,27 +705,24 @@ void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id
               deleted.
  */
 void OFInterface::flush_meter(fluid_base::OFConnection* of_conn, uint32_t meter_id) {
-  	uint8_t* buffer;
-//  fluid_msg::of13::Match m;
-	/*
-        * Meter mod message
-        */
-        fluid_msg::of13::MeterMod mm;
+	uint8_t* buffer;
+  fluid_msg::of13::MeterMod mm;
         //transactionID
 	mm.xid(43);
 	//command
-        mm.command(fluid_msg::of13::OFPMC_DELETE);
+  mm.command(fluid_msg::of13::OFPMC_DELETE);
         /*
-         *MeterBandList kbps__0x0001
+         *MeterBandList
+         * kbps__0x0001
          * pkps__0x0002
          * burst_0x0004
          * stats_0x0008
          */
-        mm.flags(fluid_msg::of13::OFPMF_KBPS);
+  mm.flags(fluid_msg::of13::OFPMF_KBPS);
 	//meterID
-        mm.meter_id(0xffffffff);	
-  	buffer = mm.pack();
-  	of_conn->send(buffer, mm.length());
+  mm.meter_id(meter_id);
+  buffer = mm.pack();
+  of_conn->send(buffer, mm.length());
 
 }
 

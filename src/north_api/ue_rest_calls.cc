@@ -59,7 +59,7 @@ namespace north_api {
      * @apiParam {String} ue_ip IP address of UE
      * @apiParam {String} enb_ip IP address of eNodeB
      * @apiExample Example usage:
-     *     curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id":1, "eps_meter_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
+     *     curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id":1, "meter_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *
@@ -76,8 +76,8 @@ namespace north_api {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"eps_meter_id":5,"s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0,"id":1,"ue_ip":"172.16.0.1"},
-     *      {"enb_ip":"192.168.0.3","imsi":"208950000000001","eps_bearer_id":5,"eps_meter_id":5,"s1_dl_teid":2,"s1_ul_teid":1, "tos":0, "slice_id":0,"id":2,"ue_ip":"172.16.0.2"}
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"meter_id":5,"s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0,"id":1,"ue_ip":"172.16.0.1"},
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000001","eps_bearer_id":5,"meter_id":5,"s1_dl_teid":2,"s1_ul_teid":1, "tos":0, "slice_id":0,"id":2,"ue_ip":"172.16.0.2"}
      *     ]
      */
     Pistache::Rest::Routes::Get(router, "/bearer/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_bearer_by_id, this));
@@ -314,12 +314,13 @@ namespace north_api {
     }
     json payload = json::parse(request.body());
     if ( (payload["eps_bearer_id"].empty() || !payload["eps_bearer_id"].is_number())
-	|| (payload["eps_meter_id"].empty() || !payload["eps_meter_id"].is_number())
-	|| (payload["imsi"].empty() || !payload["imsi"].is_string())
+	      || (payload["imsi"].empty() || !payload["imsi"].is_string())
         || (payload["s1_ul_teid"].empty() || !payload["s1_ul_teid"].is_string())
         || (payload["s1_dl_teid"].empty() || !payload["s1_dl_teid"].is_string())
         || (payload["ue_ip"].empty() || !payload["ue_ip"].is_string())
         || (payload["enb_ip"].empty() || !payload["enb_ip"].is_string())
+        || (payload["meter_rate"].empty() || !payload["meter_rate"].is_number())
+        || (payload["burst_size"].empty() || !payload["burst_size"].is_number())
         ) {
       resp = "Format error.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
@@ -332,8 +333,9 @@ namespace north_api {
     std::string ue_ip = payload["ue_ip"];
     std::string enb_ip = payload["enb_ip"];
     uint64_t eps_bearer_id = payload["eps_bearer_id"].get<int>();
-    uint32_t eps_meter_id = payload["eps_meter_id"].get<int>(); // eps_meter_id
     std::string imsi = payload["imsi"].get<std::string>();
+    uint32_t meter_rate = payload["meter_rate"].get<int>();
+    uint32_t burst_size = payload["burst_size"].get<int>();
     uint64_t slice_id = 0;
     if (!payload["slice_id"].empty()) {
       if (!payload["slice_id"].is_number()) {
@@ -358,13 +360,14 @@ namespace north_api {
     json context = {
       {"imsi", imsi},
       {"eps_bearer_id", eps_bearer_id},
-      {"eps_meter_id", eps_meter_id},	
       {"s1_ul_teid", s1_ul_teid},
       {"s1_dl_teid", s1_dl_teid},
       {"ue_ip", ue_ip},
       {"enb_ip", enb_ip},
       {"slice_id", slice_id},
-      {"tos", tos}
+      {"tos", tos},
+      {"meter_rate", meter_rate},
+      {"burst_size", burst_size}
     };
     if (ue_manager->add_bearer(context) == false) {
       resp = "Switch connection lost.";
@@ -615,7 +618,6 @@ namespace north_api {
       imsi = splited[1], bearer = splited[0];
 
     uint64_t id;
-    uint32_t meterid;
     uint64_t bearer_id = std::stoul(bearer, nullptr, 10);
     if ((id = ue_manager->get_id(imsi, bearer_id)) == 0) {
       resp = "Imsi or bearer_id invalid.";

@@ -21,10 +21,10 @@
  */
 /*!
   \file ue_manager.h
-  \brief managing the users and bearers, and their associations to different slices
-  \author Anta Huang and N. Nikaein
+  \
+  \author Mihai IDU and N. Nikaein
   \company Eurecom
-  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
+  \email: idumihai16@gmail.com, navid.nikaein@eurecom.fr
 */
 
 #ifndef __UE_MANAGER_H__
@@ -43,33 +43,30 @@ namespace llmec {
 namespace app {
 namespace uplane {
 
-class Ue_manager : public llmec::app::App {
+class Meter_manager : public llmec::app::App {
   public:
     void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
     static void create_instance(llmec::core::eps::OFInterface &of_interface);
     static Ue_manager* get_instance();
 
-    /* Add one bearer context to the underlying user plane */
-    bool add_bearer(json context);
+    /* Add one meter of type drop */
+    bool add_meter_drop(json context);
 
-    /* Redirect one specific bearer from IPv4_A to IPv4_B */
-    bool add_redirect_bearer(uint64_t id, json context);
+    /* Add one meter of type dscp */
+    bool add_meter_dscp(json context);
 
-    /* Redirect one specific bearer back if any */
-    bool delete_redirect_bearer(uint64_t id);
+    /* Delete a specific meter */
+    bool delete_meter(uint32_t meter_id);
 
     /* Return one specific bearer information in JSON array */
     json get_bearer(uint64_t ue_id);
 
-    /* Return all bearers information in JSON array */
-    json get_bearer_all();
+    /* Return all meters information in JSON array */
+    json get_meter_stats();
 
-    /* Delete one specific bearer context from the underlying user plane */
-    bool delete_bearer(uint64_t id);
-
-    /* Delete all bearers context */
-    bool delete_bearer_all();
+    /* Delete all meters  */
+    bool delete_meter_all();
 
     /* Return one specific slice information in JSON array */
     json get_slice(uint64_t slice_id);
@@ -80,21 +77,15 @@ class Ue_manager : public llmec::app::App {
     /* Get the bearer id list */
     std::vector<uint64_t> get_bearer_id_list();
 
-    /* Get the id by IMSI and bearer */
-    uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
-
     /*Get the meterid by IMSI and bearer*/
-//    uint32_t get_meterid(uint32_t meter_id);
-
-    /* Check if ID exists in LLMEC context */
-    bool id_exist(uint64_t id);
+    uint32_t get_meterid(std::string imsi, uint32_t eps_meter_id);
 
   private:
     static Ue_manager* instance;
     Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
 };
 
-} // namespace uplane
+} // namespace meter_manager
 } // namespace app
 } // namespace llmec
 #endif

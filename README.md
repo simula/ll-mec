@@ -71,3 +71,74 @@ LL-MEC is a real-time Multi-access Edge Computing platform.
 
 ## Contact
 Please email to Mosaic5G (mosaic5g@lists.eurecom.fr)
+
+## Description of the ll-mec
+
+This version of the ll-mec it contains a set of metering table enabled in the OF13 messages
+
+
+## The software architecture 
+
+![Imgur](https://i.imgur.com/gQUrgU3.jpg)
+
+## Installation
+
+In order to install the ll-mec using the Ubuntu CLI
+
+```
+pou@ubuntu:~/Desktop/Mp2-BwManagementApi/ll-mec$ ./build_ll-mec.sh
+```
+
+To run the ll-mec service on the working directory there is a script ll-mec.sh
+```
+pou@ubuntu:~/Desktop/Mp2-BwManagementApi/ll-mec$ sudo ./ll-mec
+```
+
+## Description of the meterID implementation
+```
+
+meterID = function(eps_bearer_id, imsi, s1_teid_ul/s1_teid_dl);
+
+if(sliceID=0){
+	meterID is assigned per user
+}
+else if(sliceID>0 && sliceID<=16){
+	meterID is assigned for each sliceID
+	meterID = sliceID;
+}
+```
+
+## OpenvSwitch CLI commands
+```
+  595  sudo ovs-ofctl dump-flows edge
+  596  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=0,kbps,band=type=drop,rate=50000
+  597  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=1,kbps,band=type=drop,rate=50000
+  600  sudo ovs-ofctl -O OpenFlow13 dump-meters edge
+  601  sudo ovs-ofctl -O OpenFlow13 dump-flows edge
+  604  sudo ovs-ofctl -O OpenFlow13 mod-meter edge meter=2,kbps,band=type=drop,rate=5000
+  605  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=2,kbps,band=type=drop,rate=5000
+  606  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=2,kbps,burst,band=type=drop,rate=3000,burst_size=300000
+  607  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=3,kbps,burst,band=type=drop,rate=3000,burst_size=300000
+  608  sudo ovs-ofctl -O OpenFlow13 dump-meters edge
+  609  sudo ovs-ofctl add-flow edge in_port=11,dl_dst=22:00:00:00:00:00,dl_src=22:11:11:11:11:11,dl_type=0x0800,actions=meter:2,output:13
+  610  sudo ovs-ofctl -O OpenFlow13 add-flow edge in_port=11,dl_dst=22:00:00:00:00:00,dl_src=22:11:11:11:11:11,dl_type=0x0800,actions=meter:2,output:13
+  611  sudo ovs-ofctl dump-flows edge
+  612  sudo ovs-ofctl dump-tables edge
+  613  sudo ovs-ofctl dump-table-features edge
+  614  sudo ovs-ofctl -O OpenFlow13 dump-table-features edge
+  617  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=3,kbps,burst,band=type=drop,rate=30000,burst_size=5000
+  618  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=3,kbps,burst,band=type=drop,rate=3000,burst_size=300000
+  619  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=3,kbps,burst,band=type=drop,rate=3000,burst_size=300000
+  621  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=2,kbps,band=type=drop,rate=5000
+  622  sudo ovs-ofctll -O OpenFlow13 dump-mets edge
+  623  sudo ovs-ofctl -O OpenFlow13 dump-mets edge
+  624  sudo ovs-ofctl -O OpenFlow13 dump-meters edge
+  625  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=2,kbps,band=type=drop,rate=5000
+  626  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=2,kbps,band=type=drop,rate=50000
+  627  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=12,kbps,band=type=drop,rate=50000
+  632  sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=12,kbps,band=type=drop,rate=50000
+  633  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=3,kbps,burst,band=type=drop,rate=30000,burst_size=5000
+  639  sudo ovs-ofctl -O OpenFlow13 --timestamp add-meter edge meter=3,kbps,burst,band=type=drop,rate=30000,burst_size=5000
+```
+
+

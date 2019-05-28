@@ -99,7 +99,7 @@ bool Context_manager::add_bearer(uint64_t id, uint32_t meterid, json context)
   this->context_lock.lock();
   context["id"] = id;
   this->imsi_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()), id));
-  this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_meter_id"].get<int>()), meterid));
+//  this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["meter_id"].get<int>()), meterid));
   this->bearer_context[id] = context;
   this->slice_group[context["slice_id"].get<int>()].insert(id);
   this->context_lock.unlock();
@@ -214,16 +214,19 @@ uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
   return id;
 }
 
-//meterid
+//meterid mapping
 
-uint32_t Context_manager::get_meterid(std::string imsi, uint32_t eps_meter_id){
-  uint32_t meterid = 1;
+uint32_t Context_manager::get_meterid(std::string imsi, uint32_t eps_bearer_id){
+//uint32_t meterid = 1; - The meterID=1 is already configured as DefaultMeterTable
+//this table it will be used as referance.
+  uint32_t meterid = 2;
   this->context_lock.lock();
-  if (this->meter_mapping.count(std::make_pair(imsi, eps_meter_id)) != 0)
-  meterid = this->meter_mapping.at(std::make_pair(imsi, eps_meter_id));
+  if (this->meter_mapping.count(std::make_pair(imsi, eps_bearer_id)) != 0)
+    meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
   this->context_lock.unlock();
   return meterid;
 }
+
 
 json Context_manager::get_slice_group(uint64_t slice_id)
 {
