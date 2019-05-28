@@ -69,17 +69,14 @@ LL-MEC is a real-time Multi-access Edge Computing platform.
     [2018-01-21 23:15:25] [info] Redirected UE id=1 from 192.168.12.3 to 192.168.12.1
     [2018-01-21 23:15:33] [info] No redirected traffic for UE id=1
 
-## Contact
-Please email to Mosaic5G (mosaic5g@lists.eurecom.fr)
-
 ## Description of the ll-mec
 
 This version of the ll-mec it contains a set of metering table enabled in the OF13 messages
 
 
 ## The software architecture 
-
-![Imgur](https://i.imgur.com/gQUrgU3.jpg)
+Figure 1. Software Architecture of the core LL-MEC
+![Imgur](https://i.imgur.com/6ghynYi.jpg)
 
 ## Installation
 
@@ -161,3 +158,69 @@ During the test ONLY one LL-MEC software module was running. Both LL-MEC softwar
 ## Important source of informations regarding the behaviour of the OvS
 
 https://www.mail-archive.com/ovs-discuss@openvswitch.org/msg02910.html -> it can be concluded that the OpenFlow13 for OvS v2.8.1 only supports the metering drop bands.
+
+## Testing scenario 1
+
+In the testing scenario number 1 there are used all the computers from Figure 1. 
+
+On the Faucheur machine is deployed the following software modules :
+1. mosaic5g-flexran
+2. oai-ran.enb
+3. oai-cn.hss
+4. oai-cn.mme
+5. oai-cn.spgw
+6. mosaic5g-ll-mec (legacy version)
+
+On the Pou machine is deployed just the mosaic5g-ovs-gtp software module.
+
+On the PC3 is deployed a NAT application in order to facilitate the internet access of the UE.
+
+In this case, the phone was connected to the network and after the bearers are installed, they are deleted and redone using just the CLI commands:
+```
+pou@ubuntu:~$ sudo ovs-ofctl -O OpenFlow13 add-meter edge meter=2,kbps,band=type=drop,rate=50000
+pou@ubuntu:~$ sudo ovs-ofctl add-flow edge priority=1,ip,tun_id=0x3,in_port=s1u,actions=meter:2,set_field:e0:d5:5e:c0:2d:05->eth_dst,set_field:0->ip_dscp,set_field:0->nw_ecn,output:enp0s31f6
+pou@ubuntu:~$ sudo ovs-ofctl add-flow edge priority=1,ip,nw_dst=172.16.0.13,actions=meter:2,set_field:0x4->tun_id,set_field:192.168.0.3->tun_dst,set_field:0->ip_dscp,set_field:0->nw_ecn,output:s1u
+```
+In order to verify the validity of those commands run the following commands on the Pou host:
+```
+pou@ubuntu:~$ sudo ovs-ofctl -O OpenFlow13 dump-flows edge 
+
+cookie=0x1, duration=14.646s, table=0, n_packets=0, n_bytes=0, priority=1,ip,tun_id=0x3,in_port=s1u actions=meter:2,set_field:e0:d5:5e:c0:2d:05->eth_dst,set_field:0->ip_dscp,set_field:0->nw_ecn,output:enp0s31f6 
+cookie=0x1, duration=14.646s, table=0, n_packets=0, n_bytes=0, priority=1,ip,nw_dst=172.16.0.13 actions=meter:2,set_field:0x4->tun_id,set_field:192.168.0.3->tun_dst,set_field:0->ip_dscp,set_field:0->nw_ecn,output:s1u 
+cookie=0x0, duration=90.017s, table=0, n_packets=18, n_bytes=1080, priority=0 actions=NORMAL
+```
+In order to verify the metering tables run the following commands on the Pou host:
+```
+pou@ubuntu:~$ sudo ovs-ofctl -O OpenFlow13 dump-meters edge
+
+OFPST_METER_CONFIG reply (OF1.3) (xid=0x2):
+meter=1 kbps bands=
+type=drop rate=1000000
+
+meter=2 kbps bands=
+type=drop rate=50000
+```
+
+## Testing scenario 2
+
+In the testing scenario number 2 there is used just the PC3 from Figure 2. On the Pou machine is deployed alongisde OvS-GTP also the LL-MEC with metering enabled.
+
+The LL-MEC NB-API is working on port 9999, due to the isolation from the FLEXRAN.
+Using the following API POST cal:
+```
+pou@ubuntu:~$ curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id":5 , 
+							     "imsi"         :"901700300000010", 
+							     "s1_ul_teid"   :"0x4", 
+							     "s1_dl_teid"   :"0x5", 
+                                                             "ue_ip"        :"172.16.0.13", 
+							     "enb_ip"       :"192.168.0.4", 
+					                     "meter_rate"   :78000, 
+							     "burst_size"   :5000 }'
+OK
+```
+The answer of this POST call should be "OK". This POST call is defining the uplink and downlink flows and associates the default MeteringTable (MeterTableID=1). If you are calling the same POST again, there will be defined a different MeteringTable (MeterTableID=2) , associates the meter rate and burst size from the call and also modifies the uplink and downlink flows using the new MeterTable.
+
+
+
+
+
