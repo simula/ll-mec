@@ -53,13 +53,16 @@ namespace north_api {
      * @apiParam {Number} eps_bearer_id EPS bearer ID
      * @apiParam {Number} slice_id (optional) Slice ID. default = 0
      * @apiParam {Number} tos (optional) Type of service includeing DSCP and ECN. default = 0
+     * if is choosen a different value for the meter_rate and burst_size the new MeterTable will use particular values
+     * @apiParam {Number} meter_rate (optional) The rate of the drop meter rate. default = 1000000
+     * @apiParam {Number} burst_size (optional) The burst size of the drop meter rate. default = 50000
      * @apiParam {String} imsi IMSI
      * @apiParam {String} s1_ul_teid S1 downlink tunnel ID
      * @apiParam {String} s1_dl_teid S1 uplink tunnel ID
      * @apiParam {String} ue_ip IP address of UE
      * @apiParam {String} enb_ip IP address of eNodeB
      * @apiExample Example usage:
-     *     curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id":1, "meter_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
+     *     curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *
@@ -76,8 +79,8 @@ namespace north_api {
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5,"meter_id":5,"s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0,"id":1,"ue_ip":"172.16.0.1"},
-     *      {"enb_ip":"192.168.0.3","imsi":"208950000000001","eps_bearer_id":5,"meter_id":5,"s1_dl_teid":2,"s1_ul_teid":1, "tos":0, "slice_id":0,"id":2,"ue_ip":"172.16.0.2"}
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000009","eps_bearer_id":5, "s1_dl_teid":4,"s1_ul_teid":3, "tos":0, "slice_id":0,"id":1,"ue_ip":"172.16.0.1"},
+     *      {"enb_ip":"192.168.0.3","imsi":"208950000000001","eps_bearer_id":5, "s1_dl_teid":2,"s1_ul_teid":1, "tos":0, "slice_id":0,"id":2,"ue_ip":"172.16.0.2"}
      *     ]
      */
     Pistache::Rest::Routes::Get(router, "/bearer/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::get_bearer_by_id, this));
@@ -319,8 +322,8 @@ namespace north_api {
         || (payload["s1_dl_teid"].empty() || !payload["s1_dl_teid"].is_string())
         || (payload["ue_ip"].empty() || !payload["ue_ip"].is_string())
         || (payload["enb_ip"].empty() || !payload["enb_ip"].is_string())
-        || (payload["meter_rate"].empty() || !payload["meter_rate"].is_number())
-        || (payload["burst_size"].empty() || !payload["burst_size"].is_number())
+//        || (payload["meter_rate"].empty() || !payload["meter_rate"].is_number())
+//        || (payload["burst_size"].empty() || !payload["burst_size"].is_number())
         ) {
       resp = "Format error.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
@@ -334,8 +337,8 @@ namespace north_api {
     std::string enb_ip = payload["enb_ip"];
     uint64_t eps_bearer_id = payload["eps_bearer_id"].get<int>();
     std::string imsi = payload["imsi"].get<std::string>();
-    uint32_t meter_rate = payload["meter_rate"].get<int>();
-    uint32_t burst_size = payload["burst_size"].get<int>();
+//    uint32_t meter_rate = payload["meter_rate"].get<int>();
+//    uint32_t burst_size = payload["burst_size"].get<int>();
     uint64_t slice_id = 0;
     if (!payload["slice_id"].empty()) {
       if (!payload["slice_id"].is_number()) {
@@ -354,7 +357,30 @@ namespace north_api {
       }
       tos = payload["tos"].get<int>();
     }
-    spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}", eps_bearer_id, imsi);
+    /*
+     * Optional metering parameters for defining the DefaultMeterTable
+     *
+     */
+     uint32_t meter_rate = 1000000;
+     if (!payload["meter_rate"].empty()){
+      if (!payload["meter_rate"].is_number()) {
+        resp = "Meter Rate is not a valid number.";
+        response.send(Pistache::Http::Code::Bad_Request, resp);
+        return;
+      }
+      meter_rate = payload["meter_rate"].get<int>();
+    }
+    uint32_t burst_size = 50000;
+    if (!payload["burst_size"].empty()){
+      if (!payload["burst_size"].is_number()) {
+        resp = "Meter Burst Size is not a valid number.";
+        response.send(Pistache::Http::Code::Bad_Request, resp);
+        return;
+      }
+      burst_size = payload["burst_size"].get<int>();
+    }
+
+    spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}, meter_rate {}, burst_size {}", eps_bearer_id, imsi, meter_rate, burst_size);
 
     /* Create a new json to have clean content */
     json context = {

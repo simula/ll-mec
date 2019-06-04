@@ -68,15 +68,6 @@ class Meter_manager : public llmec::app::App {
     /* Delete all meters  */
     bool delete_meter_all();
 
-    /* Return one specific slice information in JSON array */
-    json get_slice(uint64_t slice_id);
-
-    /* Return all slices information in JSON array */
-    json get_slice_all();
-
-    /* Get the bearer id list */
-    std::vector<uint64_t> get_bearer_id_list();
-
     /*Get the meterid by IMSI and bearer*/
     uint32_t get_meterid(std::string imsi, uint32_t eps_meter_id);
 

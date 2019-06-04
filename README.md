@@ -220,7 +220,48 @@ OK
 ```
 The answer of this POST call should be "OK". This POST call is defining the uplink and downlink flows and associates the default MeteringTable (MeterTableID=1). If you are calling the same POST again, there will be defined a different MeteringTable (MeterTableID=2) , associates the meter rate and burst size from the call and also modifies the uplink and downlink flows using the new MeterTable.
 
+## APIs example calls
+```
+curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id"	:1, 
+					       "imsi"		:"208950000000009", 
+					       "s1_ul_teid"	:"0x3", 
+					       "s1_dl_teid"	:"0x4", 
+					       "ue_ip"		:"172.16.0.2", 
+					       "enb_ip"		:"192.168.0.3" , 
+					       "meter_rate"	:5000}'
 
+mihai@ubuntu:~$ curl -X GET http://127.0.0.1:9999/bearer | jq .
 
+[
+  {
+    "burst_size": 50000,
+    "enb_ip": "192.168.0.3",
+    "eps_bearer_id": 1,
+    "id": 1,
+    "imsi": "208950000000009",
+    "meter_rate": 5000,
+    "s1_dl_teid": 4,
+    "s1_ul_teid": 3,
+    "slice_id": 0,
+    "tos": 0,
+    "ue_ip": "172.16.0.2"
+  }
+]
+```
+The POST NB-API call
+
+```
+curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
+```
+Defining the default bearer it will associate the flows to the default Metering Table created at the start-up of the ll-mec.
+
+LL-MEC messages:
+```
+[2019-06-01 22:52:38] [info] Add UE bearer 1: {"burst_size":50000,"enb_ip":"192.168.0.3","eps_bearer_id":1,"imsi":"208950000000009","meter_rate":1000000,"s1_dl_teid":4,"s1_ul_teid":3,"slice_id":0,"tos":0,"ue_ip":"172.16.0.2"}
+[2019-06-01 22:52:38] [info] UE bearer 1 is using the meter: 1
+[2019-06-01 22:53:46] [info] Overwrite UE bearer 1: {"burst_size":50000,"enb_ip":"192.168.0.3","eps_bearer_id":1,"imsi":"208950000000009","meter_rate":1000000,"s1_dl_teid":4,"s1_ul_teid":3,"slice_id":0,"tos":0,"ue_ip":"172.16.0.2"}
+[2019-06-01 22:53:46] [info] UE bearer 1 is using the meter: 2
+
+```
 
 
