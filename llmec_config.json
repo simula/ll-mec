@@ -20,13 +20,16 @@
     "mode": "flexran"    
   },
   "flexran": [
-    {
-      "address": "127.0.0.1",
+       {
+      
+      "address": "10.0.0.2",
       "port": 9999
     },
     {
-      "address": "10.0.0.3",
+      
+      "address": "127.0.0.1",
       "port": 9999
     }
+
   ]
 }

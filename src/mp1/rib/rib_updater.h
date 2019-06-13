@@ -47,9 +47,8 @@ static std::size_t callback(
 
 class rib_updater {
 public:
-	rib_updater (Rib& rib,struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode):
-		m_rib(rib), m_its(its), m_flexRANControllers (flexRANControllers), m_mode(mode){
-    }
+	rib_updater (Rib& rib,struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode);
+
 	void run();
 	void update_rib();
 
@@ -67,12 +66,59 @@ public:
      * @return RAN statistics
      */
     json getRANStatistics(std::string path);
+
+    /*
+     * Send curl request to FlexRAN controllers in parallel
+     * @return void
+     */
+    void send_curl_multi();
+
+    /*
+     * Create an easy single handle for each FlexRAN controller to be added to a multi session
+     * @param [addr] Address of the FlexRAN Controller
+     * @param [port] Port number of the FlexRAN Controller
+     * @param [httpData] Variable to store the return data
+     * @return a pointer to the created handle
+     */
+    CURL * curl_create_handle (std::string addr, int port, std::string *httpData);
+
+    /*
+     * Process the multi session request and store the returned data into a DB
+     */
+    void process_curl_multi();
+
+    /*
+     * Get RAN statistics from a FlexRAN controller and store in the DB
+     * @param [str] FlexRAN Controller's address
+     * @param [port] FlexRAN's port
+     * @return void
+     */
+    void get_RAN_statistics_from_FlexRAN(std::string addr, int port);
+
+    void get_RAN_statistic_from_default_file();
+
+    /*
+     * Get FlexRAN's IP address from its URL
+     * @param [url] FlexRAN's URL
+     * @return FlexRAN's IP address
+     */
+    std::string get_flexRAN_IPAddress(std::string url);
+    /*
+     * Get FlexRAN's port number from its URL
+     * @param [url] FlexRAN's URL
+     * @return FlexRAN's port number
+     */
+    int get_flexRAN_port(std::string url);
+
+
 private:
      Rib& m_rib;
      struct itimerspec m_its;
+     //uint64_t m_duration;
      std::vector<std::pair<std::string, int>> m_flexRANControllers;
+	 std::map<std::pair<std::string, int>, std::string> m_flexRANStatistics;
      std::string m_mode;
-
+     CURLM* m_curl_multi;
 
 };
 

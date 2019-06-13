@@ -74,7 +74,8 @@ bool Rib::update_eNB_info(uint64_t eNBId, nlohmann::json eNBInfo){
 	}
 	return true;
 }
-nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsId){
+
+nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
 	spdlog::get("ll-mec")->info("[RIB] Get PLMN info");
 	nlohmann::json plmnInfo;
 	std::map<uint64_t, nlohmann::json>::iterator it;
@@ -101,7 +102,7 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsId){
 		plmnInfo["cellId"] = {};
 		int numCellId = (it->second).size();
 		for (int i = 0; i < numCellId; ++i){
-			int cellId = ((it->second).at(i))["cellId"].get<int>();
+			int cellId = ((it->second).at(i))["phyCellId"].get<int>(); //TODO: cellID or PhyCellID
 			spdlog::get("ll-mec")->debug("[RIB] Get PLMN info, CellId {}", cellId);
 			plmnInfo["cellId"].push_back(std::to_string(cellId));
 		}

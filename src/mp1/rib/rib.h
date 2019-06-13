@@ -60,7 +60,13 @@ public:
      */
 	bool update_eNB_info(uint64_t eNBId, nlohmann::json eNBInfo);
 
-	nlohmann::json get_plmn_info(const std::vector<std::string> &appInsId);
+    /*
+     * Get PLMN info from DB
+     * @param [appInsId] list of appInsIds
+     * @return PLMN info in Json format
+     */
+	nlohmann::json get_plmn_info(const std::vector<std::string> &appInsIds);
+
 
 private:
 	std::map<uint64_t, nlohmann::json> eNBInfos;
