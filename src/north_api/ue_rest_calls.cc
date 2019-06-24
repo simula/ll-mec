@@ -441,7 +441,7 @@ namespace north_api {
       {"tos", tos}
     };
 
-    if (ue_manager->add_redirect_bearer(id, context) == false) {
+    if (ue_manager->add_redirect_bearer(id, meterid, context) == false) {
       resp = "Switch connection lost or no such bearer is found.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
@@ -510,7 +510,7 @@ namespace north_api {
       {"tos", tos}
     };
 
-    if (ue_manager->add_redirect_bearer(id, context) == false) {
+    if (ue_manager->add_redirect_bearer(id, meterid, context) == false) {
       resp = "Switch connection lost or no such bearer is found.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;

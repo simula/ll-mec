@@ -54,7 +54,7 @@ class Ue_manager : public llmec::app::App {
     bool add_bearer(json context);
 
     /* Redirect one specific bearer from IPv4_A to IPv4_B */
-    bool add_redirect_bearer(uint64_t id, json context);
+    bool add_redirect_bearer(uint64_t id, uint32_t meterid, json context);
 
     /* Redirect one specific bearer back if any */
     bool delete_redirect_bearer(uint64_t id);

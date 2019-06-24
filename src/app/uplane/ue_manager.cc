@@ -113,7 +113,7 @@ bool Ue_manager::modify_meter(json context){
 }
 */
 
-bool Ue_manager::add_redirect_bearer(uint64_t id, json context) {
+bool Ue_manager::add_redirect_bearer(uint64_t id, uint32_t meterid, json context) {
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 
   /* No such ue context */
@@ -141,6 +141,9 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, json context) {
 
 /*
  * The redirect_edge_service_ul_flow is not yet implemented for support the meter
+ *
+ * this->of_interface.redirect_edge_service_ul_meter_flow(of_conn, id, meterid, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+ * this->of_interface.redirect_edge_service_dl_meter_flow(of_conn, id, meterid, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
  */
 
   spdlog::get("ll-mec")->info("Redirect bearer id={} from {} to {}", id, context["from"].get<std::string>(), context["to"].get<std::string>());
