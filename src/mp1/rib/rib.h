@@ -39,11 +39,20 @@
 #include <set>
 #include <chrono>
 #include <mutex>
+#include <utility>
 #include "json.h"
+#include <unistd.h>
+enum APP_TYPE_t {
+  APP_PLMN_INFO  = 0,
+  APP_RAB_INFO   = 1
+};
+
 namespace llmec {
 namespace mp1 {
 
 namespace rib {
+
+
 
 class Rib {
 public:
@@ -67,12 +76,16 @@ public:
      */
 	nlohmann::json get_plmn_info(const std::vector<std::string> &appInsIds);
 
+	bool getAppPermission(std::string appId, APP_TYPE_t appType);
+
+
 
 private:
 	std::map<uint64_t, nlohmann::json> eNBInfos;
 	std::map<std::string, nlohmann::json> ueInfos;
     mutable std::mutex ue_info_mutex;
     mutable std::mutex eNB_info_mutex;
+    std::map<std::pair<std::string, APP_TYPE_t>, bool> appAuthorization; //test authentication
 
 };
 

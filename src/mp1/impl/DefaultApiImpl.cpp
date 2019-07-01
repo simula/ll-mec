@@ -84,34 +84,48 @@ void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::str
 
 	spdlog::get("ll-mec")->info("[MP1 API] Get PLMN info");
 
-	json jsonData = m_rib.get_plmn_info(appInsId.get());
+	if (appInsId.isEmpty()){
+		spdlog::get("ll-mec")->debug("[MP1 API] AppInsId should be provided ");
+		response.send(Pistache::Http::Code::Bad_Request, "[PLMN info] No information!\n");
+	}
 
-	//if information is available
-	if (!jsonData.empty()){
-		Plmn plmn;
-		Ecgi ecgi;
-		try{
-			plmn.fromJson(jsonData);
-			ecgi.setPlmn(plmn);
-			ecgi.fromJson(jsonData);
-		} catch (json::exception& e){
-			std::cout << "message: " << e.what() << '\n'
-					<< "exception id: " << e.id << std::endl;
+	//check whether AppInsId has permission to get PLMN info
+	if (m_rib.getAppPermission(appInsId.get()[0], APP_PLMN_INFO)){
+		json jsonData = m_rib.get_plmn_info(appInsId.get());
+
+		//if information is available
+		if (!jsonData.empty()){
+			Plmn plmn;
+			Ecgi ecgi;
+			try{
+				plmn.fromJson(jsonData);
+				ecgi.setPlmn(plmn);
+				ecgi.fromJson(jsonData);
+			} catch (json::exception& e){
+				std::cout << "message: " << e.what() << '\n'
+						<< "exception id: " << e.id << std::endl;
+				response.send(Pistache::Http::Code::Not_Found, "[PLMN info] No information!\n");
+			}
+			std::string resBody = "PLMN info ";
+			spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info,  MNC: {} ", ecgi.getPlmn().getMnc());
+			spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, MCC: {} ", ecgi.getPlmn().getMcc());
+			std::vector<std::string> m_CellId = ecgi.getCellId();
+			for (const std::string& str: m_CellId){
+				spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, Cell ID: {} ", str);
+				resBody += "CellId " + str;
+			}
+			resBody += " MNC " +  ecgi.getPlmn().getMnc() + ", MCC " +  ecgi.getPlmn().getMcc() + "\n";
+			response.send(Pistache::Http::Code::Ok, resBody);
+
+		} else{//if there's no information, send response with Not_Found code to the app
+			spdlog::get("ll-mec")->debug("[MP1 API] No PLMN info available ");
 			response.send(Pistache::Http::Code::Not_Found, "[PLMN info] No information!\n");
 		}
-		spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info,  MNC: {} ", ecgi.getPlmn().getMnc());
-		spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, MCC: {} ", ecgi.getPlmn().getMcc());
-		std::vector<std::string> m_CellId = ecgi.getCellId();
-		for (const std::string& str: m_CellId){
-			spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, Cell ID: {} ", str);
-		}
-
-		response.send(Pistache::Http::Code::Ok, "Do some magic with PLMN info\n");
-
-	} else{//if there's no information, send response with Not_Found code to the app
-		spdlog::get("ll-mec")->debug("[MP1 API] No PLMN info available ");
-		response.send(Pistache::Http::Code::Not_Found, "[PLMN info] No information!\n");
+	} else{
+		spdlog::get("ll-mec")->debug("[MP1 API] Do not permission to get PLMN info ");
+		response.send(Pistache::Http::Code::Unauthorized, "[PLMN info] not authorized to get this information!\n");
 	}
+
 }
 
 void DefaultApiImpl::post_mp1_traffic_all(const Mp1_traffic &mp1Traffic, Pistache::Http::ResponseWriter &response) {
@@ -136,7 +150,106 @@ void DefaultApiImpl::rab_est_subscriptions_subscr_id_delete(const std::string &s
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void DefaultApiImpl::rab_info_get(const Pistache::Optional<std::string> &appInsId, const Pistache::Optional<std::vector<std::string>> &cellId, const Pistache::Optional<std::vector<std::string>> &ueIpv4Address, const Pistache::Optional<std::vector<std::string>> &ueIpv6Address, const Pistache::Optional<std::vector<std::string>> &natedIpAddress, const Pistache::Optional<std::vector<std::string>> &gtpTeid, const Pistache::Optional<int32_t> &erabId, const Pistache::Optional<int32_t> &qci, const Pistache::Optional<int32_t> &erabGbrDl, const Pistache::Optional<int32_t> &erabGbrUl, const Pistache::Optional<int32_t> &erabMbrDl, const Pistache::Optional<int32_t> &erabMbrUl, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+
+	spdlog::get("ll-mec")->info("[MP1 API] Get RAB info");
+	std::vector<std::string> cellIdMp1;
+	std::vector<std::string> ueIpv4AddressMp1;
+	std::vector<std::string> ueIpv6AddressMp1;
+	std::vector<std::string> natedIpAddressMp1;
+    // Pistache::Optional<std::vector<std::string>> &gtpTeid
+    // Pistache::Optional<int32_t> &erabId
+	//Pistache::Optional<int32_t> &qci
+	//Pistache::Optional<int32_t> &erabGbrDl
+	//Pistache::Optional<int32_t> &erabGbrUl
+	//Pistache::Optional<int32_t> &erabMbrDl
+	//Pistache::Optional<int32_t> &erabMbrUl
+
+	if (!appInsId.isEmpty()){
+		spdlog::get("ll-mec")->info("[MP1 API] Get RAB info, appInsId {}", appInsId.get());
+		response.send(Pistache::Http::Code::Bad_Request, "[RAB info] AppInsId should be provided!\n");
+	}
+
+	//check authentication
+    if (!m_rib.getAppPermission(appInsId.get(), APP_RAB_INFO)){
+    	spdlog::get("ll-mec")->debug("[MP1 API] Do not permission to get RAB info ");
+    	response.send(Pistache::Http::Code::Unauthorized, "[RAB info] not authorized to get this information!\n");
+    }
+
+
+	if (!cellId.isEmpty()) {
+		cellIdMp1= cellId.get();
+
+	}
+	for (auto it = cellIdMp1.begin(); it != cellIdMp1.end(); ++it){
+		spdlog::get("ll-mec")->info("[MP1 API] Get RAB info CellId {}", *it);
+	}
+
+
+	//response
+	/*
+    RabInfo:
+      type: object
+      required:
+        - appInsId
+        - requestId
+      properties:
+        timeStamp:
+        properties:
+          seconds:
+             type: integer
+            format: uint32
+            description: The seconds part of the time. Time is defined as Unix-time since
+              January 1, 1970, 00:00:00 UTC
+            example: 1577836800
+          nanoSeconds:
+            type: integer
+            format: uint32
+            description: The nanoseconds part of the time. Time is defined as Unix-time since
+              January 1, 1970, 00:00:00 UTC
+            example: 0
+        appInsId:
+          type: string
+          format: string
+          description: Unique identifier for the mobile edge application instance
+          example: "01"
+        requestId:
+          RequestId:
+          type: string
+          format: string
+          description: Unique identifier allocated by the Mobile Edge application for the Information request.
+          example: "01"
+        cellUserInfo:
+          type: array
+          items:
+            $ref: "#/components/schemas/CellUserInfo"
+		*/
+
+	json jsonData ;
+
+	//generate RequestId
+	std::string requestId ="01";
+
+	//TimeStamp
+
+
+	auto mime = Pistache::Http::Mime::MediaType::fromString("application/json");
+	auto m1 = MIME(Application, Json);
+
+	//response.headers().add<Header::ContentType>(MIME(Application, Json));
+	//response.send(Pistache::Http::Code::Ok, m1.toString());
+	//response.headers().add<Pistache::Header::ContentType>(MIME(Application, Json));
+
+  //  auto one_header = Header::ContentType(MIME(Application, Json));
+  //  auto sec_header = Header::Accept(); //there should me constructor from MIME
+  //  sec_header.parseRaw("application/json", sizeof("application/json"));
+  /// response.header<Http::Header::ContentType>(one_header)
+   //.header<Http::Header::Accept>(sec_header)
+   //.send();
+
+	  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+
+
+
 }
 void DefaultApiImpl::rab_mod_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");

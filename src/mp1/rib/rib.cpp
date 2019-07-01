@@ -112,6 +112,19 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
 
 }
 
+bool Rib::getAppPermission(std::string appId, APP_TYPE_t appType){
+/*
+	 auto search =  appAuthorization.find(std::make_pair(appId,appType));
+	 if (search != appAuthorization.end()){
+		 return search->second;
+	 } else {
+		 return false;
+	 }
+	 */
+	//always return true for the moment
+	return true;
+}
+
 }
 }
 }

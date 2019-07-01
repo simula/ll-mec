@@ -13,6 +13,7 @@
 
 #include "DefaultApi.h"
 #include "Helpers.h"
+#include "spdlog.h"
 
 namespace llmec {
 namespace mp1 {
