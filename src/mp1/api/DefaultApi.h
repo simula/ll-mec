@@ -52,6 +52,7 @@
 #include "SubscriptionLinkList.h"
 #include <string>
 #include <curl/curl.h>
+#include "ue_event.h"
 
 namespace llmec {
 namespace mp1 {
@@ -65,6 +66,7 @@ public:
     virtual ~DefaultApi() {}
     void init();
     const std::string base = "/mp1/v1";
+    virtual void event_callback (llmec::app::uplane::ueEventType evType) = 0;
 
 private:
     void setupRoutes();

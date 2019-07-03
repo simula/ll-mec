@@ -57,6 +57,7 @@
 #include "rib.h"
 #include <string>
 
+
 using json = nlohmann::json;
 
 namespace llmec {
@@ -73,7 +74,7 @@ class DefaultApiImpl : public llmec::mp1::api::DefaultApi {
 public:
     DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router>, llmec::mp1::rib::Rib& rib);
     ~DefaultApiImpl() {}
-
+    void event_callback (llmec::app::uplane::ueEventType evType);
     void ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response);
     void ca_re_conf_subscription_subscriptions_post(const CaReConfSubscriptionPost &caReConfSubscriptionPost, Pistache::Http::ResponseWriter &response);
     void ca_re_conf_subscription_subscriptions_put(const std::string &subscriptionId, const CaReConfSubscription &caReConfSubscription, Pistache::Http::ResponseWriter &response);

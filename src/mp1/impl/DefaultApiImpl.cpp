@@ -26,6 +26,12 @@ DefaultApiImpl::DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, llme
     : DefaultApi(rtr), m_rib(rib)
     { }
 
+void DefaultApiImpl::event_callback (llmec::app::uplane::ueEventType evType){
+	spdlog::get("ll-mec")->info("[MP1 API] EVENT:{} ", evType );
+	//send notification to the corresponding Apps
+
+}
+
 void DefaultApiImpl::ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }

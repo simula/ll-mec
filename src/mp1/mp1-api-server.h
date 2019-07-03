@@ -33,10 +33,13 @@ public:
 	void start();
 	void shutdown();
 
+	std::shared_ptr<DefaultApiImpl> getDefaultApiServer();
+
 private:
 	std::shared_ptr<Pistache::Http::Endpoint> m_httpEndpoint;
 	std::shared_ptr<Pistache::Rest::Router> m_router;
 	std::shared_ptr<DefaultApiImpl> m_defaultApiserver;
+
 };
 
 

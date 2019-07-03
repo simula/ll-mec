@@ -26,7 +26,7 @@
   \company
   \email:
 */
-
+#include <chrono>
 #include <iostream>
 #include <thread>
 #include <memory>
@@ -51,6 +51,7 @@
 //#include "mp2-api-server.h" //Mp2ManagementAPI
 #include "rib.h"
 #include "rib_updater.h"
+#include "ue_event.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
@@ -107,7 +108,8 @@ int main(int argc, char **argv){
   auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
   llmec::app::uplane::Ue_manager::create_instance(of_interface);
   llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-//  auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
+  //auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
+
 
   //Register event for application
   ctrl->register_for_event(switch_manager, llmec::core::eps::EVENT_SWITCH_UP);
@@ -151,16 +153,17 @@ int main(int argc, char **argv){
   //mp1Manager.shutdown();
   std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
 
-
+  //register to user events
+  std::shared_ptr<DefaultApiImpl> api_server = mp1Manager.getDefaultApiServer();
+  ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_S1_BEARER);
+  ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
 
   struct itimerspec its;
-  its.it_value.tv_sec = 10;
+  its.it_value.tv_sec = 50;
   its.it_value.tv_nsec = 0;//100 * 1000 * 1000; //100ms
 
   rib_updater ribUpdater(rib, its, flexRANControllers, mp1ApiMode);
   std::thread rib_updater(&rib_updater::run, ribUpdater);
-
-
 
   //start Mp2 API
  

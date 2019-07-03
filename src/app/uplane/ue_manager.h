@@ -36,6 +36,8 @@
 #include "app.h"
 #include "controller.h"
 #include "json.h"
+#include "DefaultApi.h"
+#include "ue_event.h"
 
 using json = nlohmann::json;
 
@@ -85,6 +87,17 @@ class Ue_manager : public llmec::app::App {
 
     /* Check if ID exists in LLMEC context */
     bool id_exist(uint64_t id);
+
+    std::unordered_map<int, std::vector<std::shared_ptr<llmec::mp1::api::DefaultApi>>> ue_event_listeners_;
+
+    inline void dispatch_event(ueEventType evType) {
+      for (auto app : ue_event_listeners_[evType]) {
+        app->event_callback(evType);
+      }
+    }
+
+    void register_for_event(const std::shared_ptr<llmec::mp1::api::DefaultApi>& apiApp, int event_type);
+
 
   private:
     static Ue_manager* instance;

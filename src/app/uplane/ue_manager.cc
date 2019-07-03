@@ -88,6 +88,10 @@ bool Ue_manager::add_bearer(json context)
     this->of_interface.install_default_UE_ul_flow(of_conn_, id, context["s1_ul_teid"].get<int>(), metadata);
     this->of_interface.install_default_UE_dl_flow(of_conn_, id, context["ue_ip"].get<std::string>(), context["s1_dl_teid"].get<int>(), context["enb_ip"].get<std::string>(), metadata);
   }
+
+  //notify the event for Mp1 API
+  dispatch_event(UE_EVENT_RAB_ESTABLISHMENT);
+  dispatch_event(UE_EVENT_S1_BEARER);
   return true;
 }
 
@@ -257,6 +261,10 @@ Ue_manager* Ue_manager::get_instance()
 {
   assert(instance);
   return instance;
+}
+
+void Ue_manager::register_for_event(const std::shared_ptr<llmec::mp1::api::DefaultApi>& apiApp, int event_type) {
+  ue_event_listeners_[event_type].push_back(apiApp);
 }
 
 
