@@ -68,6 +68,9 @@ class Ue_manager : public llmec::app::App {
     /* Delete one specific bearer context from the underlying user plane */
     bool delete_bearer(uint64_t id);
 
+    /*Delete an specic meter ID */
+    bool delete_meter_table(uint32_t meterid);
+
     /* Delete all bearers context */
     bool delete_bearer_all();
 

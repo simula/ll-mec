@@ -359,7 +359,6 @@ namespace north_api {
     }
     /*
      * Optional metering parameters for defining the DefaultMeterTable
-     *
      */
      uint32_t meter_rate = 1000000;
      if (!payload["meter_rate"].empty()){
@@ -529,7 +528,7 @@ namespace north_api {
       resp = "Switch connection lost or no such bearer is found.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
-    }
+    }``
     resp = "OK";
     response.send(Pistache::Http::Code::Ok, resp);
     return;
@@ -691,6 +690,40 @@ namespace north_api {
     response.send(Pistache::Http::Code::Ok, resp);
     return;
   }
+
+/* Delete meter-table by ID*/
+
+  void Ue_rest_calls::delete_meter_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
+    llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+    std::string resp;
+
+    /* the expected format is "imsi,meter_id" */
+    auto id = request.param(":meterid").as<int>();
+
+    /* Default flow will be labled as 1 and cannot be removed */
+    if (meterid == 1) {
+      resp = "Default flows (meterid = 1) cannot be deleted.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
+
+    /* ID not exist */
+    if (ue_manager->id_exist(meterid) == false) {
+      resp = "ID invalid.";
+      response.send(Pistache::Http::Code::Bad_Request, resp);
+      return;
+    }
+
+    if (ue_manager->delete_meter_table(meterid) == false) {
+      resp = "Switch connection lost.";
+      response.send(Pistache::Http::Code::Service_Unavailable, resp);
+      return;
+    }
+    resp = "OK";
+    response.send(Pistache::Http::Code::Ok, resp);
+    return;
+  }
+
 
   void Ue_rest_calls::delete_bearer_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();

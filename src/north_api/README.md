@@ -1,17 +1,17 @@
 ## Description of the North-API
 
-# The add default or dedicated bearer context API call 
+# The add default or dedicated bearer context API call
 ```
 curl -X POST http://127.0.0.1:9999/bearer -d '{"eps_bearer_id":1, "imsi":"901700000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
 ```
 Parameters of the call:
 
-| Field		| Type   | Description 			                              |
+| Field	      	| Type   | Description 		                                            |
 | ------------- | ------ | ---------------------------------------------------------  |
-| eps_bearer_id | Number | EPS bearer ID		                              |
-| slice_id      | Number | (optional) SliceID.default=0        		              |
+| eps_bearer_id | Number | EPS bearer ID		                                          |
+| slice_id      | Number | (optional) SliceID.default=0        		                    |
 | tos           | Number | (optional) TypeOfService including DSCP and ECN. default=0 |
-| imsi          | String | IMSI							      |
+| imsi          | String | IMSI							                                          |
 | s1_ul_teid    | String | S1 downlink tunnel ID                                      |
 | s1_dl_teild   | String | S1 downlink tunnel ID                                      |
 | ue_ip         | String | IP address of UE                                           |
@@ -65,5 +65,3 @@ Parameters of the call:
 | from          | String | where the to-be-redirected traffic is coming from          												|
 | to            | String | where the to-be-redirected traffic is going to             												|
 | imsi_bearer   | String | ID of the bearer (LLMEC internally used to identify every single bearer, which is different from EPS bearer ID)                                      |
-
-
