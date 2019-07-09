@@ -20,11 +20,11 @@
  *  	contact@mosaic5g.io
  */
 /*!
-  \file ue_manager.h
-  \brief managing the users and bearers, and their associations to different slices 
-  \author Anta Huang and N. Nikaein
+  \file ue_event.h
+  \brief managing the user-releated events
+  \author Tien-Thinh Nguyen
   \company Eurecom
-  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
+  \email: thinhnt1983@gmail.com
 */
 
 #ifndef __UE_EVENT_H__
@@ -46,6 +46,9 @@ typedef enum {
   UE_EVENT_MEAS_TIMING_ADVANCE  = 5,
   UE_EVENT_CA_RECONF            = 6,
   UE_EVENT_S1_BEARER            = 7,
+  UE_QUERY_PLMN_INFO            = 8,
+  UE_QUERY_RAB_INFO             = 9,
+  UE_QUERY_S1_BEARER_INFO       = 10,
 } ueEventType;
 
 

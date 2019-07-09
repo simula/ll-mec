@@ -14,6 +14,7 @@
 #include <fstream>
 #include <curl/curl.h>
 #include "spdlog.h"
+#include "ue_event.h"
 
 namespace llmec {
 namespace mp1 {
@@ -26,11 +27,45 @@ DefaultApiImpl::DefaultApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, llme
     : DefaultApi(rtr), m_rib(rib)
     { }
 
-void DefaultApiImpl::event_callback (llmec::app::uplane::ueEventType evType){
-	spdlog::get("ll-mec")->info("[MP1 API] EVENT:{} ", evType );
-	//send notification to the corresponding Apps
+void DefaultApiImpl::event_callback (std::string imsi, llmec::app::uplane::ueEventType evType){
+	spdlog::get("ll-mec")->info("[MP1 API] Event Callback, UE IMSI: {}, event {} ", imsi, evType );
+
+	//send notification to the corresponding Apps by using curl lib
+	nlohmann::json notificationInfos = m_rib.get_notification_info(imsi,evType);
+	int numApps = notificationInfos.size();
+    for (int i = 0; i < numApps; i++){
+    	spdlog::get("ll-mec")->debug("[MP1 API] Event Callback, App: {}, ref {} ", (notificationInfos.at(i)["appInsId"]).get<std::string>().c_str(), (notificationInfos.at(i)["callbackReference"]).get<std::string>().c_str());
+    	std::string notificationInfo = (notificationInfos.at(i)["notificationInfo"]).dump();
+    	spdlog::get("ll-mec")->debug("[MP1 API] Event Callback, NotificationInfo: {} ",notificationInfo );
+
+		//send notification to MEC App
+		struct curl_slist *headers = NULL;
+		headers = curl_slist_append(headers, "Expect:");
+		headers = curl_slist_append(headers, "Content-Type: application/json");
+		headers = curl_slist_append(headers, "charsets: utf-8");
+		CURL *curl = curl_easy_init();
+		std::string url = (notificationInfos.at(i)["callbackReference"]).get<std::string>().c_str();
+
+		if(curl) {
+			CURLcode res;
+			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+			curl_easy_setopt(curl, CURLOPT_URL, url.c_str() );
+			curl_easy_setopt(curl, CURLOPT_POST,1L);
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, -1L);
+			curl_easy_setopt(curl, CURLOPT_POSTFIELDS, notificationInfo.c_str());
+
+			// Response information.
+			long httpCode(0);
+			std::unique_ptr<std::string> httpData(new std::string());
+			res = curl_easy_perform(curl);
+			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
+			spdlog::get("ll-mec")->debug("[MP1 API] Response from MEC App, HTTP code: {} ", httpCode);
+			curl_easy_cleanup(curl);
+		}
+    }
 
 }
+
 
 void DefaultApiImpl::ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
@@ -96,7 +131,7 @@ void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::str
 	}
 
 	//check whether AppInsId has permission to get PLMN info
-	if (m_rib.getAppPermission(appInsId.get()[0], APP_PLMN_INFO)){
+	if (m_rib.get_app_permission(appInsId.get()[0], llmec::app::uplane::UE_QUERY_PLMN_INFO)){
 		json jsonData = m_rib.get_plmn_info(appInsId.get());
 
 		//if information is available
@@ -144,10 +179,32 @@ void DefaultApiImpl::post_platform(Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void DefaultApiImpl::rab_est_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	spdlog::get("ll-mec")->info("[MP1 API] Get RabEstSubscription information\n");
+	json jsonData = m_rib.get_app_subscription_info(subscriptionId,llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
+	std::string resBody = jsonData.dump();
+	response.send(Pistache::Http::Code::Ok,resBody);
 }
 void DefaultApiImpl::rab_est_subscription_subscriptions_post(const RabEstSubscriptionPost &rabEstSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+
+	spdlog::get("ll-mec")->info("[MP1 API] Post RabEstSubscription\n");
+
+	//Store RabEstSubscription into a DB
+	RabEstSubscription *rabEstSub = new RabEstSubscription();
+	rabEstSub->setCallbackReference(rabEstSubscriptionPost.getCallbackReference());
+	rabEstSub->setFilterCriteria(rabEstSubscriptionPost.getFilterCriteria());
+	rabEstSub->setExpiryDeadline(rabEstSubscriptionPost.getExpiryDeadline());
+    std::string appId = rabEstSubscriptionPost.getFilterCriteria().getAppInsId();
+	std::string subscriptionId = appId;
+	Link link;
+	link.setSelf(m_rib.get_mp1_server_url() + base + "/" + subscriptionId);
+	rabEstSub->setLinks(link);
+
+	json jsonData = rabEstSub->toJson();
+	m_rib.update_app_subscription_info(appId, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT, jsonData);
+
+	//send response
+	std::string resBody = jsonData.dump();
+	response.send(Pistache::Http::Code::Ok,resBody);
 }
 void DefaultApiImpl::rab_est_subscription_subscriptions_put(const std::string &subscriptionId, const RabEstSubscription &rabEstSubscription, Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
@@ -156,7 +213,7 @@ void DefaultApiImpl::rab_est_subscriptions_subscr_id_delete(const std::string &s
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void DefaultApiImpl::rab_info_get(const Pistache::Optional<std::string> &appInsId, const Pistache::Optional<std::vector<std::string>> &cellId, const Pistache::Optional<std::vector<std::string>> &ueIpv4Address, const Pistache::Optional<std::vector<std::string>> &ueIpv6Address, const Pistache::Optional<std::vector<std::string>> &natedIpAddress, const Pistache::Optional<std::vector<std::string>> &gtpTeid, const Pistache::Optional<int32_t> &erabId, const Pistache::Optional<int32_t> &qci, const Pistache::Optional<int32_t> &erabGbrDl, const Pistache::Optional<int32_t> &erabGbrUl, const Pistache::Optional<int32_t> &erabMbrDl, const Pistache::Optional<int32_t> &erabMbrUl, Pistache::Http::ResponseWriter &response) {
-
+    //To be done
 	spdlog::get("ll-mec")->info("[MP1 API] Get RAB info");
 	std::vector<std::string> cellIdMp1;
 	std::vector<std::string> ueIpv4AddressMp1;
@@ -176,7 +233,7 @@ void DefaultApiImpl::rab_info_get(const Pistache::Optional<std::string> &appInsI
 	}
 
 	//check authentication
-    if (!m_rib.getAppPermission(appInsId.get(), APP_RAB_INFO)){
+    if (!m_rib.get_app_permission(appInsId.get(), llmec::app::uplane::UE_QUERY_PLMN_INFO)){
     	spdlog::get("ll-mec")->debug("[MP1 API] Do not permission to get RAB info ");
     	response.send(Pistache::Http::Code::Unauthorized, "[RAB info] not authorized to get this information!\n");
     }

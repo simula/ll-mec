@@ -72,6 +72,7 @@ void Mp1Manager::shutdown(){
 std::shared_ptr<DefaultApiImpl> Mp1Manager::getDefaultApiServer(){
 	std::shared_ptr<DefaultApiImpl> temp = std::dynamic_pointer_cast<DefaultApiImpl> (m_defaultApiserver);
 	//spdlog::get("ll-mec")->info("[MP1 Manager] number of defaultApiServer's instances:{} ", m_defaultApiserver.use_count());
+	//return m_defaultApiserver;
 	return temp;
 }
 

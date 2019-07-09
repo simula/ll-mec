@@ -81,6 +81,7 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
 	std::map<uint64_t, nlohmann::json>::iterator it;
 
 	for (auto it = ueInfos.begin(); it != ueInfos.end(); ++it){
+		/*
 		int numUEConfig = (it->second).size();
 		for (int i = 0; i < numUEConfig; ++i){
 			std::string imsi = (((it->second).at(i))["imsi"]).get<std::string>().c_str();
@@ -96,6 +97,22 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
 			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["mcc"].get<std::string>().c_str());
 			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MNC {}", plmnInfo["mnc"].get<std::string>().c_str());
 		}
+		*/
+
+		std::string imsi = ((it->second)["imsi"]).get<std::string>().c_str();
+		try{
+			plmnInfo["mcc"] = imsi.substr(0,3);
+			plmnInfo["mnc"] = imsi.substr(3,2);
+		} catch (const std::out_of_range& oor) {
+			spdlog::get("ll-mec")->warn("[RIB] Could not get MCC, MNC from IMSI, use default values");
+			plmnInfo["mcc"] = "294";
+			plmnInfo["mnc"] = "84";
+		}
+
+		spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["mcc"].get<std::string>().c_str());
+		spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MNC {}", plmnInfo["mnc"].get<std::string>().c_str());
+
+
 	}
 
 	for (auto it = eNBInfos.begin(); it != eNBInfos.end(); ++it){
@@ -112,17 +129,95 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
 
 }
 
-bool Rib::getAppPermission(std::string appId, APP_TYPE_t appType){
-/*
-	 auto search =  appAuthorization.find(std::make_pair(appId,appType));
-	 if (search != appAuthorization.end()){
-		 return search->second;
-	 } else {
-		 return false;
-	 }
-	 */
+bool Rib::get_app_permission(std::string appId, llmec::app::uplane::ueEventType appType){
 	//always return true for the moment
 	return true;
+}
+
+void Rib::update_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType, nlohmann::json subscriptionInfo){
+
+	std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
+	it  = appSubscriptionList.find(std::make_pair(appId,appType));
+	//if not present -> create a new one
+	if (it == appSubscriptionList.end()){
+		appSubscriptionList.emplace(std::make_pair(appId,appType), subscriptionInfo);
+	} else{ //if existed-> simply update
+		it->second = subscriptionInfo;
+	}
+
+}
+
+nlohmann::json Rib::get_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType){
+	std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
+	it  = appSubscriptionList.find(std::make_pair(appId,appType));
+	//if not present -> create a new one
+	if (it != appSubscriptionList.end()){
+		return it->second;
+	} else{ //if existed-> simply update
+		return NULL;
+	}
+
+}
+
+void Rib::set_mp1_server_url(std::string url){
+	mp1_server_url = url;
+	spdlog::get("ll-mec")->debug("[RIB] Server URL: {}", url);
+}
+
+std::string Rib::get_mp1_server_url(){
+	return mp1_server_url;
+}
+
+/*
+std::vector<std::pair<std::string, std::string>> Rib::get_callback_reference(std::string imsi, llmec::app::uplane::ueEventType evType){
+	std::vector<std::pair<std::string, std::string>> result;
+	std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
+	for (it = subscriptionList.begin(); it!= subscriptionList.end(); it++){
+		if (it->first.second == evType){
+			spdlog::get("ll-mec")->debug("[RIB] get_callback_reference: appInsId {}", ((it->second)["filterCriteria"]["appInsId"]).get<std::string>().c_str());
+			spdlog::get("ll-mec")->debug("[RIB] get_callback_reference: callbackReference {}", ((it->second)["callbackReference"]).get<std::string>().c_str());
+			//TODO: check filterCriteria e.g., based on AssociatedId (type=1, UE_IPVv4_ADDR)
+			std::pair<std::string, std::string> appPair = std::make_pair(((it->second)["filterCriteria"]["appInsId"]).get<std::string>().c_str(), ((it->second)["callbackReference"]).get<std::string>().c_str());
+			result.push_back(appPair);
+		}
+	}
+	return result;
+}
+*/
+
+nlohmann::json Rib::get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType){
+	nlohmann::json notificationInfos;
+	nlohmann::json ueInfo = ueInfos[imsi];
+	std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
+	for (it = appSubscriptionList.begin(); it!= appSubscriptionList.end(); it++){
+		if (it->first.second == evType){
+			nlohmann::json appInfo = it->second;
+			nlohmann::json notificationInfo;
+			notificationInfo["appInsId"] = ((it->second)["filterCriteria"]["appInsId"]).get<std::string>().c_str();
+			notificationInfo["callbackReference"] =  (appInfo["callbackReference"]).get<std::string>().c_str();
+			spdlog::get("ll-mec")->debug("[RIB] get_callback_reference: appInsId {}", (appInfo["filterCriteria"]["appInsId"]).get<std::string>().c_str());
+			spdlog::get("ll-mec")->debug("[RIB] get_callback_reference: callbackReference {}", (appInfo["callbackReference"]).get<std::string>().c_str());
+			//TODO: check filterCriteria e.g., based on AssociatedId (type=1, UE_IPVv4_ADDR)
+
+			switch (evType){
+			case llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT:
+				notificationInfo["notificationInfo"]["ecgi"]["mcc"] = imsi.substr(0,3);
+				notificationInfo["notificationInfo"]["ecgi"]["mnc"] = imsi.substr(3,2);
+				notificationInfo["notificationInfo"]["ecgi"]["cellId"] = "123";//need to get from eNB's Info
+				notificationInfo["notificationInfo"]["associateId"]["type"] = 1; //hardcoded for the moment
+				notificationInfo["notificationInfo"]["associateId"]["value"] = "172.0.0.2"; //hardcoded for the moment (should be updated from MP2)
+				notificationInfo["notificationInfo"]["erabId"] = 4; //hardcoded
+				break;
+			case llmec::app::uplane::UE_EVENT_CELL_CHANGE:
+				break;
+			default:
+				break;
+			}
+			notificationInfos.push_back(notificationInfo);
+		}
+	}
+	return notificationInfos;
+
 }
 
 }

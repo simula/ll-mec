@@ -51,6 +51,18 @@ nlohmann::json RabEstSubscriptionPost::toJson() const
 void RabEstSubscriptionPost::fromJson(const nlohmann::json& val)
 {
     setCallbackReference(val.at("callbackReference"));
+
+    if(val.find("filterCriteriaAssocQci") != val.end())
+    {
+    	if(!val["filterCriteriaAssocQci"].is_null())
+    	{
+    		FilterCriteriaAssocQci newItem;
+    		newItem.fromJson(val["filterCriteriaAssocQci"]);
+    		setFilterCriteria( newItem );
+    	}
+    }
+
+
     if(val.find("expiryDeadline") != val.end())
     {
         if(!val["expiryDeadline"].is_null())
@@ -59,7 +71,6 @@ void RabEstSubscriptionPost::fromJson(const nlohmann::json& val)
             newItem.fromJson(val["expiryDeadline"]);
             setExpiryDeadline( newItem );
         }
-        
     }
     
 }

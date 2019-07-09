@@ -142,7 +142,16 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 			cellConfig = eNB["cellConfig"];
 			UE = (eNB_config.at(0))["UE"];
 			ueConfig = UE["ueConfig"];
-			imsi = ((ueConfig.at(0))["imsi"]).get<std::string>().c_str();
+			//imsi = ((ueConfig.at(0))["imsi"]).get<std::string>().c_str();
+			int numUEConfig = ueConfig.size();
+			for (int i = 0; i < numUEConfig; i++){
+				imsi = ((ueConfig.at(i))["imsi"]).get<std::string>().c_str();
+				//should add timestamp to the DB
+				//update DB
+			    m_rib.update_ue_info(imsi, ueConfig.at(i));
+			}
+			m_rib.update_eNB_info(eNBId, cellConfig);
+
 		} catch (json::exception& e){
 			std::cout << "message: " << e.what() << '\n'
 					<< "exception id: " << e.id << std::endl;
@@ -152,8 +161,8 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 		}
 
 		//update DB
-		m_rib.update_ue_info(imsi, ueConfig);
-		m_rib.update_eNB_info(eNBId, cellConfig);
+		//m_rib.update_ue_info(imsi, ueConfig);
+		//m_rib.update_eNB_info(eNBId, cellConfig);
 	}
 	else{
 		spdlog::get("ll-mec")->warn("[RIB UPDATER] No valid data from the default file {} ",DEFAULT_RIB_FILE);
@@ -192,16 +201,21 @@ void rib_updater::update_rib()
 			cellConfig = eNB["cellConfig"];
 			UE = (eNB_config.at(0))["UE"];
 			ueConfig = UE["ueConfig"];
-			imsi = ((ueConfig.at(0))["imsi"]).get<std::string>().c_str();
+			int numUEConfig = ueConfig.size();
+
+			for (int i = 0; i < numUEConfig; i++){
+				imsi = ((ueConfig.at(i))["imsi"]).get<std::string>().c_str();
+				//should add timestamp to the DB
+				//update DB
+			    m_rib.update_ue_info(imsi, ueConfig.at(i));
+			}
+			m_rib.update_eNB_info(eNBId, cellConfig);
+
 		} catch (json::exception& e){
 			std::cout << "message: " << e.what() << '\n'
 					<< "exception id: " << e.id << std::endl;
 		}
-		//should add timestamp to the DB
 
-		//update DB
-		m_rib.update_ue_info(imsi, ueConfig);
-		m_rib.update_eNB_info(eNBId, cellConfig);
 	}
 
 }
@@ -474,7 +488,16 @@ void rib_updater::get_RAN_statistics_from_FlexRAN(std::string addr, int port)
 			cellConfig = eNB["cellConfig"];
 			UE = (eNB_config.at(0))["UE"];
 			ueConfig = UE["ueConfig"];
-			imsi = ((ueConfig.at(0))["imsi"]).get<std::string>().c_str();
+			//imsi = ((ueConfig.at(0))["imsi"]).get<std::string>().c_str();
+			int numUEConfig = ueConfig.size();
+			for (int i = 0; i < numUEConfig; i++){
+				imsi = ((ueConfig.at(i))["imsi"]).get<std::string>().c_str();
+				//should add timestamp to the DB
+				//update DB
+			    m_rib.update_ue_info(imsi, ueConfig.at(i));
+			}
+			m_rib.update_eNB_info(eNBId, cellConfig);
+
 		} catch (json::exception& e){
 			std::cout << "message: " << e.what() << '\n'
 					<< "exception id: " << e.id << std::endl;
@@ -485,8 +508,8 @@ void rib_updater::get_RAN_statistics_from_FlexRAN(std::string addr, int port)
 		}
 
 		//update DB
-		m_rib.update_ue_info(imsi, ueConfig);
-		m_rib.update_eNB_info(eNBId, cellConfig);
+		//m_rib.update_ue_info(imsi, ueConfig);
+		//m_rib.update_eNB_info(eNBId, cellConfig);
 	}
 	else{
 		spdlog::get("ll-mec")->warn("[RIB UPDATER] No valid data from FlexRAN {}:{} ", addr, port);

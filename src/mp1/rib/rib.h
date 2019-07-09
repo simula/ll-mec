@@ -42,17 +42,12 @@
 #include <utility>
 #include "json.h"
 #include <unistd.h>
-enum APP_TYPE_t {
-  APP_PLMN_INFO  = 0,
-  APP_RAB_INFO   = 1
-};
+#include "ModelBase.h"
+#include "ue_event.h"
 
 namespace llmec {
 namespace mp1 {
-
 namespace rib {
-
-
 
 class Rib {
 public:
@@ -76,16 +71,61 @@ public:
      */
 	nlohmann::json get_plmn_info(const std::vector<std::string> &appInsIds);
 
-	bool getAppPermission(std::string appId, APP_TYPE_t appType);
+    /*
+     * Get MEC APP permission
+     * @param [appInsId] AppId
+     * @param [appType] type of subscription/query
+     * @return true if this app has permission to get information of this type. if not return false
+     */
+	bool get_app_permission(std::string appId, llmec::app::uplane::ueEventType appType);
 
+	/*
+     * Update app's subscription info
+     * @param [appInsId] AppId
+     * @param [appType] type of subscription/query
+     * @param [subscriptionInfo] subscription info
+     */
+	void update_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType, nlohmann::json subscriptionInfo);
 
+	/*
+     * Get app's subscription info
+     * @param [appInsId] AppId
+     * @param [appType] type of subscription/query
+     * @return App's subscription info
+     */
+	nlohmann::json get_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType);
+
+	/*
+     * Set url of MP1 server (to be included in the response to App subscription request)
+     * @param [url] url in which MP1 server is listening to
+     */
+	void set_mp1_server_url(std::string url);
+
+	/*
+     * Get url of MP1 server
+     * @return url in which MP1 server is listening to
+     */
+	std::string get_mp1_server_url();
+
+	/*
+     * Get information to be notified to the corresponding app event (e.g., RAB establishment)
+     * @param [imsi] UE's IMSI
+     * @param [appType] type of subscription/query
+     * @return notification info e.g., RabEstNotification
+     */
+	nlohmann::json get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType);
 
 private:
+	mutable std::mutex eNB_info_mutex;
 	std::map<uint64_t, nlohmann::json> eNBInfos;
-	std::map<std::string, nlohmann::json> ueInfos;
     mutable std::mutex ue_info_mutex;
-    mutable std::mutex eNB_info_mutex;
-    std::map<std::pair<std::string, APP_TYPE_t>, bool> appAuthorization; //test authentication
+	std::map<std::string, nlohmann::json> ueInfos;
+
+    mutable std::mutex app_subscription_mutex;
+    // list of MEC apps subscribed to MEC platform
+    std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json> appSubscriptionList;
+    //MP1's URL
+    std::string mp1_server_url;
 
 };
 
