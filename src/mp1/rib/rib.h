@@ -96,6 +96,14 @@ public:
 	nlohmann::json get_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType);
 
 	/*
+	 * Delete app's subscription from subscription list
+	 * @param [appInsId] AppId
+	 * @param [appType] type of subscription/query
+	 */
+	void delete_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType);
+
+
+	/*
      * Set url of MP1 server (to be included in the response to App subscription request)
      * @param [url] url in which MP1 server is listening to
      */

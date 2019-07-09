@@ -68,58 +68,58 @@ void DefaultApiImpl::event_callback (std::string imsi, llmec::app::uplane::ueEve
 
 
 void DefaultApiImpl::ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::ca_re_conf_subscription_subscriptions_post(const CaReConfSubscriptionPost &caReConfSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::ca_re_conf_subscription_subscriptions_put(const std::string &subscriptionId, const CaReConfSubscription &caReConfSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::ca_re_conf_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::cell_change_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::cell_change_subscriptions_post(const CellChangeSubscriptionPost &cellChangeSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::cell_change_subscriptions_put(const std::string &subscriptionId, const CellChangeSubscription &cellChangeSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::cell_change_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::delete_mp1_traffic_all(const Mp1_traffic &mp1Traffic, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::delete_mp1_traffic_imsi(const Mp1_traffic_imsi &mp1TrafficImsi, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_rep_ue_report_subscriptions_put(const std::string &subscriptionId, const MeasRepUeSubscription &measRepUeSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_rep_ue_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_rep_ue_subscriptions_post(const MeasRepUeSubscriptionPost &measRepUeSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_rep_ue_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_ta_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_ta_subscriptions_post(const MeasTaSubscriptionPost &measTaSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_ta_subscriptions_put(const std::string &subscriptionId, const MeasTaSubscription &measTaSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::meas_ta_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::string>> &appInsId, Pistache::Http::ResponseWriter &response) {
 
@@ -163,27 +163,33 @@ void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::str
 			response.send(Pistache::Http::Code::Not_Found, "[PLMN info] No information!\n");
 		}
 	} else{
-		spdlog::get("ll-mec")->debug("[MP1 API] Do not permission to get PLMN info ");
+		spdlog::get("ll-mec")->debug("[MP1 API] Don't have permission to get PLMN info ");
 		response.send(Pistache::Http::Code::Unauthorized, "[PLMN info] not authorized to get this information!\n");
 	}
 
 }
 
 void DefaultApiImpl::post_mp1_traffic_all(const Mp1_traffic &mp1Traffic, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::post_mp1_traffic_imsi(const Mp1_traffic_imsi &mp1TrafficImsi, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::post_platform(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_est_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
 	spdlog::get("ll-mec")->info("[MP1 API] Get RabEstSubscription information\n");
 	json jsonData = m_rib.get_app_subscription_info(subscriptionId,llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
-	std::string resBody = jsonData.dump();
-	response.send(Pistache::Http::Code::Ok,resBody);
+	if (!jsonData.empty()){
+		std::string resBody = jsonData.dump();
+		response.send(Pistache::Http::Code::Ok,resBody);
+	} else{
+		std::string resBody = "No information for RabEstSubscriptoin with Id "+ subscriptionId + "\n";
+		response.send(Pistache::Http::Code::Not_Found, resBody);
+	}
 }
+
 void DefaultApiImpl::rab_est_subscription_subscriptions_post(const RabEstSubscriptionPost &rabEstSubscriptionPost, Pistache::Http::ResponseWriter &response) {
 
 	spdlog::get("ll-mec")->info("[MP1 API] Post RabEstSubscription\n");
@@ -207,14 +213,34 @@ void DefaultApiImpl::rab_est_subscription_subscriptions_post(const RabEstSubscri
 	response.send(Pistache::Http::Code::Ok,resBody);
 }
 void DefaultApiImpl::rab_est_subscription_subscriptions_put(const std::string &subscriptionId, const RabEstSubscription &rabEstSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	spdlog::get("ll-mec")->info("[MP1 API] Put RabEstSubscription\n");
+
+		//Store RabEstSubscription into a DB
+		RabEstSubscription *rabEstSub = new RabEstSubscription();
+		rabEstSub->setCallbackReference(rabEstSubscription.getCallbackReference());
+		rabEstSub->setFilterCriteria(rabEstSubscription.getFilterCriteria());
+		rabEstSub->setExpiryDeadline(rabEstSubscription.getExpiryDeadline());
+	    //std::string appId = rabEstSubscription.getFilterCriteria().getAppInsId();
+		Link link;
+		link.setSelf(m_rib.get_mp1_server_url() + base + "/" + subscriptionId);
+		rabEstSub->setLinks(link);
+
+		json jsonData = rabEstSub->toJson();
+		m_rib.update_app_subscription_info(subscriptionId, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT, jsonData);
+
+		//send response
+		std::string resBody = jsonData.dump();
+		response.send(Pistache::Http::Code::Ok,resBody);
+
 }
 void DefaultApiImpl::rab_est_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	spdlog::get("ll-mec")->info("[MP1 API] Delete a RabEstSubscription with ID {}", subscriptionId );
+	m_rib.delete_app_subscription_info(subscriptionId,llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
+	response.send(Pistache::Http::Code::Ok,"RabEstSubscription has been deleted!\n");
 }
 void DefaultApiImpl::rab_info_get(const Pistache::Optional<std::string> &appInsId, const Pistache::Optional<std::vector<std::string>> &cellId, const Pistache::Optional<std::vector<std::string>> &ueIpv4Address, const Pistache::Optional<std::vector<std::string>> &ueIpv6Address, const Pistache::Optional<std::vector<std::string>> &natedIpAddress, const Pistache::Optional<std::vector<std::string>> &gtpTeid, const Pistache::Optional<int32_t> &erabId, const Pistache::Optional<int32_t> &qci, const Pistache::Optional<int32_t> &erabGbrDl, const Pistache::Optional<int32_t> &erabGbrUl, const Pistache::Optional<int32_t> &erabMbrDl, const Pistache::Optional<int32_t> &erabMbrUl, Pistache::Http::ResponseWriter &response) {
     //To be done
-	spdlog::get("ll-mec")->info("[MP1 API] Get RAB info");
+	spdlog::get("ll-mec")->info("[MP1 API] Get RAB info\n");
 	std::vector<std::string> cellIdMp1;
 	std::vector<std::string> ueIpv4AddressMp1;
 	std::vector<std::string> ueIpv6AddressMp1;
@@ -234,7 +260,7 @@ void DefaultApiImpl::rab_info_get(const Pistache::Optional<std::string> &appInsI
 
 	//check authentication
     if (!m_rib.get_app_permission(appInsId.get(), llmec::app::uplane::UE_QUERY_PLMN_INFO)){
-    	spdlog::get("ll-mec")->debug("[MP1 API] Do not permission to get RAB info ");
+    	spdlog::get("ll-mec")->debug("[MP1 API] Don't have permission to get RAB info");
     	response.send(Pistache::Http::Code::Unauthorized, "[RAB info] not authorized to get this information!\n");
     }
 
@@ -315,70 +341,70 @@ void DefaultApiImpl::rab_info_get(const Pistache::Optional<std::string> &appInsI
 
 }
 void DefaultApiImpl::rab_mod_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_mod_subscription_subscriptions_post(const RabModSubscriptionPost &rabModSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_mod_subscription_subscriptions_put(const std::string &subscriptionId, const RabModSubscription &rabModSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_mod_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_rel_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_rel_subscription_subscriptions_post(const RabRelSubscriptionPost &rabRelSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_rel_subscription_subscriptions_put(const std::string &subscriptionId, const RabRelSubscription &rabRelSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::rab_rel_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::s1_bearer_info_get(const Pistache::Optional<std::vector<std::string>> &tempUeId, const Pistache::Optional<std::vector<std::string>> &ueIpv4Address, const Pistache::Optional<std::vector<std::string>> &ueIpv6Address, const Pistache::Optional<std::vector<std::string>> &natedIpAddress, const Pistache::Optional<std::vector<std::string>> &gtpTeid, const Pistache::Optional<std::vector<std::string>> &cellId, const Pistache::Optional<std::vector<int32_t>> &erabId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::s1_bearer_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::s1_bearer_subscription_subscriptions_post(const S1BearerSubscriptionPost &s1BearerSubscriptionPost, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::s1_bearer_subscription_subscriptions_put(const std::string &subscriptionId, const S1BearerSubscription &s1BearerSubscription, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::s1_bearer_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_cc_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_cr_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_mr_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_re_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_rm_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_rr_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_s1_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 }
 }

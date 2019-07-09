@@ -154,9 +154,15 @@ nlohmann::json Rib::get_app_subscription_info(std::string appId, llmec::app::upl
 	if (it != appSubscriptionList.end()){
 		return it->second;
 	} else{ //if existed-> simply update
-		return NULL;
+		return nlohmann::json();
 	}
 
+}
+
+void Rib::delete_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType){
+	//std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
+	appSubscriptionList.erase(std::make_pair(appId,appType));
+	//appSubscriptionList.erase(it);
 }
 
 void Rib::set_mp1_server_url(std::string url){
@@ -207,6 +213,15 @@ nlohmann::json Rib::get_notification_info(std::string imsi, llmec::app::uplane::
 				notificationInfo["notificationInfo"]["associateId"]["type"] = 1; //hardcoded for the moment
 				notificationInfo["notificationInfo"]["associateId"]["value"] = "172.0.0.2"; //hardcoded for the moment (should be updated from MP2)
 				notificationInfo["notificationInfo"]["erabId"] = 4; //hardcoded
+				notificationInfo["notificationInfo"]["timeStamp"]["seconds"] = 1577836800; //hardcoded
+				notificationInfo["notificationInfo"]["timeStamp"]["nanoSeconds"] = 0; //hardcoded
+				notificationInfo["notificationInfo"]["erabQosParameters"]["qosInformation"]["erabMbrDl"] = 0;//hardcoded
+				notificationInfo["notificationInfo"]["erabQosParameters"]["qosInformation"]["erabMbrUl"] = 0;//hardcoded
+				notificationInfo["notificationInfo"]["erabQosParameters"]["qosInformation"]["erabGbrDl"] = 0;//hardcoded
+				notificationInfo["notificationInfo"]["erabQosParameters"]["qosInformation"]["erabGbrUl"] = 0;//hardcoded
+				notificationInfo["notificationInfo"]["erabQosParameters"]["qci"] = 0;//hardcoded
+				notificationInfo["notificationInfo"]["tempUeId"]["mmec"] = "mmec"; //hardcoded
+				notificationInfo["notificationInfo"]["tempUeId"]["mtmsi"] = "mtmsi";//hardcoded
 				break;
 			case llmec::app::uplane::UE_EVENT_CELL_CHANGE:
 				break;
