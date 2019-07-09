@@ -386,13 +386,39 @@ void DefaultApiImpl::subscription_link_list_subscriptions_cr_get(Pistache::Http:
 	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_get(Pistache::Http::ResponseWriter &response) {
-	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
+	spdlog::get("ll-mec")->info("[MP1 API] Get a list of all subscriptions");
+
+	json jsonData = m_rib.get_app_subscription_list();
+		if (!jsonData.empty()){
+			//update links according to the subscription
+			std::string link = (jsonData["links"]).get<std::string>().c_str();
+	        link = link + base + "/subscriptions";
+	        jsonData["links"] = link;
+			std::string resBody = jsonData.dump();
+			response.send(Pistache::Http::Code::Ok,resBody);
+		} else{
+			std::string resBody = "No subscription for RabEstSubscription";
+			response.send(Pistache::Http::Code::Not_Found, resBody);
+		}
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_mr_get(Pistache::Http::ResponseWriter &response) {
 	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_re_get(Pistache::Http::ResponseWriter &response) {
-	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
+	spdlog::get("ll-mec")->info("[MP1 API] Get a list of RabEstSubscriptions");
+	json jsonData = m_rib.get_app_subscription_list(llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
+	if (!jsonData.empty()){
+		//update links according to the subscription
+		std::string link = (jsonData["links"]).get<std::string>().c_str();
+        link = link + base + "/subscriptions/rab_est";
+        jsonData["links"] = link;
+		std::string resBody = jsonData.dump();
+		response.send(Pistache::Http::Code::Ok,resBody);
+	} else{
+		std::string resBody = "No subscription for RabEstSubscription";
+		response.send(Pistache::Http::Code::Not_Found, resBody);
+	}
+
 }
 void DefaultApiImpl::subscription_link_list_subscriptions_rm_get(Pistache::Http::ResponseWriter &response) {
 	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");

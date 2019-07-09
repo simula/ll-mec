@@ -105,8 +105,8 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
 			plmnInfo["mnc"] = imsi.substr(3,2);
 		} catch (const std::out_of_range& oor) {
 			spdlog::get("ll-mec")->warn("[RIB] Could not get MCC, MNC from IMSI, use default values");
-			plmnInfo["mcc"] = "294";
-			plmnInfo["mnc"] = "84";
+			//plmnInfo["mcc"] = "294";
+			//plmnInfo["mnc"] = "84";
 		}
 
 		spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["mcc"].get<std::string>().c_str());
@@ -158,6 +158,41 @@ nlohmann::json Rib::get_app_subscription_info(std::string appId, llmec::app::upl
 	}
 
 }
+
+nlohmann::json Rib::get_app_subscription_list(llmec::app::uplane::ueEventType appType){
+	//std::string appId
+	nlohmann::json subscriptionList;
+	subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
+
+	for (auto it : appSubscriptionList){
+		nlohmann::json subscriptionInfo;
+		if (it.first.second == appType){
+			subscriptionInfo["SubscriptionType"] = appType;
+			subscriptionInfo["href"] = ((it.second)["callbackReference"]).get<std::string>().c_str();
+		}
+		subscriptionList["subscription"].push_back(subscriptionInfo);
+	}
+	return subscriptionList;
+
+}
+
+
+nlohmann::json Rib::get_app_subscription_list(){
+	//std::string appId
+	nlohmann::json subscriptionList;
+	subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
+
+	for (auto it : appSubscriptionList){
+		nlohmann::json subscriptionInfo;
+		subscriptionInfo["SubscriptionType"] = (it.first).second;
+		subscriptionInfo["href"] = ((it.second)["callbackReference"]).get<std::string>().c_str();
+		subscriptionList["subscription"].push_back(subscriptionInfo);
+	}
+	return subscriptionList;
+
+}
+
+
 
 void Rib::delete_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType){
 	//std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;

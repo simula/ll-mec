@@ -96,6 +96,20 @@ public:
 	nlohmann::json get_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType);
 
 	/*
+    * Get list of Apps subscription info for a particular type
+    * @param [appType] type of subscription/query
+    * @return list of Apps subscription info
+    */
+	nlohmann::json get_app_subscription_list(llmec::app::uplane::ueEventType appType);
+
+	/*
+    * Get list of all app subscription
+    * @return list of all app subscription
+    */
+	nlohmann::json get_app_subscription_list();
+
+
+	/*
 	 * Delete app's subscription from subscription list
 	 * @param [appInsId] AppId
 	 * @param [appType] type of subscription/query
