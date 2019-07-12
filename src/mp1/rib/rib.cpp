@@ -162,15 +162,16 @@ nlohmann::json Rib::get_app_subscription_info(std::string appId, llmec::app::upl
 nlohmann::json Rib::get_app_subscription_list(llmec::app::uplane::ueEventType appType){
 	//std::string appId
 	nlohmann::json subscriptionList;
-	subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
 
 	for (auto it : appSubscriptionList){
 		nlohmann::json subscriptionInfo;
 		if (it.first.second == appType){
 			subscriptionInfo["SubscriptionType"] = appType;
 			subscriptionInfo["href"] = ((it.second)["callbackReference"]).get<std::string>().c_str();
+			subscriptionList["subscription"].push_back(subscriptionInfo);
+			subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
 		}
-		subscriptionList["subscription"].push_back(subscriptionInfo);
+
 	}
 	return subscriptionList;
 

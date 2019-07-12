@@ -129,6 +129,7 @@ void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::str
 		spdlog::get("ll-mec")->debug("[MP1 API] AppInsId should be provided ");
 		response.send(Pistache::Http::Code::Bad_Request, "[PLMN info] No information!\n");
 	}
+	json jsonResponse;
 
 	//check whether AppInsId has permission to get PLMN info
 	if (m_rib.get_app_permission(appInsId.get()[0], llmec::app::uplane::UE_QUERY_PLMN_INFO)){
@@ -147,15 +148,16 @@ void DefaultApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::str
 						<< "exception id: " << e.id << std::endl;
 				response.send(Pistache::Http::Code::Not_Found, "[PLMN info] No information!\n");
 			}
-			std::string resBody = "PLMN info ";
-			spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info,  MNC: {} ", ecgi.getPlmn().getMnc());
-			spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, MCC: {} ", ecgi.getPlmn().getMcc());
-			std::vector<std::string> m_CellId = ecgi.getCellId();
-			for (const std::string& str: m_CellId){
-				spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info, Cell ID: {} ", str);
-				resBody += "CellId " + str;
-			}
-			resBody += " MNC " +  ecgi.getPlmn().getMnc() + ", MCC " +  ecgi.getPlmn().getMcc() + "\n";
+			jsonResponse["timeStamp"]["seconds"] = 1577836800;//hardcoded
+			jsonResponse["timeStamp"]["nanoSeconds"] = 0;//hardcoded
+			jsonResponse["appInId"] = appInsId.get()[0];
+			jsonResponse["ecgi"]["plmn"]["mcc"] = ecgi.getPlmn().getMcc();
+			jsonResponse["ecgi"]["plmn"]["mnc"] = ecgi.getPlmn().getMnc();
+			jsonResponse["ecgi"]["cellId"] = ecgi.getCellId()[0];
+
+			spdlog::get("ll-mec")->debug("[MP1 API] Get PLMN info MNC: {}, MCC: {}, cellId: {}", ecgi.getPlmn().getMnc(), ecgi.getPlmn().getMcc(), ecgi.getCellId()[0]);
+			std::string resBody = jsonResponse.dump();
+
 			response.send(Pistache::Http::Code::Ok, resBody);
 
 		} else{//if there's no information, send response with Not_Found code to the app
@@ -215,22 +217,27 @@ void DefaultApiImpl::rab_est_subscription_subscriptions_post(const RabEstSubscri
 void DefaultApiImpl::rab_est_subscription_subscriptions_put(const std::string &subscriptionId, const RabEstSubscription &rabEstSubscription, Pistache::Http::ResponseWriter &response) {
 	spdlog::get("ll-mec")->info("[MP1 API] Put RabEstSubscription\n");
 
-		//Store RabEstSubscription into a DB
-		RabEstSubscription *rabEstSub = new RabEstSubscription();
-		rabEstSub->setCallbackReference(rabEstSubscription.getCallbackReference());
-		rabEstSub->setFilterCriteria(rabEstSubscription.getFilterCriteria());
-		rabEstSub->setExpiryDeadline(rabEstSubscription.getExpiryDeadline());
-	    //std::string appId = rabEstSubscription.getFilterCriteria().getAppInsId();
-		Link link;
-		link.setSelf(m_rib.get_mp1_server_url() + base + "/" + subscriptionId);
-		rabEstSub->setLinks(link);
+	//Store RabEstSubscription into a DB
+	RabEstSubscription *rabEstSub = new RabEstSubscription();
+	rabEstSub->setCallbackReference(rabEstSubscription.getCallbackReference());
+	rabEstSub->setFilterCriteria(rabEstSubscription.getFilterCriteria());
+	rabEstSub->setExpiryDeadline(rabEstSubscription.getExpiryDeadline());
+	//std::string appId = rabEstSubscription.getFilterCriteria().getAppInsId();
+	Link link;
+	link.setSelf(m_rib.get_mp1_server_url() + base + "/" + subscriptionId);
+	rabEstSub->setLinks(link);
 
-		json jsonData = rabEstSub->toJson();
+	json jsonData = rabEstSub->toJson();
+
+	json subInfo = m_rib.get_app_subscription_info(subscriptionId,llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
+	if (!subInfo.empty()){
 		m_rib.update_app_subscription_info(subscriptionId, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT, jsonData);
-
-		//send response
 		std::string resBody = jsonData.dump();
 		response.send(Pistache::Http::Code::Ok,resBody);
+	} else{
+		std::string resBody = "No RabEstSubscription with Id "+ subscriptionId + "\n";
+		response.send(Pistache::Http::Code::Not_Found, resBody);
+	}
 
 }
 void DefaultApiImpl::rab_est_subscriptions_subscr_id_delete(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {

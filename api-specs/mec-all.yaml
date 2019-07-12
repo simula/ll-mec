@@ -387,7 +387,7 @@ paths:
               type: string
       responses:
         "200":
-          description: Successful response to rab_info request
+          description: Successful response to plmn_info request
           content:
             application/json:
               schema:
@@ -4880,9 +4880,6 @@ paths:
         "204":
           description: No Content
       x-swagger-router-controller: Default
-servers:
-  - url: http://127.0.0.1:8081/rni/v1
-  - url: https://127.0.0.1:8081/rni/v1
 components:
   parameters:
     Path.subscrId:
