@@ -216,13 +216,19 @@ uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
 
 //meterid mapping
 
-uint32_t Context_manager::get_meterid(std::string imsi, uint32_t eps_bearer_id){
+uint32_t Context_manager::get_meterid(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id){
 //uint32_t meterid = 1; - The meterID=1 is already configured as DefaultMeterTable
 //this table it will be used as referance.
   uint32_t meterid = 2;
   this->context_lock.lock();
   if (this->meter_mapping.count(std::make_pair(imsi, eps_bearer_id)) != 0)
-    meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
+    //meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
+    if ( slice_id == 0 ){
+      meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
+	}else if ( slice_id > 0 && slice_id <= 16){
+      meterid = uint64_t slice_id & 0xFFFFFFFF;
+	     //The actual logic wont be affected in case the slice_id is bigger than 32bits
+	}
   this->context_lock.unlock();
   return meterid;
 }

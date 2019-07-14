@@ -54,7 +54,7 @@ bool Ue_manager::add_bearer(json context){
 
   uint64_t id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
   uint32_t meterrate = context["meter_rate"].get<int>();
-  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
+  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>(),context["slice_id"].get<int>());
   uint32_t meterburstsize = context["burst_size"].get<int>();
   spdlog::get("ll-mec")->debug("bearer {}", id);
   spdlog::get("ll-mec")->debug("meter {}", meterid); //output the meterid value for the user
@@ -81,7 +81,6 @@ bool Ue_manager::add_bearer(json context){
     context_manager->add_bearer(context);
     id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
     meterid = 1;
-//    uint32_t meterid = context["meter_id"].get<int>(); //eps_meter_id from the json file
     spdlog::get("ll-mec")->info("Add UE bearer {}: {}", id, context.dump());
     spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meterid); //display the information
   }
@@ -108,7 +107,7 @@ bool Ue_manager::add_bearer(json context){
 bool Ue_manager::modify_meter(json context){
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-  uint32_t meterid = context["eps_meter_id"].get<int>(); //get the eps_meter_id value from the json file
+  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>(),context["slice_id"].get<int>()); //get the eps_meter_id value from the json file
   this->of_interface.install_meter_mod(of_conn_, context["meter_command"].get<std::string>(), context["meter_flags"].get<std::string>(), context["eps_meter_id"].get<int>(), context["meter_type"].get<std::string>(), context["meter_rate"].get<int>(), context["meter_burst_size"].get<int>(), context["meter_prec_level"].get<int>(),context["meter_experimenter"].get<int>() );
 }
 */
@@ -135,14 +134,14 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, uint32_t meterid, json context
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
     if (of_conn_ == nullptr || !of_conn_->is_alive())
       continue;
-    this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
-    this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+//    this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+//    this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
 
 /*
  * The redirect_edge_service_ul_flow is not yet implemented for support the meter
  *
- * this->of_interface.redirect_edge_service_ul_meter_flow(of_conn, id, meterid, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
- * this->of_interface.redirect_edge_service_dl_meter_flow(of_conn, id, meterid, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+      this->of_interface.redirect_edge_service_ul_meter_flow(of_conn, id, meterid, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+      this->of_interface.redirect_edge_service_dl_meter_flow(of_conn, id, meterid, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
  */
 }
   spdlog::get("ll-mec")->info("Redirect bearer id={} from {} to {}", id, context["from"].get<std::string>(), context["to"].get<std::string>());
