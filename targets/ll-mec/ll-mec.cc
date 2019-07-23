@@ -147,7 +147,7 @@ int main(int argc, char **argv){
   Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp1_api"]["port"].get<int>()));
   // Create the rib
   llmec::mp1::rib::Rib rib;
-  rib.set_mp1_server_url("http://"+ Pistache::Ipv4::any().toString()+"::"+std::to_string(llmec_config->X["mp1_api"]["port"].get<int>()));
+  rib.set_mp1_server_url("http://"+ Pistache::Ipv4::any().toString()+":"+std::to_string(llmec_config->X["mp1_api"]["port"].get<int>()));
   Mp1Manager mp1Manager(addr_mp1, rib);
   mp1Manager.init(2);
   //mp1Manager.start();
