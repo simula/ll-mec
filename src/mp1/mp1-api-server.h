@@ -19,26 +19,26 @@
 #include <signal.h>
 #include <unistd.h>
 #endif
-#include "DefaultApiImpl.h"
+#include "Mp1ApiImpl.h"
 #include "rib.h"
 using namespace llmec::mp1::api;
 class Mp1Manager {
 public:
 	Mp1Manager(Pistache::Address address, llmec::mp1::rib::Rib& rib) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address))  {
 		m_router = std::make_shared<Pistache::Rest::Router>();
-		m_defaultApiserver = std::make_shared<DefaultApiImpl> (m_router, rib);
+		m_mp1Apiserver = std::make_shared<Mp1ApiImpl> (m_router, rib);
 
 	}
 	void init(size_t thr = 1);
 	void start();
 	void shutdown();
 
-	std::shared_ptr<DefaultApiImpl> getDefaultApiServer();
+	std::shared_ptr<Mp1ApiImpl> getMp1ApiServer();
 
 private:
 	std::shared_ptr<Pistache::Http::Endpoint> m_httpEndpoint;
 	std::shared_ptr<Pistache::Rest::Router> m_router;
-	std::shared_ptr<DefaultApiImpl> m_defaultApiserver;
+	std::shared_ptr<Mp1ApiImpl> m_mp1Apiserver;
 
 };
 

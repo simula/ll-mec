@@ -8,10 +8,10 @@ link_directories(/usr/local/lib/)
 
 aux_source_directory(model MODEL_SOURCES)
 file(GLOB MP1_API_SOURCES
-"api/DefaultApi.h"
-"api/DefaultApi.cpp"
-"impl/DefaultApiImpl.h"
-"impl/DefaultApiImpl.cpp"
+"api/mp1Api.h"
+"api/mp1Api.cpp"
+"impl/mp1ApiImpl.h"
+"impl/mp1ApiImpl.cpp"
 )
 
 include_directories(model)

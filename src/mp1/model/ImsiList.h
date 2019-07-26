@@ -1,6 +1,7 @@
 /**
-* RNI API
-* The ETSI MEC ISG MEC012 Radio Network Information API described using OpenAPI AND som additional MEC APIs
+* MP1 API
+* The ETSI MEC ISG MEC012 Radio Network Information API, AND The ETSI MEC ISG MEC011 Application Enablement API
+* AND some additional MEC APIs described using OpenAPI
 *
 * OpenAPI spec version: 1.1.1
 * 

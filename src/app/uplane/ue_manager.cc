@@ -263,7 +263,7 @@ Ue_manager* Ue_manager::get_instance()
   return instance;
 }
 
-void Ue_manager::register_for_event(const std::shared_ptr<llmec::mp1::api::DefaultApi>& apiApp, int event_type) {
+void Ue_manager::register_for_event(const std::shared_ptr<llmec::mp1::api::Mp1Api>& apiApp, int event_type) {
   ue_event_listeners_[event_type].push_back(apiApp);
 }
 

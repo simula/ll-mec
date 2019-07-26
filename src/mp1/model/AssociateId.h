@@ -1,6 +1,7 @@
 /**
-* RNI API
-* The ETSI MEC ISG MEC012 Radio Network Information API described using OpenAPI AND som additional MEC APIs
+* MP1 API
+* The ETSI MEC ISG MEC012 Radio Network Information API, AND The ETSI MEC ISG MEC011 Application Enablement API
+* AND some additional MEC APIs described using OpenAPI
 *
 * OpenAPI spec version: 1.1.1
 * 
@@ -19,9 +20,8 @@
 #define AssociateId_H_
 
 
-#include "ModelBase.h"
-
 #include <string>
+#include <nlohmann/json.hpp>
 
 namespace llmec {
 namespace mp1 {
@@ -31,19 +31,12 @@ namespace model {
 /// 
 /// </summary>
 class  AssociateId
-    : public ModelBase
 {
 public:
     AssociateId();
     virtual ~AssociateId();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
-
-    void validate() override;
-
-    nlohmann::json toJson() const override;
-    void fromJson(const nlohmann::json& json) override;
+    void validate();
 
     /////////////////////////////////////////////
     /// AssociateId members
@@ -59,6 +52,8 @@ public:
     std::string getValue() const;
     void setValue(std::string const& value);
     
+    friend void to_json(nlohmann::json& j, const AssociateId& o);
+    friend void from_json(const nlohmann::json& j, AssociateId& o);
 protected:
     std::string m_Type;
 

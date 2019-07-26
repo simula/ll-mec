@@ -44,6 +44,7 @@
 #include <unistd.h>
 #include "ModelBase.h"
 #include "ue_event.h"
+#include "ServiceInfo.h"
 
 namespace llmec {
 namespace mp1 {
@@ -66,10 +67,17 @@ public:
 
     /*
      * Get PLMN info from DB
-     * @param [appInsId] list of appInsIds
+     * @param [appInsId] App's ID
      * @return PLMN info in Json format
      */
-	nlohmann::json get_plmn_info(const std::vector<std::string> &appInsIds);
+	nlohmann::json get_plmn_info(const std::string appInsId);
+
+    /*
+     * Get TimeStamp
+     * @param [appInsId] App's ID
+     * @return PLMN info in Json format
+     */
+	//nlohmann::json get_timeStamp(const std::string appInsId);
 
     /*
      * Get MEC APP permission
@@ -130,12 +138,19 @@ public:
 	std::string get_mp1_server_url();
 
 	/*
-     * Get information to be notified to the corresponding app event (e.g., RAB establishment)
+     * Get information to be notified to the corresponding RNI app event (e.g., RAB establishment)
      * @param [imsi] UE's IMSI
      * @param [appType] type of subscription/query
      * @return notification info e.g., RabEstNotification
      */
 	nlohmann::json get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType);
+
+
+	llmec::mp1::model::ServiceInfo get_service_info_by_id(std::string appInstanceId);
+	llmec::mp1::model::ServiceInfo get_service_info_by_name(std::string appName);
+	std::vector<llmec::mp1::model::ServiceInfo> get_service_info_by_category(std::string appCategory);
+	llmec::mp1::model::ServiceInfo update_service_info(std::string appInstanceId, llmec::mp1::model::ServiceInfo serviceInfo);
+    void init_service_info();
 
 private:
 	mutable std::mutex eNB_info_mutex;
@@ -148,6 +163,7 @@ private:
     std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json> appSubscriptionList;
     //MP1's URL
     std::string mp1_server_url;
+    std::map <std::string, llmec::mp1::model::ServiceInfo> serviceInfoList;
 
 };
 

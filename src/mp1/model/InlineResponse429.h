@@ -1,6 +1,7 @@
 /**
-* RNI API
-* The ETSI MEC ISG MEC012 Radio Network Information API described using OpenAPI AND som additional MEC APIs
+* MP1 API
+* The ETSI MEC ISG MEC012 Radio Network Information API, AND The ETSI MEC ISG MEC011 Application Enablement API
+* AND some additional MEC APIs described using OpenAPI
 *
 * OpenAPI spec version: 1.1.1
 * 
@@ -19,8 +20,6 @@
 #define Inline_response_429_H_
 
 
-#include "ModelBase.h"
-
 #include "ProblemDetails.h"
 
 namespace llmec {
@@ -31,19 +30,12 @@ namespace model {
 /// 
 /// </summary>
 class  Inline_response_429
-    : public ModelBase
 {
 public:
     Inline_response_429();
     virtual ~Inline_response_429();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
-
-    void validate() override;
-
-    nlohmann::json toJson() const override;
-    void fromJson(const nlohmann::json& json) override;
+    void validate();
 
     /////////////////////////////////////////////
     /// Inline_response_429 members
@@ -56,6 +48,8 @@ public:
     bool problemDetailsIsSet() const;
     void unsetProblemDetails();
 
+    friend void to_json(nlohmann::json& j, const Inline_response_429& o);
+    friend void from_json(const nlohmann::json& j, Inline_response_429& o);
 protected:
     ProblemDetails m_ProblemDetails;
     bool m_ProblemDetailsIsSet;

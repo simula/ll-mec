@@ -148,6 +148,8 @@ int main(int argc, char **argv){
   // Create the rib
   llmec::mp1::rib::Rib rib;
   rib.set_mp1_server_url("http://"+ Pistache::Ipv4::any().toString()+":"+std::to_string(llmec_config->X["mp1_api"]["port"].get<int>()));
+  //init default services
+  rib.init_service_info();
   Mp1Manager mp1Manager(addr_mp1, rib);
   mp1Manager.init(2);
   //mp1Manager.start();
@@ -155,7 +157,7 @@ int main(int argc, char **argv){
   std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
 
   //register to user events
-  std::shared_ptr<DefaultApiImpl> api_server = mp1Manager.getDefaultApiServer();
+  std::shared_ptr<Mp1ApiImpl> api_server = mp1Manager.getMp1ApiServer();
   ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_S1_BEARER);
   ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
 

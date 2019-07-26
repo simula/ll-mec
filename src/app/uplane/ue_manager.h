@@ -36,7 +36,7 @@
 #include "app.h"
 #include "controller.h"
 #include "json.h"
-#include "DefaultApi.h"
+#include "Mp1Api.h"
 #include "ue_event.h"
 
 using json = nlohmann::json;
@@ -102,14 +102,14 @@ class Ue_manager : public llmec::app::App {
     }
 
     /* Register to a particular user-related event */
-    void register_for_event(const std::shared_ptr<llmec::mp1::api::DefaultApi>& apiApp, int event_type);
+    void register_for_event(const std::shared_ptr<llmec::mp1::api::Mp1Api>& apiApp, int event_type);
 
   private:
     static Ue_manager* instance;
     Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
 
     /* Store user's events */
-    std::unordered_map<int, std::vector<std::shared_ptr<llmec::mp1::api::DefaultApi>>> ue_event_listeners_;
+    std::unordered_map<int, std::vector<std::shared_ptr<llmec::mp1::api::Mp1Api>>> ue_event_listeners_;
 
 };
 

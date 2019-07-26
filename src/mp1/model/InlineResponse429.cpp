@@ -1,6 +1,7 @@
 /**
-* RNI API
-* The ETSI MEC ISG MEC012 Radio Network Information API described using OpenAPI AND som additional MEC APIs
+* MP1 API
+* The ETSI MEC ISG MEC012 Radio Network Information API, AND The ETSI MEC ISG MEC011 Application Enablement API
+* AND some additional MEC APIs described using OpenAPI
 *
 * OpenAPI spec version: 1.1.1
 * 
@@ -9,7 +10,6 @@
 * https://openapi-generator.tech
 * Do not edit the class manually.
 */
-
 
 #include "InlineResponse429.h"
 
@@ -32,34 +32,21 @@ void Inline_response_429::validate()
     // TODO: implement validation
 }
 
-nlohmann::json Inline_response_429::toJson() const
+void to_json(nlohmann::json& j, const Inline_response_429& o)
 {
-    nlohmann::json val = nlohmann::json::object();
-
-    if(m_ProblemDetailsIsSet)
-    {
-        val["ProblemDetails"] = ModelBase::toJson(m_ProblemDetails);
-    }
-    
-
-    return val;
+    j = nlohmann::json();
+    if(o.problemDetailsIsSet())
+        j["ProblemDetails"] = o.m_ProblemDetails;
 }
 
-void Inline_response_429::fromJson(const nlohmann::json& val)
+void from_json(const nlohmann::json& j, Inline_response_429& o)
 {
-    if(val.find("ProblemDetails") != val.end())
+    if(j.contains("ProblemDetails"))
     {
-        if(!val["ProblemDetails"].is_null())
-        {
-            ProblemDetails newItem;
-            newItem.fromJson(val["ProblemDetails"]);
-            setProblemDetails( newItem );
-        }
-        
+        j.at("ProblemDetails").get_to(o.m_ProblemDetails);
+        o.m_ProblemDetailsIsSet = true;
     }
-    
 }
-
 
 ProblemDetails Inline_response_429::getProblemDetails() const
 {

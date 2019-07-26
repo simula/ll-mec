@@ -1,6 +1,7 @@
 /**
-* RNI API
-* The ETSI MEC ISG MEC012 Radio Network Information API described using OpenAPI AND som additional MEC APIs
+* MP1 API
+* The ETSI MEC ISG MEC012 Radio Network Information API, AND The ETSI MEC ISG MEC011 Application Enablement API
+* AND some additional MEC APIs described using OpenAPI
 *
 * OpenAPI spec version: 1.1.1
 * 
@@ -13,68 +14,56 @@
 
 #include "ErabQosParametersQci.h"
 
+
 namespace llmec {
 namespace mp1 {
 namespace model {
 
-ErabQosParameters_qci::ErabQosParameters_qci()
+ErabQosParametersQci::ErabQosParametersQci()
 {
     m_QosInformationIsSet = false;
     
 }
 
-ErabQosParameters_qci::~ErabQosParameters_qci()
+ErabQosParametersQci::~ErabQosParametersQci()
 {
 }
 
-void ErabQosParameters_qci::validate()
+void ErabQosParametersQci::validate()
 {
     // TODO: implement validation
 }
 
-nlohmann::json ErabQosParameters_qci::toJson() const
+void to_json(nlohmann::json& j, const ErabQosParametersQci& o)
 {
-    nlohmann::json val = nlohmann::json::object();
-
-    if(m_QosInformationIsSet)
-    {
-        val["qosInformation"] = ModelBase::toJson(m_QosInformation);
-    }
-    
-
-    return val;
+    j = nlohmann::json();
+    if(o.qosInformationIsSet())
+        j["qosInformation"] = o.m_QosInformation;
 }
 
-void ErabQosParameters_qci::fromJson(const nlohmann::json& val)
+void from_json(const nlohmann::json& j, ErabQosParametersQci& o)
 {
-    if(val.find("qosInformation") != val.end())
+    if(j.contains("qosInformation"))
     {
-        if(!val["qosInformation"].is_null())
-        {
-            QosInformation newItem;
-            newItem.fromJson(val["qosInformation"]);
-            setQosInformation( newItem );
-        }
-        
+        j.at("qosInformation").get_to(o.m_QosInformation);
+        o.m_QosInformationIsSet = true;
     }
-    
 }
 
-
-QosInformation ErabQosParameters_qci::getQosInformation() const
+QosInformation ErabQosParametersQci::getQosInformation() const
 {
     return m_QosInformation;
 }
-void ErabQosParameters_qci::setQosInformation(QosInformation const& value)
+void ErabQosParametersQci::setQosInformation(QosInformation const& value)
 {
     m_QosInformation = value;
     m_QosInformationIsSet = true;
 }
-bool ErabQosParameters_qci::qosInformationIsSet() const
+bool ErabQosParametersQci::qosInformationIsSet() const
 {
     return m_QosInformationIsSet;
 }
-void ErabQosParameters_qci::unsetQosInformation()
+void ErabQosParametersQci::unsetQosInformation()
 {
     m_QosInformationIsSet = false;
 }

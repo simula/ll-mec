@@ -1,6 +1,7 @@
 /**
-* RNI API
-* The ETSI MEC ISG MEC012 Radio Network Information API described using OpenAPI AND som additional MEC APIs
+* MP1 API
+* The ETSI MEC ISG MEC012 Radio Network Information API, AND The ETSI MEC ISG MEC011 Application Enablement API
+* AND some additional MEC APIs described using OpenAPI
 *
 * OpenAPI spec version: 1.1.1
 * 
@@ -23,6 +24,7 @@
 
 #include "QosInformation.h"
 
+
 namespace llmec {
 namespace mp1 {
 namespace model {
@@ -30,20 +32,13 @@ namespace model {
 /// <summary>
 /// QoS Class Identifier as defined in TS 23.401
 /// </summary>
-class  ErabQosParameters_qci
-    : public ModelBase
+class  ErabQosParametersQci
 {
 public:
-    ErabQosParameters_qci();
-    virtual ~ErabQosParameters_qci();
+    ErabQosParametersQci();
+    virtual ~ErabQosParametersQci();
 
-    /////////////////////////////////////////////
-    /// ModelBase overrides
-
-    void validate() override;
-
-    nlohmann::json toJson() const override;
-    void fromJson(const nlohmann::json& json) override;
+    void validate();
 
     /////////////////////////////////////////////
     /// ErabQosParameters_qci members
@@ -56,6 +51,8 @@ public:
     bool qosInformationIsSet() const;
     void unsetQosInformation();
 
+    friend void to_json(nlohmann::json& j, const ErabQosParametersQci& o);
+    friend void from_json(const nlohmann::json& j, ErabQosParametersQci& o);
 protected:
     QosInformation m_QosInformation;
     bool m_QosInformationIsSet;
@@ -64,5 +61,4 @@ protected:
 }
 }
 }
-
 #endif /* ErabQosParameters_qci_H_ */

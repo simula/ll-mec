@@ -75,7 +75,7 @@ bool Rib::update_eNB_info(uint64_t eNBId, nlohmann::json eNBInfo){
 	return true;
 }
 
-nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
+nlohmann::json Rib::get_plmn_info(const std::string appInsId){
 	spdlog::get("ll-mec")->info("[RIB] Get PLMN info");
 	nlohmann::json plmnInfo;
 	std::map<uint64_t, nlohmann::json>::iterator it;
@@ -101,17 +101,15 @@ nlohmann::json Rib::get_plmn_info(const std::vector<std::string> &appInsIds){
 
 		std::string imsi = ((it->second)["imsi"]).get<std::string>().c_str();
 		try{
-			plmnInfo["mcc"] = imsi.substr(0,3);
-			plmnInfo["mnc"] = imsi.substr(3,2);
+			plmnInfo["plmn"]["mcc"] = imsi.substr(0,3);
+			plmnInfo["plmn"]["mnc"] = imsi.substr(3,2);
 		} catch (const std::out_of_range& oor) {
 			spdlog::get("ll-mec")->warn("[RIB] Could not get MCC, MNC from IMSI, use default values");
 			//plmnInfo["mcc"] = "294";
 			//plmnInfo["mnc"] = "84";
 		}
-
-		spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["mcc"].get<std::string>().c_str());
-		spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MNC {}", plmnInfo["mnc"].get<std::string>().c_str());
-
+		spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["plmn"]["mcc"].get<std::string>().c_str());
+		spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MNC {}", plmnInfo["plmn"]["mnc"].get<std::string>().c_str());
 
 	}
 
@@ -160,7 +158,7 @@ nlohmann::json Rib::get_app_subscription_info(std::string appId, llmec::app::upl
 }
 
 nlohmann::json Rib::get_app_subscription_list(llmec::app::uplane::ueEventType appType){
-	//std::string appId
+
 	nlohmann::json subscriptionList;
 
 	for (auto it : appSubscriptionList){
@@ -171,15 +169,12 @@ nlohmann::json Rib::get_app_subscription_list(llmec::app::uplane::ueEventType ap
 			subscriptionList["subscription"].push_back(subscriptionInfo);
 			subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
 		}
-
 	}
 	return subscriptionList;
-
 }
 
-
 nlohmann::json Rib::get_app_subscription_list(){
-	//std::string appId
+	spdlog::get("ll-mec")->debug("[RIB] Get a list of all subscriptions");
 	nlohmann::json subscriptionList;
 	subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
 
@@ -190,10 +185,7 @@ nlohmann::json Rib::get_app_subscription_list(){
 		subscriptionList["subscription"].push_back(subscriptionInfo);
 	}
 	return subscriptionList;
-
 }
-
-
 
 void Rib::delete_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType){
 	//std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
@@ -228,6 +220,7 @@ std::vector<std::pair<std::string, std::string>> Rib::get_callback_reference(std
 */
 
 nlohmann::json Rib::get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType){
+	spdlog::get("ll-mec")->debug("[RIB] Get notification info");
 	nlohmann::json notificationInfos;
 	nlohmann::json ueInfo = ueInfos[imsi];
 	std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
@@ -271,6 +264,116 @@ nlohmann::json Rib::get_notification_info(std::string imsi, llmec::app::uplane::
 
 }
 
+llmec::mp1::model::ServiceInfo Rib::get_service_info_by_id(std::string appInstanceId){
+
+	std::map<std::string, llmec::mp1::model::ServiceInfo>::iterator it;
+	it  = serviceInfoList.find(appInstanceId);
+
+	if (it != serviceInfoList.end()){
+		return it->second;
+	} else{
+		spdlog::get("ll-mec")->info("[RIB::get_service_info] No service with this appInstanceId {}",appInstanceId);
+		return llmec::mp1::model::ServiceInfo();
+	}
+}
+
+llmec::mp1::model::ServiceInfo Rib::get_service_info_by_name(std::string appName){
+	spdlog::get("ll-mec")->debug("[RIB] Get service info by name ({})",appName);
+	for (auto it : serviceInfoList){
+		llmec::mp1::model::ServiceInfo serviceInfo = it.second;
+		if (serviceInfo.getSerName() == appName) return it.second;
+	}
+	return llmec::mp1::model::ServiceInfo();
+}
+
+std::vector<llmec::mp1::model::ServiceInfo> Rib::get_service_info_by_category(std::string appCategory){
+	spdlog::get("ll-mec")->debug("[RIB] Get service info by category ({})",appCategory);
+	std::vector<llmec::mp1::model::ServiceInfo> serviceInfos;
+	for (auto it : serviceInfoList){
+		llmec::mp1::model::ServiceInfo serviceInfo = it.second;
+		if (serviceInfo.getSerCategory().getId() == appCategory) serviceInfos.push_back(it.second);
+	}
+	return serviceInfos;
+}
+
+
+llmec::mp1::model::ServiceInfo Rib::update_service_info(std::string appInstanceId, llmec::mp1::model::ServiceInfo serviceInfo){
+	spdlog::get("ll-mec")->debug("[RIB] Update service info");
+	std::map<std::string, llmec::mp1::model::ServiceInfo>::iterator it;
+	it  = serviceInfoList.find(appInstanceId);
+
+	//update if existed
+	if (it != serviceInfoList.end()){
+		it->second = serviceInfo;
+		spdlog::get("ll-mec")->debug("[RIB] Updated service info with appInstanceId {}",appInstanceId);
+	} else { //if not existed, add to the list
+		spdlog::get("ll-mec")->debug("[RIB] Added service info with appInstanceId {} to the list ",appInstanceId);
+		serviceInfoList.emplace(appInstanceId, serviceInfo);
+	}
+
+}
+void Rib::init_service_info(){
+	spdlog::get("ll-mec")->debug("[RIB] Initialize list of default services");
+	nlohmann::json serviceInfoPlmn, serviceInfoSubscription;
+	nlohmann::json address;
+
+	//PLMN info
+    serviceInfoPlmn["serInstanceId"] = "rni1";
+    serviceInfoPlmn["serName"] = "PLMN_Information";
+    serviceInfoPlmn["serCategory"]["href"] = "catRNI";
+    serviceInfoPlmn["serCategory"]["id"] = "RNI";
+    serviceInfoPlmn["serCategory"]["name"] = "RNI";
+    serviceInfoPlmn["serCategory"]["version"] = "version1";
+    serviceInfoPlmn["version"] = "ServiceVersion1";
+    serviceInfoPlmn["state"] = "ACTIVE";
+    serviceInfoPlmn["transportInfo"]["id"] = "TransId1";
+    serviceInfoPlmn["transportInfo"]["name"] = "REST";
+    serviceInfoPlmn["transportInfo"]["description"] = "REST API";
+    serviceInfoPlmn["transportInfo"]["type"] = "REST_HTTP";
+    serviceInfoPlmn["transportInfo"]["protocol"] = "HTTP";
+    serviceInfoPlmn["transportInfo"]["version"] = "2.0";
+    serviceInfoPlmn["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/queries/plmn_info"};
+    serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"] = {};
+    address["host"] = "127.0.0.1";
+    address["port"] = 8888;
+    serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"].push_back(address);
+    serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
+    serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
+    serviceInfoPlmn["serializer"] = "JSON";
+
+    llmec::mp1::model::ServiceInfo  servicePlmn;
+    from_json(serviceInfoPlmn, servicePlmn);
+    serviceInfoList.emplace("rni1", servicePlmn);
+
+    //RNI subscriptions
+    serviceInfoSubscription["serInstanceId"] = "rni2";
+    serviceInfoSubscription["serName"] = "Subscription";
+    serviceInfoSubscription["serCategory"]["href"] = "catRNI";
+    serviceInfoSubscription["serCategory"]["id"] = "RNI";
+    serviceInfoSubscription["serCategory"]["name"] = "RNI";
+    serviceInfoSubscription["serCategory"]["version"] = "version1";
+    serviceInfoSubscription["version"] = "ServiceVersion1";
+    serviceInfoSubscription["state"] = "ACTIVE";
+    serviceInfoSubscription["transportInfo"]["id"] = "TransId2";
+    serviceInfoSubscription["transportInfo"]["name"] = "REST";
+    serviceInfoSubscription["transportInfo"]["description"] = "REST API";
+    serviceInfoSubscription["transportInfo"]["type"] = "REST_HTTP";
+    serviceInfoSubscription["transportInfo"]["protocol"] = "HTTP";
+    serviceInfoSubscription["transportInfo"]["version"] = "2.0";
+    serviceInfoSubscription["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/rni/subscriptions"};
+    serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"] = {};
+    address["host"] = "127.0.0.1";
+    address["port"] = 8888;
+    serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"].push_back(address);
+    serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
+    serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
+    serviceInfoSubscription["serializer"] = "JSON";
+
+    llmec::mp1::model::ServiceInfo  serviceSubscription;
+    from_json(serviceInfoSubscription, serviceSubscription);
+    serviceInfoList.emplace("rni2", serviceSubscription);
+
+}
 }
 }
 }
