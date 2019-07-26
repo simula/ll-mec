@@ -217,7 +217,7 @@ std::vector<std::pair<std::string, std::string>> Rib::get_callback_reference(std
 	}
 	return result;
 }
-*/
+ */
 
 nlohmann::json Rib::get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType){
 	spdlog::get("ll-mec")->debug("[RIB] Get notification info");
@@ -264,51 +264,68 @@ nlohmann::json Rib::get_notification_info(std::string imsi, llmec::app::uplane::
 
 }
 
-llmec::mp1::model::ServiceInfo Rib::get_service_info_by_id(std::string appInstanceId){
+llmec::mp1::model::ServiceInfo Rib::get_service_info_by_id(std::string serInstanceId){
 
 	std::map<std::string, llmec::mp1::model::ServiceInfo>::iterator it;
-	it  = serviceInfoList.find(appInstanceId);
+	it  = serviceInfoList.find(serInstanceId);
 
 	if (it != serviceInfoList.end()){
 		return it->second;
 	} else{
-		spdlog::get("ll-mec")->info("[RIB::get_service_info] No service with this appInstanceId {}",appInstanceId);
+		spdlog::get("ll-mec")->info("[RIB::get_service_info] No service with this serInstanceId {}",serInstanceId);
 		return llmec::mp1::model::ServiceInfo();
 	}
 }
 
-llmec::mp1::model::ServiceInfo Rib::get_service_info_by_name(std::string appName){
-	spdlog::get("ll-mec")->debug("[RIB] Get service info by name ({})",appName);
+llmec::mp1::model::ServiceInfo Rib::get_service_info_by_name(std::string serName){
+	spdlog::get("ll-mec")->debug("[RIB] Get service info by name ({})",serName);
 	for (auto it : serviceInfoList){
 		llmec::mp1::model::ServiceInfo serviceInfo = it.second;
-		if (serviceInfo.getSerName() == appName) return it.second;
+		if (serviceInfo.getSerName() == serName) return it.second;
 	}
 	return llmec::mp1::model::ServiceInfo();
 }
 
-std::vector<llmec::mp1::model::ServiceInfo> Rib::get_service_info_by_category(std::string appCategory){
-	spdlog::get("ll-mec")->debug("[RIB] Get service info by category ({})",appCategory);
+std::vector<llmec::mp1::model::ServiceInfo> Rib::get_service_info_by_category(std::string serCategory){
+	spdlog::get("ll-mec")->debug("[RIB] Get service info by category ({})",serCategory);
 	std::vector<llmec::mp1::model::ServiceInfo> serviceInfos;
 	for (auto it : serviceInfoList){
 		llmec::mp1::model::ServiceInfo serviceInfo = it.second;
-		if (serviceInfo.getSerCategory().getId() == appCategory) serviceInfos.push_back(it.second);
+		if (serviceInfo.getSerCategory().getId() == serCategory) serviceInfos.push_back(it.second);
 	}
 	return serviceInfos;
 }
 
 
-llmec::mp1::model::ServiceInfo Rib::update_service_info(std::string appInstanceId, llmec::mp1::model::ServiceInfo serviceInfo){
+std::string Rib::update_service_info(const std::string serInstanceId, const llmec::mp1::model::ServiceInfo &serviceInfo){
 	spdlog::get("ll-mec")->debug("[RIB] Update service info");
-	std::map<std::string, llmec::mp1::model::ServiceInfo>::iterator it;
-	it  = serviceInfoList.find(appInstanceId);
+	if (serInstanceId.compare("") !=0 ){ //with a valid appInstanceId
+		std::map<std::string, llmec::mp1::model::ServiceInfo>::iterator it;
+		it  = serviceInfoList.find(serInstanceId);
 
-	//update if existed
-	if (it != serviceInfoList.end()){
-		it->second = serviceInfo;
-		spdlog::get("ll-mec")->debug("[RIB] Updated service info with appInstanceId {}",appInstanceId);
-	} else { //if not existed, add to the list
-		spdlog::get("ll-mec")->debug("[RIB] Added service info with appInstanceId {} to the list ",appInstanceId);
-		serviceInfoList.emplace(appInstanceId, serviceInfo);
+		//update if existed
+		if (it != serviceInfoList.end()){
+			it->second = serviceInfo;
+			spdlog::get("ll-mec")->debug("[RIB] Updated service info with serInstanceId {}",serInstanceId);
+		} else { //if not existed, add to the list
+			spdlog::get("ll-mec")->debug("[RIB] Added service info with serInstanceId {} to the list ",serInstanceId);
+			serviceInfoList.emplace(serInstanceId, serviceInfo);
+		}
+		return serInstanceId;
+	} else{ //generate a new appInstanceId and add to the list
+		std::string newId = "serviceId"+std::to_string(serviceInfoList.size() + 1);
+		spdlog::get("ll-mec")->debug("[RIB] Update service info, generate a new instance id {} and add to the list", newId);
+		llmec::mp1::model::ServiceInfo temp;
+		temp.setSerInstanceId(newId);
+		temp.setSerName(serviceInfo.getSerName());
+		temp.setSerCategory(serviceInfo.getSerCategory());
+		temp.setVersion(serviceInfo.getVersion());
+		temp.setState(serviceInfo.getState());
+		temp.setTransportInfo(serviceInfo.getTransportInfo());
+		temp.setSerializer(serviceInfo.getSerializer());
+
+		serviceInfoList.emplace(newId, temp);
+		return newId;
 	}
 
 }
@@ -316,62 +333,65 @@ void Rib::init_service_info(){
 	spdlog::get("ll-mec")->debug("[RIB] Initialize list of default services");
 	nlohmann::json serviceInfoPlmn, serviceInfoSubscription;
 	nlohmann::json address;
+	std::string serInstanceId;
 
 	//PLMN info
-    serviceInfoPlmn["serInstanceId"] = "rni1";
-    serviceInfoPlmn["serName"] = "PLMN_Information";
-    serviceInfoPlmn["serCategory"]["href"] = "catRNI";
-    serviceInfoPlmn["serCategory"]["id"] = "RNI";
-    serviceInfoPlmn["serCategory"]["name"] = "RNI";
-    serviceInfoPlmn["serCategory"]["version"] = "version1";
-    serviceInfoPlmn["version"] = "ServiceVersion1";
-    serviceInfoPlmn["state"] = "ACTIVE";
-    serviceInfoPlmn["transportInfo"]["id"] = "TransId1";
-    serviceInfoPlmn["transportInfo"]["name"] = "REST";
-    serviceInfoPlmn["transportInfo"]["description"] = "REST API";
-    serviceInfoPlmn["transportInfo"]["type"] = "REST_HTTP";
-    serviceInfoPlmn["transportInfo"]["protocol"] = "HTTP";
-    serviceInfoPlmn["transportInfo"]["version"] = "2.0";
-    serviceInfoPlmn["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/queries/plmn_info"};
-    serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"] = {};
-    address["host"] = "127.0.0.1";
-    address["port"] = 8888;
-    serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"].push_back(address);
-    serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
-    serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
-    serviceInfoPlmn["serializer"] = "JSON";
+	serInstanceId = "serviceId1";
+	serviceInfoPlmn["serInstanceId"] = serInstanceId;
+	serviceInfoPlmn["serName"] = "PLMN_Information";
+	serviceInfoPlmn["serCategory"]["href"] = "catRNI";
+	serviceInfoPlmn["serCategory"]["id"] = "RNI";
+	serviceInfoPlmn["serCategory"]["name"] = "RNI";
+	serviceInfoPlmn["serCategory"]["version"] = "version1";
+	serviceInfoPlmn["version"] = "ServiceVersion1";
+	serviceInfoPlmn["state"] = "ACTIVE";
+	serviceInfoPlmn["transportInfo"]["id"] = "TransId1";
+	serviceInfoPlmn["transportInfo"]["name"] = "REST";
+	serviceInfoPlmn["transportInfo"]["description"] = "REST API";
+	serviceInfoPlmn["transportInfo"]["type"] = "REST_HTTP";
+	serviceInfoPlmn["transportInfo"]["protocol"] = "HTTP";
+	serviceInfoPlmn["transportInfo"]["version"] = "2.0";
+	serviceInfoPlmn["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/queries/plmn_info"};
+	serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"] = {};
+	address["host"] = "127.0.0.1";
+	address["port"] = 8888;
+	serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"].push_back(address);
+	serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
+	serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
+	serviceInfoPlmn["serializer"] = "JSON";
 
-    llmec::mp1::model::ServiceInfo  servicePlmn;
-    from_json(serviceInfoPlmn, servicePlmn);
-    serviceInfoList.emplace("rni1", servicePlmn);
+	llmec::mp1::model::ServiceInfo  servicePlmn;
+	from_json(serviceInfoPlmn, servicePlmn);
+	serviceInfoList.emplace(serInstanceId, servicePlmn);
 
-    //RNI subscriptions
-    serviceInfoSubscription["serInstanceId"] = "rni2";
-    serviceInfoSubscription["serName"] = "Subscription";
-    serviceInfoSubscription["serCategory"]["href"] = "catRNI";
-    serviceInfoSubscription["serCategory"]["id"] = "RNI";
-    serviceInfoSubscription["serCategory"]["name"] = "RNI";
-    serviceInfoSubscription["serCategory"]["version"] = "version1";
-    serviceInfoSubscription["version"] = "ServiceVersion1";
-    serviceInfoSubscription["state"] = "ACTIVE";
-    serviceInfoSubscription["transportInfo"]["id"] = "TransId2";
-    serviceInfoSubscription["transportInfo"]["name"] = "REST";
-    serviceInfoSubscription["transportInfo"]["description"] = "REST API";
-    serviceInfoSubscription["transportInfo"]["type"] = "REST_HTTP";
-    serviceInfoSubscription["transportInfo"]["protocol"] = "HTTP";
-    serviceInfoSubscription["transportInfo"]["version"] = "2.0";
-    serviceInfoSubscription["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/rni/subscriptions"};
-    serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"] = {};
-    address["host"] = "127.0.0.1";
-    address["port"] = 8888;
-    serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"].push_back(address);
-    serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
-    serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
-    serviceInfoSubscription["serializer"] = "JSON";
+	//RNI subscriptions
+	serInstanceId = "serviceId2";
+	serviceInfoPlmn["serInstanceId"] = serInstanceId;
+	serviceInfoSubscription["serName"] = "Subscription";
+	serviceInfoSubscription["serCategory"]["href"] = "catRNI";
+	serviceInfoSubscription["serCategory"]["id"] = "RNI";
+	serviceInfoSubscription["serCategory"]["name"] = "RNI";
+	serviceInfoSubscription["serCategory"]["version"] = "version1";
+	serviceInfoSubscription["version"] = "ServiceVersion1";
+	serviceInfoSubscription["state"] = "ACTIVE";
+	serviceInfoSubscription["transportInfo"]["id"] = "TransId2";
+	serviceInfoSubscription["transportInfo"]["name"] = "REST";
+	serviceInfoSubscription["transportInfo"]["description"] = "REST API";
+	serviceInfoSubscription["transportInfo"]["type"] = "REST_HTTP";
+	serviceInfoSubscription["transportInfo"]["protocol"] = "HTTP";
+	serviceInfoSubscription["transportInfo"]["version"] = "2.0";
+	serviceInfoSubscription["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/rni/subscriptions"};
+	serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"] = {};
+	address["host"] = "127.0.0.1";
+	address["port"] = 8888;
+	serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"].push_back(address);
+	serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
+	serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
+	serviceInfoSubscription["serializer"] = "JSON";
 
-    llmec::mp1::model::ServiceInfo  serviceSubscription;
-    from_json(serviceInfoSubscription, serviceSubscription);
-    serviceInfoList.emplace("rni2", serviceSubscription);
+	llmec::mp1::model::ServiceInfo  serviceSubscription;
+	from_json(serviceInfoSubscription, serviceSubscription);
+	serviceInfoList.emplace(serInstanceId, serviceSubscription);
 
 }
 }

@@ -20,6 +20,11 @@
 #define ServiceInfo_Post_H_
 
 
+#include "TransportInfo.h"
+#include "CategoryRef.h"
+#include "ServiceInfo_State.h"
+#include <string>
+#include "SerializerTypes.h"
 #include <nlohmann/json.hpp>
 
 namespace llmec {
@@ -40,10 +45,63 @@ public:
     /////////////////////////////////////////////
     /// ServiceInfo_Post members
 
-
+    /// <summary>
+    /// Identifier of the service instance assigned by the MEPM / mobile edge platform.
+    /// </summary>
+    std::string getSerInstanceId() const;
+    void setSerInstanceId(std::string const& value);
+    bool serInstanceIdIsSet() const;
+    void unsetSerInstanceId();
+    /// <summary>
+    /// The name of the service. This is how the service producing mobile edge application identifies the service instance it produces.
+    /// </summary>
+    std::string getSerName() const;
+    void setSerName(std::string const& value);
+        /// <summary>
+    /// 
+    /// </summary>
+    CategoryRef getSerCategory() const;
+    void setSerCategory(CategoryRef const& value);
+    bool serCategoryIsSet() const;
+    void unsetSerCategory();
+    /// <summary>
+    /// Service version
+    /// </summary>
+    std::string getVersion() const;
+    void setVersion(std::string const& value);
+        /// <summary>
+    /// 
+    /// </summary>
+    ServiceInfo_State getState() const;
+    void setState(ServiceInfo_State const& value);
+        /// <summary>
+    /// 
+    /// </summary>
+    TransportInfo getTransportInfo() const;
+    void setTransportInfo(TransportInfo const& value);
+        /// <summary>
+    /// 
+    /// </summary>
+    std::string getSerializer() const;
+    void setSerializer(std::string const& value);
+    
     friend void to_json(nlohmann::json& j, const ServiceInfo_Post& o);
     friend void from_json(const nlohmann::json& j, ServiceInfo_Post& o);
 protected:
+    std::string m_SerInstanceId;
+    bool m_SerInstanceIdIsSet;
+    std::string m_SerName;
+
+    CategoryRef m_SerCategory;
+    bool m_SerCategoryIsSet;
+    std::string m_Version;
+
+    ServiceInfo_State m_State;
+
+    TransportInfo m_TransportInfo;
+
+    std::string m_Serializer;
+
 };
 
 }

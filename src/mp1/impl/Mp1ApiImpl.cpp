@@ -503,15 +503,49 @@ void Mp1ApiImpl::services_get(const Pistache::Optional<std::vector<std::string>>
 }
 
 void Mp1ApiImpl::services_post(const ServiceInfo_Post &serviceInfoPost, Pistache::Http::ResponseWriter &response) {
-	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
+	spdlog::get("ll-mec")->info("[MP1 Services API] Create a meService resource");
+
+	ServiceInfo serviceInfo;
+
+	std::string serInstanceId = "";
+	serviceInfo.setSerInstanceId(serInstanceId);
+	serviceInfo.setSerName(serviceInfoPost.getSerName());
+	serviceInfo.setSerCategory(serviceInfoPost.getSerCategory());
+	serviceInfo.setVersion(serviceInfoPost.getVersion());
+	serviceInfo.setState(serviceInfoPost.getState());
+	serviceInfo.setTransportInfo(serviceInfoPost.getTransportInfo());
+	serviceInfo.setSerializer(serviceInfoPost.getSerializer());
+
+	serInstanceId = m_rib.update_service_info(serInstanceId, serviceInfo);
+	serviceInfo.setSerInstanceId(serInstanceId);
+    std::string url = m_rib.get_mp1_server_url() + "/services/" + serInstanceId;
+	response.headers().add<Pistache::Http::Header::Location>(url);
+	json serviceInfoJson;
+	to_json(serviceInfoJson, serviceInfo);
+	response.send(Pistache::Http::Code::Ok, serviceInfoJson.dump());
+
 }
 
 void Mp1ApiImpl::services_service_id_get(const std::string &serviceId, Pistache::Http::ResponseWriter &response) {
-	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
+	spdlog::get("ll-mec")->info("[MP1 Services API] Retrieve information about a meService resource with serviceId {}", serviceId);
+	json serviceInfoJson;
+	ServiceInfo serviceInfo = m_rib.get_service_info_by_id(serviceId);
+	to_json(serviceInfoJson, serviceInfo);
+
+	std::string resBody = serviceInfoJson.dump();
+	response.send(Pistache::Http::Code::Ok,resBody);
+	return;
 }
 
 void Mp1ApiImpl::services_service_id_put(const std::string &serviceId, const ServiceInfo &serviceInfo, Pistache::Http::ResponseWriter &response) {
-	response.send(Pistache::Http::Code::Ok, "This API has not been implemented (will be available soon)!\n");
+
+	spdlog::get("ll-mec")->info("[MP1 Services API] Update a meService resource with serviceId {}", serviceId);
+
+	std::string serInstanceId = m_rib.update_service_info(serviceId, serviceInfo);
+	json serviceInfoJson;
+	to_json(serviceInfoJson, serviceInfo);
+	response.send(Pistache::Http::Code::Ok, serviceInfoJson.dump());
+
 }
 
 }

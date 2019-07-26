@@ -145,12 +145,38 @@ public:
      */
 	nlohmann::json get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType);
 
+	/*
+     * Retrieve information of a service by its ID
+     * @param [serInstanceId] Service's ID
+     * @return service information
+     */
+	llmec::mp1::model::ServiceInfo get_service_info_by_id(std::string serInstanceId);
 
-	llmec::mp1::model::ServiceInfo get_service_info_by_id(std::string appInstanceId);
-	llmec::mp1::model::ServiceInfo get_service_info_by_name(std::string appName);
-	std::vector<llmec::mp1::model::ServiceInfo> get_service_info_by_category(std::string appCategory);
-	llmec::mp1::model::ServiceInfo update_service_info(std::string appInstanceId, llmec::mp1::model::ServiceInfo serviceInfo);
-    void init_service_info();
+	/*
+     * Retrieve information of a service by its name
+     * @param [serName] Service's name
+     * @return service information
+     */
+	llmec::mp1::model::ServiceInfo get_service_info_by_name(std::string serName);
+
+	/*
+     * Retrieve information of a list of service in a category
+     * @param [serCategory] Service's name
+     * @return a list of service with this category
+     */
+	std::vector<llmec::mp1::model::ServiceInfo> get_service_info_by_category(std::string serCategory);
+
+	/*
+     * Update the information about service if exist, if not create a new one and add to the list
+     * @param [serInstanceId] Service's ID
+     * @return service's ID
+     */
+	std::string update_service_info(const std::string serInstanceId, const llmec::mp1::model::ServiceInfo &serviceInfo);
+
+	/*
+     * Store default ME services into the list of services e.g., get PLMN, RNI subscription, etc.
+     */
+	void init_service_info();
 
 private:
 	mutable std::mutex eNB_info_mutex;

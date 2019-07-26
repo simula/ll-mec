@@ -20,6 +20,11 @@ namespace model {
 
 ServiceInfo_Post::ServiceInfo_Post()
 {
+    m_SerInstanceId = "";
+    m_SerInstanceIdIsSet = false;
+    m_SerName = "";
+    m_SerCategoryIsSet = false;
+    m_Version = "";
     
 }
 
@@ -35,12 +40,115 @@ void ServiceInfo_Post::validate()
 void to_json(nlohmann::json& j, const ServiceInfo_Post& o)
 {
     j = nlohmann::json();
+    if(o.serInstanceIdIsSet())
+        j["serInstanceId"] = o.m_SerInstanceId;
+    j["serName"] = o.m_SerName;
+    if(o.serCategoryIsSet())
+        j["serCategory"] = o.m_SerCategory;
+    j["version"] = o.m_Version;
+    j["state"] = o.m_State;
+    j["transportInfo"] = o.m_TransportInfo;
+    j["serializer"] = o.m_Serializer;
 }
 
 void from_json(const nlohmann::json& j, ServiceInfo_Post& o)
 {
+    if(j.contains("serInstanceId"))
+    {
+        j.at("serInstanceId").get_to(o.m_SerInstanceId);
+        o.m_SerInstanceIdIsSet = true;
+    } 
+    j.at("serName").get_to(o.m_SerName);
+    if(j.contains("serCategory"))
+    {
+        j.at("serCategory").get_to(o.m_SerCategory);
+        o.m_SerCategoryIsSet = true;
+    } 
+    j.at("version").get_to(o.m_Version);
+    j.at("state").get_to(o.m_State);
+    j.at("transportInfo").get_to(o.m_TransportInfo);
+    j.at("serializer").get_to(o.m_Serializer);
 }
 
+std::string ServiceInfo_Post::getSerInstanceId() const
+{
+    return m_SerInstanceId;
+}
+void ServiceInfo_Post::setSerInstanceId(std::string const& value)
+{
+    m_SerInstanceId = value;
+    m_SerInstanceIdIsSet = true;
+}
+bool ServiceInfo_Post::serInstanceIdIsSet() const
+{
+    return m_SerInstanceIdIsSet;
+}
+void ServiceInfo_Post::unsetSerInstanceId()
+{
+    m_SerInstanceIdIsSet = false;
+}
+std::string ServiceInfo_Post::getSerName() const
+{
+    return m_SerName;
+}
+void ServiceInfo_Post::setSerName(std::string const& value)
+{
+    m_SerName = value;
+    
+}
+CategoryRef ServiceInfo_Post::getSerCategory() const
+{
+    return m_SerCategory;
+}
+void ServiceInfo_Post::setSerCategory(CategoryRef const& value)
+{
+    m_SerCategory = value;
+    m_SerCategoryIsSet = true;
+}
+bool ServiceInfo_Post::serCategoryIsSet() const
+{
+    return m_SerCategoryIsSet;
+}
+void ServiceInfo_Post::unsetSerCategory()
+{
+    m_SerCategoryIsSet = false;
+}
+std::string ServiceInfo_Post::getVersion() const
+{
+    return m_Version;
+}
+void ServiceInfo_Post::setVersion(std::string const& value)
+{
+    m_Version = value;
+    
+}
+ServiceInfo_State ServiceInfo_Post::getState() const
+{
+    return m_State;
+}
+void ServiceInfo_Post::setState(ServiceInfo_State const& value)
+{
+    m_State = value;
+    
+}
+TransportInfo ServiceInfo_Post::getTransportInfo() const
+{
+    return m_TransportInfo;
+}
+void ServiceInfo_Post::setTransportInfo(TransportInfo const& value)
+{
+    m_TransportInfo = value;
+    
+}
+std::string ServiceInfo_Post::getSerializer() const
+{
+    return m_Serializer;
+}
+void ServiceInfo_Post::setSerializer(std::string const& value)
+{
+    m_Serializer = value;
+    
+}
 
 }
 }
