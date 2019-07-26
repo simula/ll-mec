@@ -15,7 +15,87 @@ security:
       - all
 servers:
   - url: http://localhost:9090/mp1/v1
+tags:
+  - name: mp1
 paths:
+#Service API (MEC 011)
+  '/services':
+    get:
+      description: >-
+        This method retrieves information about a list of meService resources.
+        This method is typically used in "service availability query" procedure
+      operationId: Services_GET
+      tags:
+        - mp1
+      parameters:
+        - $ref: '#/components/parameters/Query.Ser_instance_id'
+        - $ref: '#/components/parameters/Query.Ser_name'
+        - $ref: '#/components/parameters/Query.Ser_category_id'
+      responses:
+        '200':
+          $ref: '#/components/responses/Services.200'
+        '400':
+          $ref: '#/components/responses/Error.400'
+        '403':
+          $ref: '#/components/responses/Error.403'
+        '404':
+          $ref: '#/components/responses/Error.404'
+    post:
+      description: >-
+        This method is used to create a meService resource. This method is
+        typically used in "service availability update and new service
+        registration" procedure
+      operationId: Services_POST
+      tags:
+        - mp1
+      responses:
+        '201':
+          $ref: '#/components/responses/Services.201'
+        '400':
+          $ref: '#/components/responses/Error.400'
+        '403':
+          $ref: '#/components/responses/Error.403'
+        '404':
+          $ref: '#/components/responses/Error.404'
+      requestBody:
+        $ref: '#/components/requestBodies/Services.Post'
+  '/services/{serviceId}':
+    parameters:
+      - $ref: '#/components/parameters/Path.ServiceId'
+    get:
+      description: >-
+        This method retrieves information about a meService resource. This
+        method is typically used in "service availability query" procedure
+      operationId: ServicesServiceId_GET
+      tags:
+        - mp1
+      responses:
+        '200':
+          $ref: '#/components/responses/ServicesServiceId.200'
+        '400':
+          $ref: '#/components/responses/Error.400'
+        '403':
+          $ref: '#/components/responses/Error.403'
+        '404':
+          $ref: '#/components/responses/Error.404'
+    put:
+      description: This method updates the information about a meService resource
+      operationId: ServicesServiceId_PUT
+      tags:
+        - mp1
+      responses:
+        '200':
+          $ref: '#/components/responses/ServicesServiceId.200'
+        '400':
+          $ref: '#/components/responses/Error.400'
+        '403':
+          $ref: '#/components/responses/Error.403'
+        '404':
+          $ref: '#/components/responses/Error.404'
+        '412':
+          $ref: '#/components/responses/Error.412'
+      requestBody:
+        $ref: '#/components/requestBodies/ServicesServiceId'
 #Additional APIs 
   '/platform':
     post:
@@ -26,6 +106,8 @@ paths:
         * Rules for communication (IP+ARP) between the local OVS host and the SGi
         * Rule for rewriting the dst MAC for packets coming from the UEs so that they reach the SGi (NAT box).
       operationId: post_platform
+      tags:
+        - mp1
       responses:
         '200':
           description: Virtual switch reset
@@ -46,6 +128,8 @@ paths:
         \npushed to the OVS. If the UE is already connected, however, the redirection
         rules will be directly installed by this function.\n"
       operationId: post_mp1_traffic_imsi
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -72,6 +156,8 @@ paths:
         Disable redirection by traffic type for the specified list of UEs. For now, the request body needs to carry
         the full information about the redirection rule. (Support for deleting a redirection rule by id is to be added.)
       operationId: delete_mp1_traffic_imsi
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -110,6 +196,8 @@ paths:
         openflow rules for redirection will be installed. \nRedirection applies to
         all UEs.\n"
       operationId: post_mp1_traffic_all
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -142,6 +230,8 @@ paths:
         reconfigures the DNS server to stop resolving requests for the given
         name to the MEC application instance, and removes the related openflow rules.
       operationId: delete_mp1_traffic_all
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -170,11 +260,13 @@ paths:
                 
                 
 #API from RNIS API (ETSI)                
-  /queries/rab_info:
+  /rni/queries/rab_info:
     get:
       description: Gets information on existing E-RABs that are associated with a specific
         mobile edge application instance
       operationId: rab_infoGET
+      tags:
+        - mp1
       #parameters:
       #  - $ref: "#/components/parameters/Query.AppInsId"
       #  - $ref: "#/components/parameters/Query.CellId"
@@ -370,11 +462,13 @@ paths:
                 #  ProblemDetails:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  /queries/plmn_info:
+  /rni/queries/plmn_info:
     get:
       description: Gets the information on Mobile Network(s) that are associated with a
         specific mobile edge application instance
       operationId: plmn_infoGET
+      tags:
+        - mp1
       parameters:
         #- $ref: "#/components/parameters/Query.AppInsIdArr"
         - name: app_ins_id
@@ -465,11 +559,13 @@ paths:
                 #  ProblemDetails:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  /queries/s1_bearer_info:
+  /rni/queries/s1_bearer_info:
     get:
       description: Gets information on existing E-RABs that are associated with a specific
         mobile edge application instance
       operationId: s1_bearer_infoGET
+      tags:
+        - mp1
       #parameters:
       #  - $ref: "#/components/parameters/Query.TempUeId"
       #  - $ref: "#/components/parameters/Query.UeIpv4Address"
@@ -656,11 +752,13 @@ paths:
                 #  ProblemDetails:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  /subscriptions/:
+  /rni/subscriptions/:
     get:
       description: The GET method can be used to request information about the
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptionsGET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors subscriptions.
@@ -787,11 +885,13 @@ paths:
                 # ProblemDetails:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  /subscriptions/cell_change:
+  /rni/subscriptions/cell_change:
     get:
       description: The GET method can be used to request information about the cell_change
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_cc_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors cell_change
@@ -923,6 +1023,8 @@ paths:
       description: Creates a subscription to cell change notifications from Radio Network
         Information Service
       operationId: CellChange_subscriptionsPOST
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -1094,10 +1196,12 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/cell_change/{subscriptionId}":
+  "/rni/subscriptions/cell_change/{subscriptionId}":
     get:
       description: Get cell change subscription information
       operationId: CellChange_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
 
@@ -1199,6 +1303,8 @@ paths:
       description: Updates a subscription to cell change notifications from Radio Network
         Information Service
       operationId: CellChange_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -1332,17 +1438,21 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: CellChange_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
         "204":
           description: No Content
       x-swagger-router-controller: Default
-  /subscriptions/s1_bearer:
+  /rni/subscriptions/s1_bearer:
     get:
       description: The GET method can be used to request information about the s1_bearer
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_s1_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors s1_bearer
@@ -1434,6 +1544,8 @@ paths:
       description: Creates a subscription to S1 bearer notifications from Radio Network
         Information Service
       operationId: S1BearerSubscription_subscriptionsPOST
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -1563,11 +1675,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/s1_bearer/{subscriptionId}":
+  "/rni/subscriptions/s1_bearer/{subscriptionId}":
     get:
       description: Gets a subscription to S1 bearer notifications from Radio Network
         Information Service
       operationId: S1BearerSubscription_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -1664,6 +1778,8 @@ paths:
       description: Updates a subscription to S1 bearer notifications from Radio Network
         Information Service
       operationId: S1BearerSubscription_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -1797,17 +1913,21 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: S1Bearer_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
         "204":
           description: No Content
       x-swagger-router-controller: Default
-  /subscriptions/ta:
+  /rni/subscriptions/ta:
     get:
       description: The GET method can be used to request information about the ta
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_ta_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors ta
@@ -1899,6 +2019,8 @@ paths:
       description: Creates a subscription to UE Timing Advance notifications from Radio
         Network Information Service
       operationId: MeasTa_subscriptionsPOST
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -2029,11 +2151,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/ta/{subscriptionId}":
+  "/rni/subscriptions/ta/{subscriptionId}":
     get:
       description: Gets UE Timing Advance subscription information from Radio Network
         Information Service
       operationId: MeasTa_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -2134,6 +2258,8 @@ paths:
       description: Updates a subscription to UE Timing Advance notifications from Radio
         Network Information Service
       operationId: MeasTa_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -2268,17 +2394,21 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: MeasTa_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
         "204":
           description: No Content
       x-swagger-router-controller: Default
-  /subscriptions/meas_rep_ue:
+  /rni/subscriptions/meas_rep_ue:
     get:
       description: The GET method can be used to request information about the meas_rep_ue
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_mr_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors meas_rep_ue
@@ -2370,6 +2500,8 @@ paths:
       description: Creates a subscription to UE measurement report notifications from Radio
         Network Information Service
       operationId: MeasRepUe_subscriptionsPOST
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -2500,11 +2632,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/meas_rep_ue/{subscriptionId}":
+  "/rni/subscriptions/meas_rep_ue/{subscriptionId}":
     get:
       description: Gets a subscription to UE measurement report notifications from Radio
         Network Information Service
       operationId: MeasRepUe_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -2606,6 +2740,8 @@ paths:
       description: Updates a subscription to UE measurement report notifications from Radio
         Network Information Service
       operationId: MeasRepUeReport_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -2746,17 +2882,21 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: MeasRepUe_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
         "204":
           description: No Content. Successful deletion of UE Measurment Report subscription
       x-swagger-router-controller: Default
-  /subscriptions/rab_est:
+  /rni/subscriptions/rab_est:
     get:
       description: The GET method can be used to request information about the rab_est
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_re_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors rab_est
@@ -2865,7 +3005,9 @@ paths:
     post:
       description: Creates a subscription to RAB establishment notifications from Radio
         Network Information Service
-      operationId: RabEstSubscription_subscriptionsPOST
+      operationId: RabEstSubscription_subscriptionsPOST      
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -3026,11 +3168,13 @@ paths:
                   ProblemDetails:
                     $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/rab_est/{subscriptionId}":
+  "/rni/subscriptions/rab_est/{subscriptionId}":
     get:
       description: Gets a subscription to RAB establishment notifications from Radio
         Network Information Service
       operationId: RabEstSubscription_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -3149,6 +3293,8 @@ paths:
       description: Updates a subscription to RAB establishment notifications from Radio
         Network Information Service
       operationId: RabEstSubscription_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -3312,17 +3458,21 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: RabEst_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
         "204":
           description: No Content. Successful deletion of Rab Establishment subscription
       x-swagger-router-controller: Default
-  /subscriptions/rab_mod:
+  /rni/subscriptions/rab_mod:
     get:
       description: The GET method can be used to request information about the rab_mod
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_rm_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors rab_mod
@@ -3433,6 +3583,8 @@ paths:
       description: Creates a subscription to RAB Modification notifications from Radio
         Network Information Service
       operationId: RabModSubscription_subscriptionsPOST
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -3592,11 +3744,13 @@ paths:
                   ProblemDetails:
                     $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/rab_mod/{subscriptionId}":
+  "/rni/subscriptions/rab_mod/{subscriptionId}":
     get:
       description: Gets a subscription to RAB Modification notifications from Radio Network
         Information Service
       operationId: RabModSubscription_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -3715,6 +3869,8 @@ paths:
       description: Updates a subscription to RAB Modification notifications from Radio
         Network Information Service
       operationId: RabModSubscription_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -3878,17 +4034,21 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: RabMod_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
         "204":
           description: No Content. Successful deletion of Rab Modification subscription
       x-swagger-router-controller: Default
-  /subscriptions/rab_rel:
+  /rni/subscriptions/rab_rel:
     get:
       description: The GET method can be used to request information about the rab_rel
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_rr_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors rab_rel
@@ -3998,6 +4158,8 @@ paths:
       description: Creates a subscription to RAB Release notifications from Radio Network
         Information Service
       operationId: RabRelSubscription_subscriptionsPOST
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -4157,11 +4319,13 @@ paths:
                   ProblemDetails:
                     $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/rab_rel/{subscriptionId}":
+  "/rni/subscriptions/rab_rel/{subscriptionId}":
     get:
       description: Gets a subscription to RAB Release notifications from Radio Network
         Information Service
       operationId: RabRelSubscription_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -4262,6 +4426,8 @@ paths:
       description: Updates a subscription to RAB Release notifications from Radio Network
         Information Service
       operationId: RabRelSubscription_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -4395,17 +4561,21 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: RabRel_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
         "204":
           description: No Content. Successful deletion of Rab Release subscription
       x-swagger-router-controller: Default
-  /subscriptions/ca_reconf:
+  /rni/subscriptions/ca_reconf:
     get:
       description: The GET method can be used to request information about the ca_reconf
         subscriptions for this requestor
       operationId: SubscriptionLinkList_subscriptions_cr_GET
+      tags:
+        - mp1
       responses:
         "200":
           description: Response body contains the list of links to requestors ca_reconf
@@ -4497,6 +4667,8 @@ paths:
       description: Creates a subscription to Carrier Aggregation Reconfiguration
         notifications from Radio Network Information Service
       operationId: CaReConfSubscription_subscriptionsPOST
+      tags:
+        - mp1
       requestBody:
         content:
           application/json:
@@ -4629,11 +4801,13 @@ paths:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
       x-swagger-router-controller: Default
-  "/subscriptions/ca_reconf/{subscriptionId}":
+  "/rni/subscriptions/ca_reconf/{subscriptionId}":
     get:
       description: Gets a subscription to Carrier Aggregation Reconfiguration notifications
         from Radio Network Information Service
       operationId: CaReConfSubscription_subscriptionsGET
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -4741,6 +4915,8 @@ paths:
       description: Updates a subscription to Carrier Aggregation Reconfiguration
         notifications from Radio Network Information Service
       operationId: CaReConfSubscription_subscriptionsPUT
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       requestBody:
@@ -4874,6 +5050,8 @@ paths:
     delete:
       description: Method to delete a subscription
       operationId: CaReConf_subscriptionsSubscrIdDELETE
+      tags:
+        - mp1
       parameters:
         - $ref: "#/components/parameters/Path.subscrId"
       responses:
@@ -4882,6 +5060,51 @@ paths:
       x-swagger-router-controller: Default
 components:
   parameters:
+    Path.ServiceId:
+      name: serviceId
+      description: Represents a mobile edge service instance.
+      in: path
+      required: true
+      schema:
+        type: string
+    Query.Ser_category_id:
+      name: ser_category_id
+      description: >-
+        A mobile edge application instance may use ser_category_id as an input
+        parameter to query the availability of a list of mobile edge service
+        instances in a serCategory. Either "ser_instance_id" or "ser_name" or
+        "ser_category_id" or none of them shall be present.
+      in: query
+      required: false
+      schema:
+        type: string
+    Query.Ser_instance_id:
+      name: ser_instance_id
+      description: >-
+        A mobile edge application instance may use multiple ser_instance_ids as
+        an input parameter to query the availability of a list of mobile edge
+        service instances. Either "ser_instance_id" or "ser_name" or
+        "ser_category_id" or none of them shall be present.
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+    Query.Ser_name:
+      name: ser_name
+      description: >-
+        A mobile edge application instance may use multiple ser_names as an
+        input parameter to query the availability of a list of mobile edge
+        service instances. Either "ser_instance_id" or "ser_name" or
+        "ser_category_id" or none of them shall be present.
+      in: query
+      required: false
+      schema:
+        type: array
+        items:
+          type: string
+# end MEC 011  
     Path.subscrId:
       name: subscriptionId
       in: path
@@ -5034,6 +5257,361 @@ components:
           scopes:
             all: Single oauth2 scope for API
   schemas:
+#MEC 011 (services)
+    Empty:
+      description: Empty schema
+    CategoryRef.Href:
+      description: Reference of the catalogue
+      type: string
+      example: 'catItem1'
+    CategoryRef.Id:
+      description: Unique identifier of the category
+      type: string
+      example: 'id12345'
+    CategoryRef.Name:
+      description: Name of the category
+      type: string
+      example: 'RNI'
+    CategoryRef.Version:
+      description: Category version
+      type: string
+      example: 'version1'
+    CategoryRef:
+      description: This type represents the category reference
+      type: object
+      required:
+        - href
+        - id
+        - name
+        - version
+      properties:
+        href:
+          $ref: '#/components/schemas/CategoryRef.Href'
+        id:
+          $ref: '#/components/schemas/CategoryRef.Id'
+        name:
+          $ref: '#/components/schemas/CategoryRef.Name'
+        version:
+          $ref: '#/components/schemas/CategoryRef.Version'
+    EndPointInfo.Address.Host:
+      description: Host portion of the address
+      type: string
+      example: '192.0.2.0'
+    EndPointInfo.Address_Port:
+      description: Port portion of the address
+      type: integer
+      format: uint32
+      example: 8080
+    EndPointInfo.Address:
+      description: A IP address and port pair
+      type: object
+      required:
+        - host
+        - port
+      properties:
+        host:
+          $ref: '#/components/schemas/EndPointInfo.Address.Host'
+        port:
+          $ref: '#/components/schemas/EndPointInfo.Address_Port'
+    EndPointInfo.Addresses:
+      description: >-
+        Entry point information of the service as one or more pairs of IP
+        address and port
+      type: array
+      items:
+        $ref: '#/components/schemas/EndPointInfo.Address'
+#      type: object
+#      required:
+#        - addresses
+#      properties:
+#        addresses:
+#          type: array
+#          minItems: 0
+#          items:
+#            $ref: '#/components/schemas/EndPointInfo.Address'
+    EndPointInfo.Alternative:
+      description: >-
+        Entry point information of the service in a format defined by an
+        implementation, or in an external specification.
+      type: object
+      required:
+        - alternative
+      properties: 
+        alternative:
+          type: object
+    EndPointInfo.Uri:
+      description: Entry point information of the service
+      type: string
+      format: uri
+      example: '/meMp1/service/EntryPoint'
+    EndPointInfo.Uris:
+      description: >-
+        Entry point information of the service as string, formatted according to
+        URI syntax
+      type: array
+      items:
+        $ref: '#/components/schemas/EndPointInfo.Uri'
+#      type: object
+#      required:
+#        - uris
+#      properties:
+#        uris:
+#          type: array
+#          minItems: 0
+#          items:
+#            $ref: '#/components/schemas/EndPointInfo.Uri'
+    
+    EndPointInfo.All:
+      type: object
+      required:
+        - test
+      properties:
+        uris:
+          $ref: '#/components/schemas/EndPointInfo.Uris'
+        addresses: 
+          $ref: '#/components/schemas/EndPointInfo.Addresses'
+
+    Href:
+      description: URI referring to a resource
+      type: string
+      format: uri
+      example: '/meMp1/example'
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Problem.type'
+        title:
+          $ref: '#/components/schemas/Problem.title'
+        status:
+          $ref: '#/components/schemas/Problem.status'
+        detail:
+          $ref: '#/components/schemas/Problem.detail'
+        instance:
+          $ref: '#/components/schemas/Problem.instance'
+    Problem.detail:
+      type: string
+      description: A human-readable explanation specific to this occurrence of the problem
+    Problem.instance:
+      type: string
+      format: uri
+      description: A URI reference that identifies the specific occurrence of the problem
+    Problem.status:
+      type: integer
+      format: uint32
+      description: The HTTP status code for this occurrence of the problem
+    Problem.title:
+      type: string
+      description: 'A short, human-readable summary of the problem type'
+    Problem.type:
+      type: string
+      format: uri
+      description: >-
+        A URI reference according to IETF RFC 3986 that identifies the problem
+        type
+    SecurityInfo.OAuth2Info.GrantTypes:
+      description: List of supported OAuth 2.0 grant types
+      type: string
+      enum:
+        - OAUTH2_AUTHORIZATION_CODE
+        - OAUTH2_IMPLICIT_GRANT
+        - OAUTH2_RESOURCE_OWNER
+        - OAUTH2_CLIENT_CREDENTIALS
+      example: 'OAUTH2_CLIENT_CREDENTIALS'
+    SecurityInfo.OAuth2Info.TokenEndpoint:
+      description: The token endpoint
+      type: string
+      format: uri
+      example: '/meMp1/security/TokenEndPoint'
+    SecurityInfo.OAuth2Info:
+      description: Parameters related to use of OAuth 2.0
+      required:
+        - grantTypes
+        - tokenEndpoint
+      properties:
+        grantTypes:
+          description: >-
+            List of supported OAuth 2.0 grant types.
+          type: array
+          minItems: 1
+          maxItems: 4
+          items:
+            $ref: '#/components/schemas/SecurityInfo.OAuth2Info.GrantTypes'
+        tokenEndpoint:
+          $ref: '#/components/schemas/SecurityInfo.OAuth2Info.TokenEndpoint'
+      type: object
+    SecurityInfo:
+      description: This type represents security information related to a transport
+      type: object
+      properties:
+        oAuth2Info:
+          $ref: '#/components/schemas/SecurityInfo.OAuth2Info'
+    SerializerTypes:
+      description: The enumeration SerializerTypes represents types of serializers
+      type: string
+      enum:
+        - JSON
+        - XML
+        - PROTOBUF3
+      example: 'JSON'
+    ServiceInfo.SerInstanceId:
+      description: >-
+        Identifier of the service instance assigned by the MEPM / mobile edge
+        platform.
+      type: string
+      readOnly: true
+      example: 'ServiceInstance123'
+    ServiceInfo.SerName:
+      description: >-
+        The name of the service. This is how the service producing mobile edge
+        application identifies the service instance it produces.
+      type: string
+      example: 'ExampleService'
+    ServiceInfo.State:
+      description: Contains the state
+      type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
+      example: 'ACTIVE'
+    ServiceInfo.TransportId:
+      description: >-
+        Identifier of the platform-provided transport to be used by the service.
+        Valid identifiers may be obtained using the "Transport information
+        query" procedure. May be present in POST requests to signal the use of a
+        platform-provided transport for the service, and shall be absent
+        otherwise.
+      type: string
+      writeOnly: true
+      example: 'Rest1'
+    ServiceInfo.Version:
+      description: Service version
+      type: string
+      example: 'ServiceVersion1'
+    ServiceInfo.Post:
+      description: This type represents the general information of a mobile edge service.
+      type: object
+      required:
+        - serName
+        - version
+        - state
+        - serializer
+      oneOf:
+        - required: [transportId]
+        - required: [transportInfo]
+      properties:
+        serInstanceId:
+          $ref: '#/components/schemas/ServiceInfo.SerInstanceId'
+        serName:
+          $ref: '#/components/schemas/ServiceInfo.SerName'
+        serCategory:
+          $ref: '#/components/schemas/CategoryRef'
+        version:
+          $ref: '#/components/schemas/ServiceInfo.Version'
+        state:
+          $ref: '#/components/schemas/ServiceInfo.State'
+        transportId:
+          $ref: '#/components/schemas/ServiceInfo.TransportId'
+        transportInfo:
+          $ref: '#/components/schemas/TransportInfo'
+        serializer:
+          $ref: '#/components/schemas/SerializerTypes'
+    ServiceInfo:
+      description: This type represents the general information of a mobile edge service.
+      type: object
+      required:
+        - serName
+        - version
+        - state
+        - transportInfo
+        - serializer
+      properties:
+        serInstanceId:
+          $ref: '#/components/schemas/ServiceInfo.SerInstanceId'
+        serName:
+          $ref: '#/components/schemas/ServiceInfo.SerName'
+        serCategory:
+          $ref: '#/components/schemas/CategoryRef'
+        version:
+          $ref: '#/components/schemas/ServiceInfo.Version'
+        state:
+          $ref: '#/components/schemas/ServiceInfo.State'
+        transportInfo:
+          $ref: '#/components/schemas/TransportInfo'
+        serializer:
+          $ref: '#/components/schemas/SerializerTypes'
+
+    TransportInfo.Description:
+      description: Human-readable description of this transport
+      type: string
+      example: 'REST API'
+    TransportInfo.Id:
+      description: The identifier of this transport
+      type: string
+      example: 'TransId12345'
+    TransportInfo.ImplSpecificInfo:
+      description: Additional implementation specific details of the transport
+      type: object
+    TransportInfo.Name:
+      description: The name of this transport
+      type: string
+      example: 'REST'
+    TransportInfo.Protocol:
+      description: The name of the protocol used. Shall be set to HTTP for a REST API.
+      type: string
+      example: 'HTTP'
+    TransportInfo.Version:
+      description: The version of the protocol used
+      type: string
+      example: '2.0'
+    TransportInfo:
+      description: This type represents the general information of a mobile edge service.
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - protocol
+        - version
+        - endpoint
+        - security
+      properties:
+        id:
+          $ref: '#/components/schemas/TransportInfo.Id'
+        name:
+          $ref: '#/components/schemas/TransportInfo.Name'
+        description:
+          $ref: '#/components/schemas/TransportInfo.Description'
+        type:
+          $ref: '#/components/schemas/TransportTypes'
+        protocol:
+          $ref: '#/components/schemas/TransportInfo.Protocol'
+        version:
+          $ref: '#/components/schemas/TransportInfo.Version'
+        endpoint:
+          description: This type represents information about a transport endpoint
+          $ref: '#/components/schemas/EndPointInfo.All'
+#          type: object
+#          oneOf:
+#            - $ref: '#/components/schemas/EndPointInfo.Uris'
+#            - $ref: '#/components/schemas/EndPointInfo.Addresses'
+#            - $ref: '#/components/schemas/EndPointInfo.Alternative'
+        security:
+          $ref: '#/components/schemas/SecurityInfo'
+        implSpecificInfo:
+          $ref: '#/components/schemas/TransportInfo.ImplSpecificInfo'
+    TransportTypes:
+      description: The enumeration TransportTypes represents types of transports
+      type: string
+      enum:
+        - REST_HTTP
+        - MB_TOPIC_BASED
+        - MB_ROUTING
+        - MB_PUBSUB
+        - RPC
+        - RPC_STREAMING
+        - WEBSOCKET
+      example: 'REST_HTTP'
 #Additional schemas (from Pantelis)
     ue_list:
       title: List of UEs
@@ -5873,3 +6451,211 @@ components:
         qosInformation:
           $ref: "#/components/schemas/QosInformation"
       description: QoS Class Identifier as defined in TS 23.401
+
+      
+#MEC 011
+  responses:
+    Services.200:
+      description: >-
+        It is used to indicate nonspecific success. The response body
+        contains a representation of the resource.
+      content:
+        application/json:
+          schema:
+            type: array
+            minItems: 0
+            items:
+              $ref: '#/components/schemas/ServiceInfo'
+          examples:
+            ServiceInfoList:
+              $ref: '#/components/examples/ServiceInfoList'
+      links:
+        getIndividualMeService:
+          $ref: '#/components/links/GetIndividualMeService'
+        putIndividualMeService:
+          $ref: '#/components/links/PutIndividualMeService'
+    Services.201:
+      description: >-
+        Upon success, the HTTP response shall include a Location HTTP header
+        that contains the resource URI of the created resource.
+      headers:
+        location:
+          description: The resource URI of the created resource
+          schema:
+            type: string
+            format: uri
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceInfo'
+          examples:
+            ServiceInfo:
+              $ref: '#/components/examples/ServiceInfo'
+      links:
+        getIndividualMeService:
+          $ref: '#/components/links/GetIndividualMeService'
+        putIndividualMeService:
+          $ref: '#/components/links/PutIndividualMeService'
+    ServicesServiceId.200:
+      description: >-
+        It is used to indicate nonspecific success. The response body
+        contains a representation of the resource.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceInfo'
+          examples:
+            ServiceInfo:
+              $ref: '#/components/examples/ServiceInfo'
+    Transports.200:
+      description: >-
+        It is used to indicate nonspecific success. The response body
+        contains a representation of the resource.
+      content:
+        application/json:
+          schema:
+            type: array
+            minItems: 0
+            items:
+              $ref: '#/components/schemas/TransportInfo'
+      links:
+        getTransportInfo:
+          $ref: '#/components/links/GetTransportInfo'
+    Error.400:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/Empty'
+    Error.403:
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+    Error.404:
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/Empty'
+    Error.412:
+      description: Precondition Failed
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/ProblemDetails'
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/Empty'
+  requestBodies:
+    Services:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceInfo'
+      description: >-
+        New ServiceInfo with updated "state" is included as entity body of the
+        request
+      required: true
+    Services.Post:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceInfo.Post'
+      description: >-
+        New ServiceInfo with updated "state" is included as entity body of the
+        request
+      required: true
+    ServicesServiceId:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceInfo'
+      description: >-
+        New ServiceInfo with updated "state" is included as entity body of the
+        request
+      required: true
+    AppTerminationNotification:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/AppTerminationNotification'
+    ServiceAvailabilityNotification:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ServiceAvailabilityNotification'
+  links:
+    GetIndividualMeService:
+      operationId: ServicesServiceId_GET
+      description: The `serviceId` value returned in the response can be used as the `serviceId` parameter in `GET /services/{serviceId}`
+      parameters:
+        serviceId: '$response.body#/serviceId'
+    PutIndividualMeService:
+      operationId: ServicesServiceId_PUT
+      description: The `serviceId` value returned in the response can be used as the `serviceId` parameter in `PUT /services/{serviceId}`
+      parameters:
+        serviceId: '$response.body#/serviceId'
+  examples:
+    ServiceInfo:
+      value:
+        serInstanceId: 'ServiceInstance123'
+        serName: 'ExampleService'
+        serCategory:
+          href: 'catItem1'
+          id: 'id12345'
+          name: 'RNI'
+          version: 'version1'
+        version: 'ServiceVersion1'
+        state: 'ACTIVE'
+        transportInfo:
+          id: 'TransId12345'
+          name: 'REST'
+          description: 'REST API'
+          type: 'REST_HTTP'
+          protocol: 'HTTP'
+          version: '2.0'
+          endpoint:
+            uris:
+              - '/meMp1/service/EntryPoint'
+          security:
+            oAuth2Info:
+              grantTypes: 
+                - 'OAUTH2_CLIENT_CREDENTIALS'
+              tokenEndpoint: '/meMp1/security/TokenEndPoint'
+        serializer: 'JSON'
+    ServiceInfoList:
+      value:
+        - serInstanceId: 'ServiceInstance123'
+          serName: 'ExampleService'
+          serCategory:
+            href: 'catItem1'
+            id: 'id12345'
+            name: 'RNI'
+            version: 'version1'
+          version: 'ServiceVersion1'
+          state: 'ACTIVE'
+          transportInfo:
+            id: 'TransId12345'
+            name: 'REST'
+            description: 'REST API'
+            type: 'REST_HTTP'
+            protocol: 'HTTP'
+            version: '2.0'
+            endpoint:
+              addresses:
+                - host: '192.0.2.0'
+                  port: 8080
+            security:
+              oAuth2Info:
+                grantTypes: 
+                  - 'OAUTH2_CLIENT_CREDENTIALS'
+                tokenEndpoint: '/meMp1/security/TokenEndPoint'
+          serializer: 'JSON'      
