@@ -83,12 +83,6 @@ void Mp1Api::setupRoutes() {
     Routes::Get(*router, base + "/rni/subscriptions/s1_bearer", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_s1_get_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/ta", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_ta_get_handler, this));
 
-    //for Services (MEC 011)
-    Routes::Get(*router, base + "/services", Routes::bind(&Mp1Api::services_get_handler, this));
-    Routes::Post(*router, base + "/services", Routes::bind(&Mp1Api::services_post_handler, this));
-    Routes::Get(*router, base + "/services/:serviceId", Routes::bind(&Mp1Api::services_service_id_get_handler, this));
-    Routes::Put(*router, base + "/services/:serviceId", Routes::bind(&Mp1Api::services_service_id_put_handler, this));
-   
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&Mp1Api::mp1_api_default_handler, this));
 }
@@ -1145,106 +1139,7 @@ void Mp1Api::subscription_link_list_subscriptions_ta_get_handler(const Pistache:
     }
 
 }
-void Mp1Api::services_get_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
 
-    // Getting the query params
-    auto serInstanceIdQuery = request.query().get("ser_instance_id");
-    Pistache::Optional<std::vector<std::string>> serInstanceId;
-    if(!serInstanceIdQuery.isEmpty()){
-        std::vector<std::string> value;
-        if(fromStringValue(serInstanceIdQuery.get(), value)){
-            serInstanceId = Pistache::Some(value);
-        }
-    }
-    auto serNameQuery = request.query().get("ser_name");
-    Pistache::Optional<std::vector<std::string>> serName;
-    if(!serNameQuery.isEmpty()){
-        std::vector<std::string> value;
-        if(fromStringValue(serNameQuery.get(), value)){
-            serName = Pistache::Some(value);
-        }
-    }
-    auto serCategoryIdQuery = request.query().get("ser_category_id");
-    Pistache::Optional<std::string> serCategoryId;
-    if(!serCategoryIdQuery.isEmpty()){
-        std::string value;
-        if(fromStringValue(serCategoryIdQuery.get(), value)){
-            serCategoryId = Pistache::Some(value);
-        }
-    }
-    
-    try {
-      this->services_get(serInstanceId, serName, serCategoryId, response);
-    } catch (nlohmann::detail::exception &e) {
-        //send a 400 error
-        response.send(Pistache::Http::Code::Bad_Request, e.what());
-        return;
-    } catch (std::exception &e) {
-        //send a 500 error
-        response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
-        return;
-    }
-
-}
-void Mp1Api::services_post_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
-
-    // Getting the body param
-    
-    ServiceInfo_Post serviceInfoPost;
-    
-    try {
-      nlohmann::json::parse(request.body()).get_to(serviceInfoPost);
-      this->services_post(serviceInfoPost, response);
-    } catch (nlohmann::detail::exception &e) {
-        //send a 400 error
-        response.send(Pistache::Http::Code::Bad_Request, e.what());
-        return;
-    } catch (std::exception &e) {
-        //send a 500 error
-        response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
-        return;
-    }
-
-}
-void Mp1Api::services_service_id_get_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
-    // Getting the path params
-    auto serviceId = request.param(":serviceId").as<std::string>();
-    
-    try {
-      this->services_service_id_get(serviceId, response);
-    } catch (nlohmann::detail::exception &e) {
-        //send a 400 error
-        response.send(Pistache::Http::Code::Bad_Request, e.what());
-        return;
-    } catch (std::exception &e) {
-        //send a 500 error
-        response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
-        return;
-    }
-
-}
-void Mp1Api::services_service_id_put_handler(const Pistache::Rest::Request &request, Pistache::Http::ResponseWriter response) {
-    // Getting the path params
-    auto serviceId = request.param(":serviceId").as<std::string>();
-    
-    // Getting the body param
-    
-    ServiceInfo serviceInfo;
-    
-    try {
-      nlohmann::json::parse(request.body()).get_to(serviceInfo);
-      this->services_service_id_put(serviceId, serviceInfo, response);
-    } catch (nlohmann::detail::exception &e) {
-        //send a 400 error
-        response.send(Pistache::Http::Code::Bad_Request, e.what());
-        return;
-    } catch (std::exception &e) {
-        //send a 500 error
-        response.send(Pistache::Http::Code::Internal_Server_Error, e.what());
-        return;
-    }
-
-}
 void Mp1Api::mp1_api_default_handler(const Pistache::Rest::Request &, Pistache::Http::ResponseWriter response) {
     response.send(Pistache::Http::Code::Not_Found, "The requested method does not exist");
 }

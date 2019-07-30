@@ -59,6 +59,10 @@ void Mp1Manager::init(size_t thr) {
 	.threads(thr);
 	m_httpEndpoint->init(opts);
 	m_mp1Apiserver->init();
+	m_subscriptionsApiserver->init();
+	m_servicesApiserver->init();
+	m_servicesApiserver->register_for_event(m_subscriptionsApiserver,llmec::mp1::rib::meMp1SubscriptionType::ME_MP1_SUBSCRIPTION_SERVICE_AVAILABILITY);
+	//m_mp1Apiserver->register_for_event(m_subscriptionsApiserver,llmec::mp1::rib::meMp1SubscriptionType::ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION);
 }
 void Mp1Manager::start(){
 	m_httpEndpoint->setHandler(m_router->handler());

@@ -26,7 +26,7 @@
   \author Tien-Thinh NGUYEN
   \company Eurecom
   \email: thinhnt1983@gmail.com
-*/
+ */
 
 #include "rib.h"
 #include <algorithm>
@@ -97,7 +97,7 @@ nlohmann::json Rib::get_plmn_info(const std::string appInsId){
 			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["mcc"].get<std::string>().c_str());
 			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MNC {}", plmnInfo["mnc"].get<std::string>().c_str());
 		}
-		*/
+		 */
 
 		std::string imsi = ((it->second)["imsi"]).get<std::string>().c_str();
 		try{
@@ -138,9 +138,13 @@ void Rib::update_app_subscription_info(std::string appId, llmec::app::uplane::ue
 	it  = appSubscriptionList.find(std::make_pair(appId,appType));
 	//if not present -> create a new one
 	if (it == appSubscriptionList.end()){
+		app_subscription_mutex.lock();
 		appSubscriptionList.emplace(std::make_pair(appId,appType), subscriptionInfo);
+		app_subscription_mutex.unlock();
 	} else{ //if existed-> simply update
+		app_subscription_mutex.lock();
 		it->second = subscriptionInfo;
+		app_subscription_mutex.unlock();
 	}
 
 }
@@ -167,7 +171,7 @@ nlohmann::json Rib::get_app_subscription_list(llmec::app::uplane::ueEventType ap
 			subscriptionInfo["SubscriptionType"] = appType;
 			subscriptionInfo["href"] = ((it.second)["callbackReference"]).get<std::string>().c_str();
 			subscriptionList["subscription"].push_back(subscriptionInfo);
-			subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
+			subscriptionList["links"] = "http://"+ mp1_server_addr + ":" + std::to_string(mp1_server_port);
 		}
 	}
 	return subscriptionList;
@@ -176,7 +180,7 @@ nlohmann::json Rib::get_app_subscription_list(llmec::app::uplane::ueEventType ap
 nlohmann::json Rib::get_app_subscription_list(){
 	spdlog::get("ll-mec")->debug("[RIB] Get a list of all subscriptions");
 	nlohmann::json subscriptionList;
-	subscriptionList["links"] = mp1_server_url;//store server url for the moment, should be updated with base+path for this appType
+	subscriptionList["links"] = "http://"+ mp1_server_addr + ":" + std::to_string(mp1_server_port);
 
 	for (auto it : appSubscriptionList){
 		nlohmann::json subscriptionInfo;
@@ -189,35 +193,29 @@ nlohmann::json Rib::get_app_subscription_list(){
 
 void Rib::delete_app_subscription_info(std::string appId, llmec::app::uplane::ueEventType appType){
 	//std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
+	app_subscription_mutex.lock();
 	appSubscriptionList.erase(std::make_pair(appId,appType));
+	app_subscription_mutex.unlock();
 	//appSubscriptionList.erase(it);
 }
 
-void Rib::set_mp1_server_url(std::string url){
-	mp1_server_url = url;
-	spdlog::get("ll-mec")->debug("[RIB] Server URL: {}", url);
+void Rib::set_mp1_server_addr(std::string addr){
+	mp1_server_addr = addr;
+	spdlog::get("ll-mec")->debug("[RIB] Server Addr: {}", addr);
 }
 
-std::string Rib::get_mp1_server_url(){
-	return mp1_server_url;
+std::string Rib::get_mp1_server_addr(){
+	return mp1_server_addr;
 }
 
-/*
-std::vector<std::pair<std::string, std::string>> Rib::get_callback_reference(std::string imsi, llmec::app::uplane::ueEventType evType){
-	std::vector<std::pair<std::string, std::string>> result;
-	std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json>::iterator it;
-	for (it = subscriptionList.begin(); it!= subscriptionList.end(); it++){
-		if (it->first.second == evType){
-			spdlog::get("ll-mec")->debug("[RIB] get_callback_reference: appInsId {}", ((it->second)["filterCriteria"]["appInsId"]).get<std::string>().c_str());
-			spdlog::get("ll-mec")->debug("[RIB] get_callback_reference: callbackReference {}", ((it->second)["callbackReference"]).get<std::string>().c_str());
-			//TODO: check filterCriteria e.g., based on AssociatedId (type=1, UE_IPVv4_ADDR)
-			std::pair<std::string, std::string> appPair = std::make_pair(((it->second)["filterCriteria"]["appInsId"]).get<std::string>().c_str(), ((it->second)["callbackReference"]).get<std::string>().c_str());
-			result.push_back(appPair);
-		}
-	}
-	return result;
+void Rib::set_mp1_server_port(int port){
+	mp1_server_port = port;
+	spdlog::get("ll-mec")->debug("[RIB] Server port: {}", port);
 }
- */
+
+int Rib::get_mp1_server_port(){
+	return mp1_server_port;
+}
 
 nlohmann::json Rib::get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType){
 	spdlog::get("ll-mec")->debug("[RIB] Get notification info");
@@ -291,7 +289,7 @@ std::vector<llmec::mp1::model::ServiceInfo> Rib::get_service_info_by_category(st
 	std::vector<llmec::mp1::model::ServiceInfo> serviceInfos;
 	for (auto it : serviceInfoList){
 		llmec::mp1::model::ServiceInfo serviceInfo = it.second;
-		if (serviceInfo.getSerCategory().getId() == serCategory) serviceInfos.push_back(it.second);
+		if (serviceInfo.getSerCategory().getId() == serCategory) serviceInfos.push_back(serviceInfo);
 	}
 	return serviceInfos;
 }
@@ -305,15 +303,20 @@ std::string Rib::update_service_info(const std::string serInstanceId, const llme
 
 		//update if existed
 		if (it != serviceInfoList.end()){
+			mp1_service_mutex.lock();
 			it->second = serviceInfo;
+			mp1_service_mutex.unlock();
 			spdlog::get("ll-mec")->debug("[RIB] Updated service info with serInstanceId {}",serInstanceId);
 		} else { //if not existed, add to the list
 			spdlog::get("ll-mec")->debug("[RIB] Added service info with serInstanceId {} to the list ",serInstanceId);
+			mp1_service_mutex.lock();
 			serviceInfoList.emplace(serInstanceId, serviceInfo);
+			mp1_service_mutex.unlock();
 		}
 		return serInstanceId;
 	} else{ //generate a new appInstanceId and add to the list
-		std::string newId = "serviceId"+std::to_string(serviceInfoList.size() + 1);
+		service_id =  service_id + 1;
+		std::string newId = "serviceId"+std::to_string(service_id);
 		spdlog::get("ll-mec")->debug("[RIB] Update service info, generate a new instance id {} and add to the list", newId);
 		llmec::mp1::model::ServiceInfo temp;
 		temp.setSerInstanceId(newId);
@@ -324,7 +327,9 @@ std::string Rib::update_service_info(const std::string serInstanceId, const llme
 		temp.setTransportInfo(serviceInfo.getTransportInfo());
 		temp.setSerializer(serviceInfo.getSerializer());
 
+		mp1_service_mutex.lock();
 		serviceInfoList.emplace(newId, temp);
+		mp1_service_mutex.unlock();
 		return newId;
 	}
 
@@ -353,8 +358,8 @@ void Rib::init_service_info(){
 	serviceInfoPlmn["transportInfo"]["version"] = "2.0";
 	serviceInfoPlmn["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/queries/plmn_info"};
 	serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"] = {};
-	address["host"] = "127.0.0.1";
-	address["port"] = 8888;
+	address["host"] = mp1_server_addr;
+	address["port"] = mp1_server_port;
 	serviceInfoPlmn["transportInfo"]["endpoint"]["addresses"].push_back(address);
 	serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
 	serviceInfoPlmn["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
@@ -362,7 +367,9 @@ void Rib::init_service_info(){
 
 	llmec::mp1::model::ServiceInfo  servicePlmn;
 	from_json(serviceInfoPlmn, servicePlmn);
+	mp1_service_mutex.lock();
 	serviceInfoList.emplace(serInstanceId, servicePlmn);
+	mp1_service_mutex.unlock();
 
 	//RNI subscriptions
 	serInstanceId = "serviceId2";
@@ -382,8 +389,8 @@ void Rib::init_service_info(){
 	serviceInfoSubscription["transportInfo"]["version"] = "2.0";
 	serviceInfoSubscription["transportInfo"]["endpoint"]["uris"] = {"mp1/v1/rni/subscriptions"};
 	serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"] = {};
-	address["host"] = "127.0.0.1";
-	address["port"] = 8888;
+	address["host"] = mp1_server_addr;
+	address["port"] = mp1_server_port;
 	serviceInfoSubscription["transportInfo"]["endpoint"]["addresses"].push_back(address);
 	serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["grantTypes"] = {"OAUTH2_CLIENT_CREDENTIALS"};
 	serviceInfoSubscription["transportInfo"]["security"]["oAuth2Info"]["tokenEndpoint"] = "/mp1/v1/security/TokenEndPoint";
@@ -391,9 +398,170 @@ void Rib::init_service_info(){
 
 	llmec::mp1::model::ServiceInfo  serviceSubscription;
 	from_json(serviceInfoSubscription, serviceSubscription);
+	mp1_service_mutex.lock();
 	serviceInfoList.emplace(serInstanceId, serviceSubscription);
+	mp1_service_mutex.unlock();
 
 }
+
+
+std::string Rib::update_me_mp1_subscription_info(std::string appInstanceId, meMp1SubscriptionType subscriptionType, nlohmann::json subscriptionInfo, std::string subscriptionId){
+	spdlog::get("ll-mec")->info("[RIB] Update/Create a new meMp1Subscription");
+	std::map<std::pair<std::string, meMp1SubscriptionType>, std::map<std::string, nlohmann::json>>::iterator it;
+	it  = meMp1SubscriptionList.find(std::make_pair(appInstanceId,subscriptionType));
+	//if not present -> create a new one
+	if (it == meMp1SubscriptionList.end()){
+		//generate a new subscriptionId
+		subscription_id = subscription_id + 1;
+		if (subscriptionType ==  ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION)
+			subscriptionId = "subscription" + appInstanceId + "appTermination" + std::to_string(subscription_id);
+		else
+			subscriptionId = "subscription" + appInstanceId + "serAvailability" + std::to_string(subscription_id);
+		std::map<std::string, nlohmann::json> subscriptionMap;
+		subscriptionMap.emplace(subscriptionId, subscriptionInfo);
+		mp1_subscription_mutex.lock();
+		meMp1SubscriptionList.emplace(std::make_pair(appInstanceId,subscriptionType), subscriptionMap);
+		mp1_subscription_mutex.unlock();
+	} else{ //if existed-> simply update
+		if (subscriptionId.compare("") != 0){
+			std::map<std::string, nlohmann::json>::iterator itSubscription;
+			itSubscription = (it->second).find (subscriptionId);
+			//if not present -> create a new one
+			if (itSubscription == (it->second).end()){
+				mp1_subscription_mutex.lock();
+				(it->second).emplace(subscriptionId, subscriptionInfo);
+				mp1_subscription_mutex.unlock();
+			} else{//update
+				mp1_subscription_mutex.lock();
+				itSubscription->second = subscriptionInfo;
+				mp1_subscription_mutex.unlock();
+			}
+		} else{
+			//generate a new subscriptionId
+			subscription_id = subscription_id + 1;
+			if (subscriptionType ==  ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION)
+				subscriptionId = "subscription" + appInstanceId + "appTermination" + std::to_string(subscription_id);
+			else
+				subscriptionId = "subscription" + appInstanceId + "serAvailability" + std::to_string(subscription_id);
+
+			mp1_subscription_mutex.lock();
+			(it->second).emplace(subscriptionId, subscriptionInfo);
+			mp1_subscription_mutex.unlock();
+		}
+
+	}
+	return subscriptionId;
+
+}
+
+nlohmann::json Rib::get_me_mp1_subscription_info(std::string appInstanceId, meMp1SubscriptionType subscriptionType, std::string subscriptionId){
+	spdlog::get("ll-mec")->info("[RIB] Get a meMp1Subscription");
+
+	spdlog::get("ll-mec")->info("[RIB] Get a meMp1Subscription appId {}, subType {}, subId",appInstanceId,subscriptionType,subscriptionId);
+
+	std::map<std::pair<std::string, meMp1SubscriptionType>, std::map<std::string, nlohmann::json>>::iterator it;
+	it  = meMp1SubscriptionList.find(std::make_pair(appInstanceId,subscriptionType));
+
+	if (it != meMp1SubscriptionList.end()){
+		std::map<std::string, nlohmann::json>::iterator itSubscription;
+		itSubscription = (it->second).find(subscriptionId);
+		if (itSubscription != (it->second).end()) return itSubscription->second;
+		else return nlohmann::json();
+	} else{
+		return nlohmann::json();
+	}
+
+}
+
+nlohmann::json Rib::get_me_mp1_subscription_infos(std::string appInstanceId){
+	spdlog::get("ll-mec")->debug("[RIB] Get a list of meMp1SubscriptionInfo, appInstanceId = {}", appInstanceId);
+	nlohmann::json subscriptionInfos;
+
+	for (auto it: meMp1SubscriptionList){
+		if ((it.first).first.compare("appInstanceId") == 0)
+			spdlog::get("ll-mec")->debug("[RIB] Get a list of meMp1SubscriptionInfo type {}", (it.first).second);
+		subscriptionInfos["_links"]["self"] = mp1_server_addr + ":" + std::to_string(mp1_server_port) + "/applications/" + appInstanceId + "/subscriptions";
+		for (auto itSub : it.second){
+			nlohmann::json subscription;
+			spdlog::get("ll-mec")->debug("[RIB] meMp1SubscriptionInfo subscriptionId {}", itSub.first);
+
+			if ((it.first).second == ME_MP1_SUBSCRIPTION_SERVICE_AVAILABILITY){
+				subscription["href"] = mp1_server_addr + ":" + std::to_string(mp1_server_port) + "/applications/" + appInstanceId + "/subscriptions/SerAvailabilityNotificationSubscription/" + itSub.first;
+				subscription["rel"] = "SerAvailabilityNotificationSubscription";
+			}
+			else if ((it.first).second == ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION){
+				subscription["href"] = mp1_server_addr + ":" + std::to_string(mp1_server_port) + "/applications/" + appInstanceId + "/subscriptions/AppTerminationNotificationSubscription/" + itSub.first;
+				subscription["rel"] = "AppTerminationNotificationSubscription";
+			}
+			subscriptionInfos["_links"]["subscription"].push_back(subscription);
+		}
+	}
+	//spdlog::get("ll-mec")->debug("[RIB] Get a list of meMp1SubscriptionInfo, appInstanceId = {}", subscriptionInfos.dump());
+	return subscriptionInfos;
+
+}
+
+void Rib::delete_me_mp1_subscription_info(std::string appInstanceId, meMp1SubscriptionType subscriptionType, std::string subscriptionId){
+	spdlog::get("ll-mec")->debug("[RIB] Delete a meMp1SubscriptionInfo");
+	std::map<std::pair<std::string, meMp1SubscriptionType>, std::map<std::string, nlohmann::json>>::iterator it;
+	it  = meMp1SubscriptionList.find(std::make_pair(appInstanceId,subscriptionType));
+	if (it != meMp1SubscriptionList.end()){
+		std::map<std::string, nlohmann::json>::iterator itSubscription;
+		itSubscription = (it->second).find(subscriptionId);
+		if (itSubscription != (it->second).end()) {
+			mp1_subscription_mutex.lock();
+			(it->second).erase(subscriptionId);
+			mp1_subscription_mutex.unlock();
+		}
+		if ((it->second).size() == 0) {
+			mp1_subscription_mutex.lock();
+			meMp1SubscriptionList.erase(std::make_pair(appInstanceId,subscriptionType));
+			mp1_subscription_mutex.unlock();
+		}
+	}
+}
+
+nlohmann::json Rib::get_subscription_notification_info(nlohmann::json serviceInfo, meMp1SubscriptionType evType){
+	spdlog::get("ll-mec")->debug("[RIB] Get a SubscriptionNotificationInfo");
+
+	nlohmann::json notificationInfos;
+
+	std::map<std::pair<std::string, meMp1SubscriptionType>, std::map<std::string, nlohmann::json>>::iterator it;
+
+	for (it = meMp1SubscriptionList.begin(); it!= meMp1SubscriptionList.end(); it++){
+		if (it->first.second == evType){
+
+			nlohmann::json notificationInfo;
+
+			for (auto itSubscription : it->second){
+				//check filteringCriteria
+				nlohmann::json filteringCriteria = (itSubscription.second)["filteringCriteria"];
+				if ((filteringCriteria["serInstanceId"] == serviceInfo["serInstanceId"]) | (filteringCriteria["serName"] == serviceInfo["serName"])) {
+					notificationInfo["callbackReference"] = (itSubscription.second)["callbackReference"];
+					break;
+				}
+			}
+
+			switch (evType){
+			case ME_MP1_SUBSCRIPTION_SERVICE_AVAILABILITY:
+				notificationInfo["notificationInfo"]["notificationType"] = "SerAvailabilityNotificationSubscription";
+				notificationInfo["notificationInfo"]["_links"] =  mp1_server_addr + ":" + std::to_string(mp1_server_port) + "/services/" + serviceInfo["serInstanceId"].get<std::string>().c_str();
+				notificationInfo["notificationInfo"]["services"] = serviceInfo;
+				break;
+			case ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION:
+				notificationInfo["notificationInfo"]["notificationType"] = "AppTerminationNotificationSubscription";
+				notificationInfo["notificationInfo"]["_links"] =  mp1_server_addr + ":" + std::to_string(mp1_server_port) + "/services/" + serviceInfo["serInstanceId"].get<std::string>().c_str();
+				notificationInfo["notificationInfo"]["maxGracefulTimeout"] = 10;//hardcoded
+				break;
+			default:
+				break;
+			}
+			notificationInfos.push_back(notificationInfo);
+		}
+	}
+	return notificationInfos;
+}
+
 }
 }
 }

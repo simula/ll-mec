@@ -54,12 +54,10 @@
 #include "S1BearerInfo.h"
 #include "S1BearerSubscription.h"
 #include "S1BearerSubscriptionPost.h"
-#include "ServiceInfo.h"
-#include "ServiceInfo_Post.h"
 #include "SubscriptionLinkList.h"
 #include "rib.h"
 #include <string>
-
+#include "SubscriptionsApiImpl.h"
 
 using json = nlohmann::json;
 
@@ -133,11 +131,6 @@ public:
     void subscription_link_list_subscriptions_s1_get(Pistache::Http::ResponseWriter &response);
     void subscription_link_list_subscriptions_ta_get(Pistache::Http::ResponseWriter &response);
 
-    //for Services (MEC 011)
-    void services_get(const Pistache::Optional<std::vector<std::string>> &serInstanceId, const Pistache::Optional<std::vector<std::string>> &serName, const Pistache::Optional<std::string> &serCategoryId, Pistache::Http::ResponseWriter &response);
-    void services_post(const ServiceInfo_Post &serviceInfoPost, Pistache::Http::ResponseWriter &response);
-    void services_service_id_get(const std::string &serviceId, Pistache::Http::ResponseWriter &response);
-    void services_service_id_put(const std::string &serviceId, const ServiceInfo &serviceInfo, Pistache::Http::ResponseWriter &response);
 
 private:
     llmec::mp1::rib::Rib& m_rib;

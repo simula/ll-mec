@@ -22,7 +22,7 @@
 
 /*!
   \file rib.h
-  \brief header file of rib.cpp stores RAN Information Base from FlexRAN controllers
+  \brief header file of rib.cpp stores RAN/MP1 Information Base from FlexRAN controllers
   \author Tien-Thinh NGUYEN
   \company Eurecom
   \email: thinhnt1983@gmail.com
@@ -50,6 +50,15 @@ namespace llmec {
 namespace mp1 {
 namespace rib {
 
+
+
+//SubscriptionType of a meMp1Subscription (ETSI MEC 011)
+typedef enum {
+  ME_MP1_SUBSCRIPTION_SERVICE_AVAILABILITY = 0,
+  ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION = 1,
+} meMp1SubscriptionType;
+
+
 class Rib {
 public:
     /*
@@ -64,6 +73,9 @@ public:
      * @param [eNBInfo] eNB's info
      */
 	bool update_eNB_info(uint64_t eNBId, nlohmann::json eNBInfo);
+
+
+	//For RNI API (ETSI MEC 012)
 
     /*
      * Get PLMN info from DB
@@ -126,16 +138,29 @@ public:
 
 
 	/*
-     * Set url of MP1 server (to be included in the response to App subscription request)
-     * @param [url] url in which MP1 server is listening to
+     * Store address of MP1 server
+     * @param [addr] address in which MP1 server is listening to
      */
-	void set_mp1_server_url(std::string url);
+	void set_mp1_server_addr(std::string addr);
 
 	/*
-     * Get url of MP1 server
-     * @return url in which MP1 server is listening to
+     * Get IP address of MP1 server
+     * @return IP address in which MP1 server is listening to
      */
-	std::string get_mp1_server_url();
+	std::string get_mp1_server_addr();
+
+	/*
+     * Store Port of MP1 server
+     * @param [port] port in which MP1 server is listening to
+     */
+	void set_mp1_server_port(int port);
+
+	/*
+     * Get port of MP1 server
+     * @return port in which MP1 server is listening to
+     */
+	int get_mp1_server_port();
+
 
 	/*
      * Get information to be notified to the corresponding RNI app event (e.g., RAB establishment)
@@ -145,6 +170,8 @@ public:
      */
 	nlohmann::json get_notification_info(std::string imsi, llmec::app::uplane::ueEventType evType);
 
+
+	//for Services APIs (ETSI MEC 011)
 	/*
      * Retrieve information of a service by its ID
      * @param [serInstanceId] Service's ID
@@ -178,6 +205,52 @@ public:
      */
 	void init_service_info();
 
+	//serSubscription API
+
+	/*
+     * Update meMp1Subscription's info for a particular application instance
+     * @param [appInstanceId] Application's Id of the subscriber
+     * @param [subscriptionType] type of subscription (service availability/application termination)
+     * @param [subscriptionId] ID of the subscription
+     * @param [subscriptionInfo] subscription info
+     */
+	std::string update_me_mp1_subscription_info(std::string appInstanceId, meMp1SubscriptionType subscriptionType, nlohmann::json subscriptionInfo, std::string subscriptionId="");
+
+
+	/*
+     * Get meMp1Subscription's info for a particular application instance
+     * @param [appInstanceId] Application's Id of the subscriber
+     * @param [subscriptionType] type of subscription (service availability/application termination)
+     * @param [subscriptionId] ID of the subscription
+     * @return subscription info
+     */
+	nlohmann::json get_me_mp1_subscription_info(std::string appInstanceId, meMp1SubscriptionType subscriptionType, std::string subscriptionId);
+
+	/*
+     * Get a list of meMp1Subscription's info for a particular application instance
+     * @param [appInstanceId] Application's Id of the subscriber
+     * @return list of subscription info
+     */
+	nlohmann::json get_me_mp1_subscription_infos(std::string appInstanceId);
+
+	/*
+     * Delete a meMp1Subscription
+     * @param [appInstanceId] Application's Id of the subscriber
+     * @param [subscriptionType] type of subscription (service availability/application termination)
+     * @param [subscriptionId] ID of the subscription
+     *
+     */
+	void delete_me_mp1_subscription_info(std::string appInstanceId, meMp1SubscriptionType subscriptionType, std::string subscriptionId);
+
+	/*
+     * Get information to be notified to the corresponding ME App
+     * @param [serviceInfo] ServiceInfo of the service which generates the event
+     * @param [evType] type of subscription (AppTermination/ServiceAvailability)
+     * @return notification info
+     */
+	nlohmann::json get_subscription_notification_info(nlohmann::json serviceInfo, meMp1SubscriptionType evType);
+
+
 private:
 	mutable std::mutex eNB_info_mutex;
 	std::map<uint64_t, nlohmann::json> eNBInfos;
@@ -187,9 +260,19 @@ private:
     mutable std::mutex app_subscription_mutex;
     // list of MEC apps subscribed to MEC platform
     std::map<std::pair<std::string, llmec::app::uplane::ueEventType>, nlohmann::json> appSubscriptionList;
-    //MP1's URL
-    std::string mp1_server_url;
+    //Address of MP1's server
+    std::string mp1_server_addr;
+    //Port of MP1's server
+    int mp1_server_port;
+    int subscription_id = 0;
+    int service_id = 0;
+    mutable std::mutex mp1_service_mutex;
+    //list of service info for MEC ETSI 011
     std::map <std::string, llmec::mp1::model::ServiceInfo> serviceInfoList;
+    mutable std::mutex mp1_subscription_mutex;
+    //list of SerAvailabilityNotificationSubscriptions/AppTerminationNotificationSubscriptions for MEC ETSI 011
+    std::map<std::pair<std::string, meMp1SubscriptionType>, std::map<std::string, nlohmann::json>> meMp1SubscriptionList;
+
 
 };
 
