@@ -85,22 +85,23 @@ LL-MEC is a real-time Multi-access Edge Computing platform.
 
 
 ## MP1 API
-#### Sending a request for PLMN information (Section 5.2.3 Sending a request for PLMN information, ETSI GS MEC 012 V1.1.1)
-    curl -X GET http://127.0.0.1:8888/mp1/v1/queries/plmn_info?app_ins_id=app01
+#### RNI APIs
+###### Sending a request for PLMN information (Section 5.2.3 Sending a request for PLMN information, ETSI GS MEC 012 V1.1.1)
+    curl -X GET http://127.0.0.1:8888/mp1/v1/rni/queries/plmn_info?app_ins_id=app01
     # result    
     {"appInId":"app01","ecgi":{"cellId":"0","plmn":{"mcc":"208","mnc":"93"}},"timeStamp":{"nanoSeconds":0,"seconds":1577836800}} 
 
-#### Subscribe to RNI event notifications (RabEstSubscription) (Section 5.2.5.1 Subscribing to RNI event notifications, ETSI GS MEC 012 V1.1.1). A notification will be sent to the callbackref whenever a RAB bearer is established
-    curl -X POST http://127.0.0.1:8888/mp1/v1/subscriptions/rab_est -d '{"callbackReference":"http://10.0.0.1:8888/rni/v1/notifications/rab_est/1","filterCriteriaAssocQci":{"appInsId": "app01", "associateId":{"type":"1", "value": "10.0.0.1"}, "plmn": {"mnc":"01", "mcc":"001"}, "cellId":"0x800000B", "qci":1}, "expiryDeadline":{"seconds":15700,"nanoSeconds":0 } }'
+###### Subscribe to RNI event notifications (RabEstSubscription) (Section 5.2.5.1 Subscribing to RNI event notifications, ETSI GS MEC 012 V1.1.1). A notification will be sent to the callbackref whenever a RAB bearer is established
+    curl -X POST http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est -d '{"callbackReference":"http://10.0.0.1:8888/rni/v1/rni/notifications/rab_est/1","filterCriteriaAssocQci":{"appInsId": "app01", "associateId":{"type":"1", "value": "10.0.0.1"}, "plmn": {"mnc":"01", "mcc":"001"}, "cellId":"0x800000B", "qci":1}, "expiryDeadline":{"seconds":15700,"nanoSeconds":0 } }'
     # result
-    {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/app01"},"callbackReference":"http://10.0.0.1:8888/rni/v1/notifications/rab_est/1","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{"appInsId":"app01","associateId":{"type":"1","value":"10.0.0.1"},"cellId":["0x800000B"],"plmn":{"mcc":"001","mnc":"01"},"qci":1}}
+    {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01"},"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/1","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{"appInsId":"app01","associateId":{"type":"1","value":"10.0.0.1"},"cellId":["0x800000B"],"plmn":{"mcc":"001","mnc":"01"},"qci":1}}
     
-#### Get information of a RabEst subscription
-    curl -X GET http://127.0.0.1:8888/mp1/v1/subscriptions/rab_est/app01
+###### Get information of a RabEst subscription
+    curl -X GET http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01
     # result  
-    {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/app01"},"callbackReference":"http://10.0.0.1:8888/rni/v1/notifications/rab_est/1","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{"appInsId":"app01","associateId":{"type":"1","value":"10.0.0.1"},"cellId":["0x800000B"],"plmn":{"mcc":"001","mnc":"01"},"qci":1}}
+    {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01"},"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/1","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{"appInsId":"app01","associateId":{"type":"1","value":"10.0.0.1"},"cellId":["0x800000B"],"plmn":{"mcc":"001","mnc":"01"},"qci":1}}
     
-#### Add a bearer to trigger a RabEst notification
+###### Add a bearer to trigger a RabEst notification
     curl -X POST http://127.0.0.1:9998/bearer -d '{"eps_bearer_id":1, "imsi":"208950000000009", "s1_ul_teid":"0x3", "s1_dl_teid":"0x4", "ue_ip":"172.16.0.2", "enb_ip":"192.168.0.3"}'
     # result
     OK
@@ -109,26 +110,87 @@ As a result, MEC App will receive the a notification (Section 5.2.7 Receiving RN
 establishment, ETSI GS MEC 012 V1.1.1 ):
     {"associateId":{"type":1,"value":"172.0.0.2"},"ecgi":{"cellId":"123","mcc":"208","mnc":"95"},"erabId":4,"erabQosParameters":{"qci":0,"qosInformation":{"erabGbrDl":0,"erabGbrUl":0,"erabMbrDl":0,"erabMbrUl":0}},"tempUeId":{"mmec":"mmec","mtmsi":"mtmsi"},"timeStamp":{"nanoSeconds":0,"seconds":1577836800}}
 
-#### Update a RabEstSubscription for event notifications (Section 5.2.5.3 Updating subscription for RNI event notifications, ETSI GS MEC 012 V1.1.1)
-    curl -X PUT http://127.0.0.1:8888/mp1/v1/subscriptions/rab_est/app01 -d '{"callbackReference":"http://10.0.0.1:8888/rni/v1/notifications/rab_est/2","filterCriteriaAssocQci":{"appInsId": "app01", "associateId":{"type":"1", "value": "10.10.10.1"}, "plmn": {"mnc":"01", "mcc":"001"}, "cellId":"0x800000B", "qci":1}, "expiryDeadline":{"seconds":15700,"nanoSeconds":0 } }'
+###### Update a RabEstSubscription for event notifications (Section 5.2.5.3 Updating subscription for RNI event notifications, ETSI GS MEC 012 V1.1.1)
+    curl -X PUT http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01 -d '{"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/2","filterCriteriaAssocQci":{"appInsId": "app01", "associateId":{"type":"1", "value": "10.10.10.1"}, "plmn": {"mnc":"01", "mcc":"001"}, "cellId":"0x800000B", "qci":1}, "expiryDeadline":{"seconds":15700,"nanoSeconds":0 } }'
     # result
-    {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/app01"},"callbackReference":"http://10.0.0.1:8888/rni/v1/notifications/rab_est/2","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{}}
+    {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01"},"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/2","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{}}
  
 
-#### Unscribe from an event notification (Delete subscription with SubId) (Section 5.2.5.4 Unsubscribing from RNI event notifications,ETSI GS MEC 012 V1.1.1)
-    curl -X DELETE http://127.0.0.1:8888/mp1/v1/subscriptions/rab_est/app01
+###### Unscribe from an event notification (Delete subscription with SubId) (Section 5.2.5.4 Unsubscribing from RNI event notifications,ETSI GS MEC 012 V1.1.1)
+    curl -X DELETE http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01
     # result
     RabEstSubscription has been deleted!
     
 verify that this subscription exist
-    curl -X GET http://127.0.0.1:8888/mp1/v1/subscriptions/rab_est/app01
+    curl -X GET http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01
     # result
     No RabEstSubscription with Id app01!
 
-#### Get a list of subscriptions for RabEstSubscription
-    curl -X GET http://127.0.0.1:8888/mp1/v1/subscriptions/rab_est
+###### Get a list of subscriptions for RabEstSubscription
+    curl -X GET http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est
     # result
-    {"links":"http://127.0.0.1:8888/mp1/v1/subscriptions/rab_est","subscription":[{"SubscriptionType":1,"href":"http://10.0.0.1:8888/rni/v1/notifications/rab_est/2"}]}
+    {"links":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est","subscription":[{"SubscriptionType":1,"href":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/2"}]}
+
+#### MP1 Services APIs
+
+###### Create a new service (Section 5.2.4 Service availability update and new service registration, MEC ETSI 011): a ServiceAvailabilitySubscriptionNotification will be sent to the subscribers (subscribed to this event) 
+    curl -X POST http://0.0.0.0:8888/mp1/v1/services -d  '{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
+    # result
+    {"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"serviceId1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
+    
+###### Get service's information by service intance (Section 5.2.5 Service availability query, ETSI MEC 011)
+    curl -X GET -G http://0.0.0.0:8888/mp1/v1/services -d ser_instance_id="serviceId1"
+    # result
+    [{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"serviceId1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}]
+    
+###### Get service's information by service name (Section 5.2.5 Service availability query, ETSI MEC 011)
+    curl -X GET -G http://0.0.0.0:8888/mp1/v1/services -d ser_name="PLMN_Information"
+    # result
+    [{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"serviceId1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}]
+    
+###### Get service's information by service category (Section 5.2.5 Service availability query, ETSI MEC 011)
+    curl -X GET -G http://0.0.0.0:8888/mp1/v1/services -d ser_category_id="RNI"
+    # result
+    [{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"serviceId1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}]
+    
+###### Update a service (Section 5.2.4 Service availability update and new service registration, MEC ETSI 011)
+    curl -X PUT http://0.0.0.0:8888/mp1/v1/services/serviceId1 -d  '{"serCategory":{"href":"catTEST","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
+    # result
+    {"serCategory":{"href":"catTEST","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
+
+
+#### MP1 Subscriptions APIs
+
+###### Create a new service availability subscription (Section 5.2.6 Service availability notification subscription, MEC ETSI 011)
+    curl -X POST http://0.0.0.0:8888/mp1/v1/applications/appInstanceId1/subscriptions -d '{"subscriptionType":"SerAvailabilityNotificationSubscription", "callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/", "_links":{"self":{"href":"/meMp1/example"}},"filteringCriteria":{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}}'
+    # result
+    {"_links":{"self":{"href":"/meMp1/example"}},"callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/","filteringCriteria":{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"},"subscriptionType":"SerAvailabilityNotificationSubscription"}
+    
+
+###### Create a new application termination subscription (MEC ETSI 011)
+    curl -X POST http://0.0.0.0:8888/mp1/v1/applications/appInstanceId1/subscriptions -d '{"subscriptionType":"AppTerminationNotificationSubscription", "callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/", "_links":{"self":{"href":"/meMp1/example"}}, "appInstanceId":"appInstance1"}'
+    # result
+    {"_links":{"self":{"href":"/meMp1/example"}},"appInstanceId":"appInstance1","callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/","subscriptionType":"AppTerminationNotificationSubscription"}
+    
+
+
+###### Get a list of all subscriptions (Section 7.6 Resource: all meMp1Subscriptions, MEC ETSI 011)
+    curl -X GET http://0.0.0.0:8888/mp1/v1/applications/appInstanceId1/subscriptions
+    # result
+    {"_links":{"self":"0.0.0.0:8888/applications/appInstanceId1/subscriptions","subscription":[{"href":"0.0.0.0:8888/applications/appInstanceId1/subscriptions/SerAvailabilityNotificationSubscription/subscriptionappInstanceId1serAvailability1","rel":"SerAvailabilityNotificationSubscription"},{"href":"0.0.0.0:8888/applications/appInstanceId1/subscriptions/AppTerminationNotificationSubscription/subscriptionappInstanceId1appTermination2","rel":"AppTerminationNotificationSubscription"}]}}
+    
+
+###### Get an Application Termination Subscription's info (Section 7.6 Resource: all meMp1Subscriptions, MEC ETSI 011)
+    curl -X GET http://0.0.0.0:8888/mp1/v1/applications/appInstanceId1/subscriptions/AppTerminationNotificationSubscription/subscriptionappInstanceId1appTermination1
+    # result
+    null
+    
+
+###### Get a Service Availability Subscription's info (Section 7.6 Resource: all meMp1Subscriptions, MEC ETSI 011)
+    curl -X GET http://0.0.0.0:8888/mp1/v1/applications/appInstanceId1/subscriptions/SerAvailabilityNotificationSubscription/subscriptionappInstanceId1serAvailability1
+    # result
+    {"_links":{"self":{"href":"/meMp1/example"}},"callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/","filteringCriteria":{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"},"subscriptionType":"SerAvailabilityNotificationSubscription"}
+    
 
 ## Contact
 Please email to Mosaic5G (mosaic5g@lists.eurecom.fr)
