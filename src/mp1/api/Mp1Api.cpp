@@ -52,13 +52,85 @@ void Mp1Api::setupRoutes() {
     Routes::Put(*router, base + "/rni/subscriptions/ta/:subscriptionId", Routes::bind(&Mp1Api::meas_ta_subscriptions_put_handler, this));
     Routes::Delete(*router, base + "/rni/subscriptions/ta/:subscriptionId", Routes::bind(&Mp1Api::meas_ta_subscriptions_subscr_id_delete_handler, this));
     Routes::Get(*router, base + "/rni/queries/plmn_info", Routes::bind(&Mp1Api::plmn_info_get_handler, this));
+    /**
+     * @api {get} /rni/queries/plmn_info Get PLMN info.
+     * @apiName GetPLMNInfo
+     * @apiGroup RNI
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:8888/mp1/v1/rni/queries/plmn_info?app_ins_id=app01
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     *       {"appInId":"app01","ecgi":{"cellId":"0","plmn":{"mcc":"208","mnc":"93"}},"timeStamp":{"nanoSeconds":0,"seconds":1577836800}}
+     *
+     */
+
     Routes::Post(*router, base + "/mp1/traffic/all", Routes::bind(&Mp1Api::post_mp1_traffic_all_handler, this));
     Routes::Post(*router, base + "/mp1/traffic/imsi", Routes::bind(&Mp1Api::post_mp1_traffic_imsi_handler, this));
     Routes::Post(*router, base + "/platform", Routes::bind(&Mp1Api::post_platform_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/rab_est/:subscriptionId", Routes::bind(&Mp1Api::rab_est_subscription_subscriptions_get_handler, this));
+    /**
+     * @api {get} /rni/subscriptions/rab_est/:subscriptionId  Get information of a RabEst subscription.
+     * @apiName GetRabEstSubscription
+     * @apiGroup RNI
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01"},"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/1","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{"appInsId":"app01","associateId":{"type":"1","value":"10.0.0.1"},"cellId":["0x800000B"],"plmn":{"mcc":"001","mnc":"01"},"qci":1}}
+     *
+     */
     Routes::Post(*router, base + "/rni/subscriptions/rab_est", Routes::bind(&Mp1Api::rab_est_subscription_subscriptions_post_handler, this));
+    /**
+     * @api {post} /rni/subscriptions/rab_est  Creates a subscription to RAB establishment notifications from RNI Service
+     * @apiName SubscribeRabEstSubscription
+     * @apiGroup RNI
+     *
+     * @apiParam {URI} callbackReference (required) URL selected by the ME application to receive notifications on the subscribed RNIS information.
+     * @apiParam {Structure} filterCriteria (required) (FilterCriteriaAssocQci) List of filtering criteria for the subscription
+     * @apiParam {Structure} _links List of hyperlinks related to the resource
+     * @apiParam {TimeStamp} expiryDeadline Time stamp
+     *
+     * @apiExample Example usage:
+     *     curl -X POST http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est -d '{"callbackReference":"http://10.0.0.1:8888/rni/v1/rni/notifications/rab_est/1","filterCriteriaAssocQci":{"appInsId": "app01", "associateId":{"type":"1", "value": "10.0.0.1"}, "plmn": {"mnc":"01", "mcc":"001"}, "cellId":"0x800000B", "qci":1}, "expiryDeadline":{"seconds":15700,"nanoSeconds":0 } }'
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01"},"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/1","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{"appInsId":"app01","associateId":{"type":"1","value":"10.0.0.1"},"cellId":["0x800000B"],"plmn":{"mcc":"001","mnc":"01"},"qci":1}}
+     *
+     */
+
     Routes::Put(*router, base + "/rni/subscriptions/rab_est/:subscriptionId", Routes::bind(&Mp1Api::rab_est_subscription_subscriptions_put_handler, this));
+    /**
+     * @api {put} /rni/subscriptions/rab_est:subscriptionId  Updates a subscription to RAB establishment notifications from RNI Service
+     * @apiName UpdateRabEstSubscription
+     * @apiGroup RNI
+     *
+     * @apiParam {URI} callbackReference (required) URL selected by the ME application to receive notifications on the subscribed RNIS information.
+     * @apiParam {Structure} filterCriteria (required) (FilterCriteriaAssocQci) List of filtering criteria for the subscription
+     * @apiParam {Structure} _links List of hyperlinks related to the resource
+     * @apiParam {TimeStamp} expiryDeadline Time stamp
+     *
+     * @apiExample Example usage:
+     *     curl -X PUT http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01 -d '{"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/2","filterCriteriaAssocQci":{"appInsId": "app01", "associateId":{"type":"1", "value": "10.10.10.1"}, "plmn": {"mnc":"01", "mcc":"001"}, "cellId":"0x800000B", "qci":1}, "expiryDeadline":{"seconds":15700,"nanoSeconds":0 } }'
+     * @apiParam {String} subscriptionId ID of the subscription
+
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {"_links":{"self":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01"},"callbackReference":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/2","expiryDeadline":{"nanoSeconds":0,"seconds":15700},"filterCriteria":{}}
+     *
+     */
     Routes::Delete(*router, base + "/rni/subscriptions/rab_est/:subscriptionId", Routes::bind(&Mp1Api::rab_est_subscriptions_subscr_id_delete_handler, this));
+    /**
+     * @api {delete} /rni/subscriptions/rab_est/:subscriptionId  Delete a RabEst subscription.
+     * @apiName DeleteRabEstSubscription
+     * @apiGroup RNI
+     * @apiExample Example usage:
+     *     curl -X DELETE http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     */
     Routes::Get(*router, base + "/rni/queries/rab_info", Routes::bind(&Mp1Api::rab_info_get_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/rab_mod/:subscriptionId", Routes::bind(&Mp1Api::rab_mod_subscription_subscriptions_get_handler, this));
     Routes::Post(*router, base + "/rni/subscriptions/rab_mod", Routes::bind(&Mp1Api::rab_mod_subscription_subscriptions_post_handler, this));
@@ -78,6 +150,17 @@ void Mp1Api::setupRoutes() {
     Routes::Get(*router, base + "/rni/subscriptions/", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_get_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/meas_rep_ue", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_mr_get_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/rab_est", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_re_get_handler, this));
+    /**
+     * @api {get} /rni/subscriptions/rab_est/  Get a list of subscriptions for RabEstSubscription
+     * @apiName GetRabEstSubscriptions
+     * @apiGroup RNI
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {"links":"http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est","subscription":[{"SubscriptionType":1,"href":"http://10.0.0.1:8888/mp1/v1/rni/notifications/rab_est/2"}]}
+     *
+     */
     Routes::Get(*router, base + "/rni/subscriptions/rab_mod", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_rm_get_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/rab_rel", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_rr_get_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/s1_bearer", Routes::bind(&Mp1Api::subscription_link_list_subscriptions_s1_get_handler, this));
