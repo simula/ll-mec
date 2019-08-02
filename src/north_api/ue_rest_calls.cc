@@ -305,6 +305,21 @@ namespace north_api {
      *       "1":[2]
      *     }
      */
+
+    Pistache::Rest::Routes::Delete(router, "/meter/:id", Pistache::Rest::Routes::bind(&llmec::north_api::Ue_rest_calls::delete_meter_by_id, this));
+       /**
+        * @api {delete} /meter/:id Remove the meter by ID.
+        * @apiName RemoveMeterByID
+        * @apiGroup User
+        *
+        * @apiParam {Number} id ID of the MT
+        * @apiExample Example usage:
+        *     curl -X DELETE http://127.0.0.1:9999/meter/17
+        * @apiSuccessExample Success-Response:
+        *     HTTP/1.1 200 OK
+        *
+        * @apiError ServiceUnavailable Switch connection lost.
+        */
   }
 
   void Ue_rest_calls::add_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
@@ -714,36 +729,35 @@ namespace north_api {
     return;
   }
 
-/* Delete meter-table by ID*/
-
+  /* Delete meter-table by ID*/
   void Ue_rest_calls::delete_meter_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-    std::string resp;
+    //std::string resp;
 
     /* the expected format is "imsi,meter_id" */
-    auto meter_id = request.param(":meterid").as<int>();
+    auto meter_id = request.param(":id").as<int>();
 
     /* Default flow will be labled as 0xffffffff and cannot be removed */
     if (meter_id == DEFAULT_MT_ID) {
-      resp = "Default flows (meterid = 0xffffffff) cannot be deleted.";
-      response.send(Pistache::Http::Code::Bad_Request, resp);
+      response.send(Pistache::Http::Code::Bad_Request, "Default flows (meterid = 0xffffffff) cannot be deleted.");
       return;
     }
 
     /* ID not exist */
+    /*
     if (ue_manager->id_exist(meter_id) == false) {
       resp = "ID invalid.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
       return;
     }
+*/
 
     if (ue_manager->delete_meter_table(meter_id) == false) {
-      resp = "Switch connection lost.";
-      response.send(Pistache::Http::Code::Service_Unavailable, resp);
+      response.send(Pistache::Http::Code::Service_Unavailable, "Switch connection lost.");
       return;
     }
-    resp = "OK";
-    response.send(Pistache::Http::Code::Ok, resp);
+
+    response.send(Pistache::Http::Code::Ok, "OK");
     return;
   }
 

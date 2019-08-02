@@ -69,7 +69,7 @@ class Ue_manager : public llmec::app::App {
     bool delete_bearer(uint64_t id);
 
     /*Delete an specic meter ID */
-    bool delete_meter_table(uint32_t meterid);
+    bool delete_meter_table(uint32_t meter_id);
 
     /* Delete all bearers context */
     bool delete_bearer_all();

@@ -78,6 +78,8 @@ bool Context_manager::add_bearer(json context)
 
   this->context_lock.lock();
   uint64_t id = this->next_id();
+  spdlog::get("ll-mec")->info("next_id {}",id );
+
   if (id == 0) {
     spdlog::get("ll-mec")->error("Running out of IDs.");
     this->context_lock.unlock();
@@ -142,9 +144,11 @@ bool Context_manager::delete_bearer(uint64_t id)
   if (slice_group[context["slice_id"].get<int>()].empty()) slice_group.erase(context["slice_id"].get<int>());
   this->bearer_context.erase(id);
   this->bag_of_occupied_ids.erase(id);
+  this->meter_mapping.erase(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()));
   this->context_lock.unlock();
   return true;
 }
+
 
 bool Context_manager::add_redirect_bearer(uint64_t id, json context)
 {

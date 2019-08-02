@@ -74,7 +74,7 @@ bool Ue_manager::add_bearer(json context){
 
   }
   context["meter_id"] = meter_id;
-  spdlog::get("ll-mec")->debug("[Ue_manager] add bearer, bearer id {}, meter id {}, meter rate {}, burst size {}", id, meter_id, meter_rate, meter_burst_size);
+  //spdlog::get("ll-mec")->debug("[Ue_manager] add bearer, bearer id {}, meter id {}, meter rate {}, burst size {}", id, meter_id, meter_rate, meter_burst_size);
 
   /* Bearer already exists. Remove it and then add (Overwrite) */
   /*
@@ -107,14 +107,14 @@ bool Ue_manager::add_bearer(json context){
 
   //Bearer already exists. Remove it and then add (Overwrite)
   if (id != 0) {
-    context_manager->delete_bearer(id);
+    //context_manager->delete_bearer(id);
     for (auto each:context_manager->get_switch_set()) {
       fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
       if (of_conn_ == nullptr || !of_conn_->is_alive())
         continue;
       this->of_interface.flush_flow(of_conn_, id);
     }
-    //add bearer's info
+    //update bearer's info
     context_manager->add_bearer(id, context);
     spdlog::get("ll-mec")->info("Overwrite UE bearer {}: {}", id, context.dump());
     spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meter_id);
@@ -277,22 +277,48 @@ bool Ue_manager::delete_bearer(uint64_t id) {
  * Remove the meter tables
  *
  */
-bool Ue_manager::delete_meter_table(uint32_t meterid){
+bool Ue_manager::delete_meter_table(uint32_t meter_id){
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
   /* flush meter*/
   std::vector<uint64_t> id_list = context_manager->get_id_list();
-  for (auto id:id_list) {
-    for (auto switch_id:context_manager->get_switch_set()) {
-    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(switch_id);
-    if (of_conn_ == nullptr || !of_conn_->is_alive())
-      continue;
-      this->of_interface.flush_meter(of_conn_,meterid);
-    }
+  for (auto id : id_list) {
+	  for (auto switch_id:context_manager->get_switch_set()) {
+		  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(switch_id);
+		  if (of_conn_ == nullptr || !of_conn_->is_alive())
+			  continue;
+		  this->of_interface.flush_meter(of_conn_, meter_id);
+	  }
   }
-  context_manager->clean();
 
-  spdlog::get("ll-mec")->info("Removed the Meter ID!");
+  //context_manager->clean();
+  //Move the flows associated to this meter table to the default MT
+
+  for (auto id : id_list) {
+	  json bearer_context = context_manager->get_bearer_context(id);
+	  if (meter_id == bearer_context["meter_id"].get<int>()){
+		  spdlog::get("ll-mec")->info("[Ue_manager] delete_meter_table, associate flow {} from meter {} to the default MT {}", id, meter_id, DEFAULT_MT_ID);
+		  //update the context with default meter id
+		  bearer_context["meter_id"] = DEFAULT_MT_ID;
+		  context_manager->add_bearer(id, bearer_context);
+		  //associate this flow to the default table
+		  Metadata metadata;
+		  if (!bearer_context["tos"].empty()) {
+		    metadata.ipdscp = (uint8_t)((bearer_context["tos"].get<int>() & 0xFC) >> 2);
+		    metadata.ipecn = (uint8_t) bearer_context["tos"].get<int>() & 0x3;
+		  }
+
+		  for (auto each:context_manager->get_switch_set()) {
+		    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+		    if (of_conn_ == nullptr || !of_conn_->is_alive())
+		      continue;
+		    this->of_interface.install_default_meter_UE_ul_flow(of_conn_, id, DEFAULT_MT_ID, bearer_context["s1_ul_teid"].get<int>(), metadata);
+		    this->of_interface.install_default_meter_UE_dl_flow(of_conn_, id, DEFAULT_MT_ID, bearer_context["ue_ip"].get<std::string>(), bearer_context["s1_dl_teid"].get<int>(), bearer_context["enb_ip"].get<std::string>(), metadata);
+		  }
+	  }
+  }
+
+  spdlog::get("ll-mec")->info("Removed the Meter {}!", meter_id);
   return true;
 }
 
