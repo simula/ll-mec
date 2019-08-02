@@ -96,6 +96,37 @@ bool Context_manager::add_bearer(json context)
   return true;
 }
 
+bool Context_manager::add_meter(uint32_t id, uint32_t meter_rate, uint32_t burst_size)
+{
+	spdlog::get("ll-mec")->debug("Context_manager add meter, id {}, rate {}, burst_size {}", id, meter_rate, burst_size);
+	this->context_lock.lock();
+	std::unordered_map<uint64_t, std::pair<uint32_t, uint32_t>>::iterator it;
+	it = meter_context.find(id);
+	if (it != meter_context.end()){
+		it->second = std::make_pair(meter_rate, burst_size);
+	}
+	else this->meter_context.insert(std::make_pair(id, std::make_pair(meter_rate, burst_size)));
+	this->context_lock.unlock();
+	return true;
+}
+
+std::pair<uint32_t, uint32_t> Context_manager::get_meter_info(uint32_t id)
+{
+	this->context_lock.lock();
+	std::pair<uint32_t, uint32_t> meter_info;
+	if (this->meter_context.count(id) != 0)
+		meter_info = this->meter_context.at(id);
+	this->context_lock.unlock();
+	return meter_info;
+}
+
+bool Context_manager::delete_meter(uint32_t id)
+{
+  this->context_lock.lock();
+  this->meter_context.erase(id);
+  this->context_lock.unlock();
+  return true;
+}
 
 //bool Context_manager::add_bearer(uint64_t id, uint32_t meter_id, json context)
 bool Context_manager::add_bearer(uint64_t id, json context)

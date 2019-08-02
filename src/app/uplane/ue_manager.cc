@@ -74,6 +74,9 @@ bool Ue_manager::add_bearer(json context){
 
   }
   context["meter_id"] = meter_id;
+  //store meter's info
+  context_manager->add_meter(meter_id, meter_rate, meter_burst_size);
+
   //spdlog::get("ll-mec")->debug("[Ue_manager] add bearer, bearer id {}, meter id {}, meter rate {}, burst size {}", id, meter_id, meter_rate, meter_burst_size);
 
   /* Bearer already exists. Remove it and then add (Overwrite) */
@@ -166,7 +169,7 @@ bool Ue_manager::modify_meter(json context){
 }
 */
 
-bool Ue_manager::add_redirect_bearer(uint64_t id, uint32_t meterid, json context) {
+bool Ue_manager::add_redirect_bearer(uint64_t id, uint32_t meter_id, json context) {
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 
   /* No such ue context */
@@ -185,18 +188,14 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, uint32_t meterid, json context
     metadata.ipecn = (uint8_t) context["tos"].get<int>() & 0x3;
   }
   for (auto each:context_manager->get_switch_set()) {
-    fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
-    if (of_conn_ == nullptr || !of_conn_->is_alive())
-      continue;
-//    this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
-//    this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+	  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+	  if (of_conn_ == nullptr || !of_conn_->is_alive())
+		  continue;
+	  //    this->of_interface.redirect_edge_service_ul_flow(of_conn_, id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+	  //    this->of_interface.redirect_edge_service_dl_flow(of_conn_, id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+	  this->of_interface.redirect_edge_service_ul_meter_flow(of_conn_, id, meter_id, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
+	  this->of_interface.redirect_edge_service_dl_meter_flow(of_conn_, id, meter_id, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
 
-/*
- * The redirect_edge_service_ul_flow is not yet implemented for support the meter
- *
-      this->of_interface.redirect_edge_service_ul_meter_flow(of_conn, id, meterid, bearer["s1_ul_teid"].get<int>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
-      this->of_interface.redirect_edge_service_dl_meter_flow(of_conn, id, meterid, bearer["ue_ip"].get<std::string>(), bearer["s1_dl_teid"].get<int>(), bearer["enb_ip"].get<std::string>(), context["from"].get<std::string>(), context["to"].get<std::string>(), metadata);
- */
 }
   spdlog::get("ll-mec")->info("Redirect bearer id={} from {} to {}", id, context["from"].get<std::string>(), context["to"].get<std::string>());
   return true;
@@ -292,8 +291,10 @@ bool Ue_manager::delete_meter_table(uint32_t meter_id){
   }
 
   //context_manager->clean();
-  //Move the flows associated to this meter table to the default MT
+  //remove meter table from context manager
+  context_manager->delete_meter(meter_id);
 
+  //Move the flows associated to this meter table to the default MT
   for (auto id : id_list) {
 	  json bearer_context = context_manager->get_bearer_context(id);
 	  if (meter_id == bearer_context["meter_id"].get<int>()){
@@ -320,6 +321,19 @@ bool Ue_manager::delete_meter_table(uint32_t meter_id){
 
   spdlog::get("ll-mec")->info("Removed the Meter {}!", meter_id);
   return true;
+}
+
+
+/*
+ * Update the meter tables
+ *
+ */
+bool Ue_manager::update_meter_table(uint32_t meter_id,  uint32_t meter_rate,  uint32_t meter_burst_size){
+
+	llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+	context_manager->add_meter(meter_id, meter_rate, meter_burst_size);
+    spdlog::get("ll-mec")->info("Updated Meter id {}!", meter_id);
+	return true;
 }
 
 /*

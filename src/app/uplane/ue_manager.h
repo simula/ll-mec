@@ -54,7 +54,7 @@ class Ue_manager : public llmec::app::App {
     bool add_bearer(json context);
 
     /* Redirect one specific bearer from IPv4_A to IPv4_B */
-    bool add_redirect_bearer(uint64_t id, uint32_t meterid, json context);
+    bool add_redirect_bearer(uint64_t id, uint32_t meter_id, json context);
 
     /* Redirect one specific bearer back if any */
     bool delete_redirect_bearer(uint64_t id);
@@ -70,6 +70,9 @@ class Ue_manager : public llmec::app::App {
 
     /*Delete an specic meter ID */
     bool delete_meter_table(uint32_t meter_id);
+
+    /* Update meter table by ID */
+    bool update_meter_table(uint32_t meter_id,  uint32_t meter_rate,  uint32_t meter_burst_size);
 
     /* Delete all bearers context */
     bool delete_bearer_all();

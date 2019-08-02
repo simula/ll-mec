@@ -98,6 +98,9 @@ class Context_manager {
     void slice_group_dump();
 
     uint32_t next_meter_id();
+    bool add_meter(uint32_t id,uint32_t meter_rate, uint32_t burst_size);
+    std::pair<uint32_t, uint32_t> get_meter_info(uint32_t id);
+    bool delete_meter(uint32_t id);
 
 
   private:
@@ -117,6 +120,9 @@ class Context_manager {
 
 //    std::map< uint32_t> meter_mapping;
     std::map<std::pair<std::string, uint32_t>, uint32_t> meter_mapping;
+
+    /* id <-> meter info (meter_rate, burst_size) */
+    std::unordered_map<uint64_t, std::pair<uint32_t, uint32_t>> meter_context;
 
     /* slice_id <-> set<id> */
     std::map<uint64_t, std::set<uint64_t>> slice_group;
