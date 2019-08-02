@@ -252,6 +252,17 @@ void OFInterface::modify_meter_mod_drop(fluid_base::OFConnection* of_conn, uint3
   fluid_msg::OFMsg::free_buffer(buffer);
 }
 
+void OFInterface::install_meter_mod_drop(fluid_base::OFConnection* of_conn, uint32_t meter_id, uint32_t rate, uint32_t burst_size) {
+  uint8_t* buffer;
+  fluid_msg::of13::MeterMod mm(42, fluid_msg::of13::OFPMC_ADD, fluid_msg::of13::OFPMF_KBPS, meter_id);
+  fluid_msg::of13::MeterBand *mb1 = new fluid_msg::of13::MeterBandDrop(rate, burst_size);
+  mm.add_band(mb1);
+  buffer = mm.pack();
+  of_conn->send(buffer, mm.length());
+  fluid_msg::OFMsg::free_buffer(buffer);
+
+}
+
 void OFInterface::modify_meter_mod_dscp(fluid_base::OFConnection* of_conn, uint32_t meter_id, uint32_t rate, uint32_t burst_size, uint8_t prec_level) {
 /* Meter mod message */
   uint8_t* buffer;

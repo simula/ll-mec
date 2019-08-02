@@ -44,16 +44,16 @@ void Switch_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
   if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_UP) {
     this->of_interface.install_default_flow(ev->of_conn_);
     spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
-    //definig a default meter rule of 10GB rate with meterID=1
+    //definig a default meter rule of 10GB rate with meterID=DEFAULT_MT_ID
     //this will be the default generic meter assigned into the first set of flows
-      this->of_interface.install_default_meter_drop(ev->of_conn_, 1);
+      this->of_interface.install_default_meter_drop(ev->of_conn_, DEFAULT_MT_ID);
     //switch_set_.insert(ev->of_conn_->get_id());
     context_manager->add_switch(ev->of_conn_->get_id());
   }
   if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_DOWN) {
     /* the switch id, mec id are not related together for the moment */
     //this->of_interface.flush_flow(ev->of_conn_->get_id());
-    this->of_interface.flush_meter(ev->of_conn_, 0xffffffff);
+    this->of_interface.flush_meter(ev->of_conn_, DEFAULT_MT_ID);
     spdlog::get("ll-mec")->info("Switch id={} flushed flow", ev->of_conn_->get_id());
     //switch_set_.insert(ev->of_conn_->get_id());
     context_manager->delete_switch(ev->of_conn_->get_id());

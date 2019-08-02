@@ -58,7 +58,7 @@ bool Meter_manager::add_meter_drop(json context){
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 
   uint32_t meterrate = context["meter_rate"].get<int>();
-  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
+  uint32_t meterid = context_manager->get_meter_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
   uint32_t meterburstsize = context["burst_size"].get<int>();
   spdlog::get("ll-mec")->debug("bearer {}", id);
   spdlog::get("ll-mec")->debug("meter {}", meterid); //output the meterid value for the user
@@ -94,7 +94,7 @@ bool Meter_manager::add_meter_dscp(json context){
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 
   uint32_t meterrate = context["meter_rate"].get<int>();
-  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
+  uint32_t meterid = context_manager->get_meter_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
   uint32_t meterburstsize = context["burst_size"].get<int>();
   spdlog::get("ll-mec")->debug("bearer {}", id);
   spdlog::get("ll-mec")->debug("meter {}", meterid); //output the meterid value for the user
@@ -148,7 +148,7 @@ bool Meter_manager::delete_meter_all() {
 //retrive the meter stats
 bool Meter_manager::get_meter_stats(){
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
+  uint32_t meterid = context_manager->get_meter_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
   this->of_interface.get_meter_stats(of_conn_,meterid);
   return true;
 }

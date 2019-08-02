@@ -60,6 +60,8 @@ class OFInterface {
     void modify_meter_mod_dscp(fluid_base::OFConnection* of_conn, uint32_t meter_id, uint32_t rate, uint32_t burst_size, uint8_t prec_level);
     void install_default_meter_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint32_t meter_id, uint64_t ul_tunnel, Metadata metadata);
     void install_default_meter_UE_dl_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint32_t meter_id, const std::string UE_ip, const uint64_t dl_tunnel, const std::string ENB_ip, Metadata metadata);
+    void install_meter_mod_drop(fluid_base::OFConnection* of_conn, uint32_t meter_id, uint32_t rate, uint32_t burst_size);
+
 /*
  * ##################################################################
  */

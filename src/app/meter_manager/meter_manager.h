@@ -69,7 +69,7 @@ class Meter_manager : public llmec::app::App {
     bool delete_meter_all();
 
     /*Get the meterid by IMSI and bearer*/
-    uint32_t get_meterid(std::string imsi, uint32_t eps_meter_id);
+    uint32_t get_meter_id(std::string imsi, uint32_t eps_meter_id);
 
   private:
     static Ue_manager* instance;

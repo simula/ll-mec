@@ -76,6 +76,16 @@ int main(int argc, char **argv){
       spdlog::get("ll-mec")->info("No configuration file specified. Default config path loaded");
     }
   }
+
+  //Set log level
+  if (input.cmd_option_exists("-l")){
+	  std::string log_level = input.get_cmd_option("-l");
+	  spdlog::set_level(spdlog::level::info);
+	  if (log_level.compare("debug") == 0) spdlog::set_level(spdlog::level::debug);
+	  if (log_level.compare("warn") == 0) spdlog::set_level(spdlog::level::warn);
+	  if (log_level.compare("trace") == 0) spdlog::set_level(spdlog::level::trace);
+  }
+
   llmec_config->parse_config();
 
   /* Initial the controller based on the config */

@@ -85,13 +85,18 @@ bool Context_manager::add_bearer(json context)
   }
   context["id"] = id;
   this->imsi_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()), id));
+  if (context.count("meter_id") != 0){
+	  this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+  }
   this->bearer_context[id] = context;
   this->slice_group[context["slice_id"].get<int>()].insert(id);
   this->context_lock.unlock();
   return true;
 }
 
-bool Context_manager::add_bearer(uint64_t id, uint32_t meterid, json context)
+
+//bool Context_manager::add_bearer(uint64_t id, uint32_t meter_id, json context)
+bool Context_manager::add_bearer(uint64_t id, json context)
 {
   if (this->sanitize(context) == false)
     return false;
@@ -99,7 +104,10 @@ bool Context_manager::add_bearer(uint64_t id, uint32_t meterid, json context)
   this->context_lock.lock();
   context["id"] = id;
   this->imsi_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()), id));
-//  this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["meter_id"].get<int>()), meterid));
+  if (context.count("meter_id") != 0){
+	  this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+  }
+  //this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), meter_id));
   this->bearer_context[id] = context;
   this->slice_group[context["slice_id"].get<int>()].insert(id);
   this->context_lock.unlock();
@@ -216,21 +224,42 @@ uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
 
 //meterid mapping
 
-uint32_t Context_manager::get_meterid(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id){
+uint32_t Context_manager::get_meter_id(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id){
 //uint32_t meterid = 1; - The meterID=1 is already configured as DefaultMeterTable
 //this table it will be used as referance.
-  uint32_t meterid = 2;
+	uint32_t meter_id = DEFAULT_MT_ID; //default MT
+
+	if ((slice_id > 0) && (slice_id <= 16)) { //MT for slice (id = 1-16)
+		meter_id = (uint32_t) (slice_id);
+	} else { // if MT exists in the meter_mapping -> UE-specified MT, if not use default MT (id = 1)
+		this->context_lock.lock();
+		if (this->meter_mapping.count(std::make_pair(imsi, eps_bearer_id)) != 0)
+			meter_id = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
+		else meter_id = DEFAULT_MT_ID ;
+		this->context_lock.unlock();
+
+	}
+	return meter_id;
+
+/*
+
   this->context_lock.lock();
   if (this->meter_mapping.count(std::make_pair(imsi, eps_bearer_id)) != 0)
     //meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
     if ( slice_id == 0 ){
       meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
 	}else if ( slice_id > 0 && slice_id <= 16){
-      meterid = uint64_t slice_id & 0xFFFFFFFF;
+      meterid = uint64_t slice_id & DEFAULT_MT_ID;
 	     //The actual logic wont be affected in case the slice_id is bigger than 32bits
 	}
   this->context_lock.unlock();
   return meterid;
+  */
+}
+
+uint32_t Context_manager::next_meter_id(){
+	current_meter_id = current_meter_id + 1;
+	return current_meter_id;
 }
 
 

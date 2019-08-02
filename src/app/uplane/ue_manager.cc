@@ -49,33 +49,51 @@ void Ue_manager::start()
 }
 
 bool Ue_manager::add_bearer(json context){
+  spdlog::get("ll-mec")->debug("Ue_manager add bearer {}", context.dump());
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 
+  uint32_t meter_id = DEFAULT_MT_ID ;//default MT id
+  uint32_t meter_rate = 1000000; //default meter rate
+  uint32_t meter_burst_size = 50000; //default burst_size
+  uint64_t slice_id = context["slice_id"].get<int>();
   uint64_t id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
-  uint32_t meterrate = context["meter_rate"].get<int>();
-  uint32_t meterid = context_manager->get_meterid(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>(),context["slice_id"].get<int>());
-  uint32_t meterburstsize = context["burst_size"].get<int>();
-  spdlog::get("ll-mec")->debug("bearer {}", id);
-  spdlog::get("ll-mec")->debug("meter {}", meterid); //output the meterid value for the user
-  spdlog::get("ll-mec")->debug("meter rate {}", meterrate);
-  spdlog::get("ll-mec")->debug("meter burst_size {}", meterburstsize);
+
+  if ((slice_id > 0) && (slice_id <= 16)){ //MT for slice (id = 1-16)
+	  meter_id = (uint32_t) (slice_id);
+	  if (context.count("meter_rate") != 0) meter_rate = context["meter_rate"].get<int>();
+	  if (context.count("burst_size") != 0) meter_burst_size = context["burst_size"].get<int>();
+  } else { //if MT information is available-> create a new UE-specified MT, else use default MT
+	  if ((context.count("meter_rate") != 0) | (context.count("burst_size") != 0))
+		  meter_id = context_manager->next_meter_id();
+	  else
+		  meter_id = DEFAULT_MT_ID;
+
+	  if (context.count("meter_rate") != 0) meter_rate = context["meter_rate"].get<int>();
+	  if (context.count("burst_size") != 0) meter_burst_size = context["burst_size"].get<int>();
+
+  }
+  context["meter_id"] = meter_id;
+  spdlog::get("ll-mec")->debug("[Ue_manager] add bearer, bearer id {}, meter id {}, meter rate {}, burst size {}", id, meter_id, meter_rate, meter_burst_size);
+
   /* Bearer already exists. Remove it and then add (Overwrite) */
-  if (id != 0 && meterid != 0) {
+  /*
+  if (id != 0 && meter_id != 1) {
     context_manager->delete_bearer(id);
     for (auto each:context_manager->get_switch_set()) {
       fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
       if (of_conn_ == nullptr || !of_conn_->is_alive())
         continue;
       this->of_interface.flush_flow(of_conn_, id);
-      this->of_interface.install_default_meter_drop(of_conn_,meterid);
+
+      this->of_interface.install_default_meter_drop(of_conn_,meter_id);
 //      this->of_interface.flush_meter(of_conn_, meterid); //deleting the meter based on meter_id Instead of flush the meter, just modify the values
 //modify_meter_mod(fluid_base::OFConnection* of_conn, uint16_t flags, uint32_t meter_id, uint16_t type, uint32_t rate, uint32_t burst_size, uint8_t prec_level, uint32_t experimenter)
-      this->of_interface.modify_meter_mod_drop(of_conn_, meterid, meterrate, meterburstsize);
+      this->of_interface.modify_meter_mod_drop(of_conn_, meter_id, meter_rate, meter_burst_size);
     }
-    context_manager->add_bearer(id, meterid, context); //added the meterid so it creates the bearer with the meterid associated
+    context_manager->add_bearer(id, meter_id, context); //added the meter_id so it creates the bearer with the meter_id associated
     spdlog::get("ll-mec")->info("Overwrite UE bearer {}: {}", id, context.dump());
-    spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meterid); //display the information regarding the mapping between the UE bearer ID to the meaterID
+    spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meter_id); //display the information regarding the mapping between the UE bearer ID to the meaterID
   }
   else {
     context_manager->add_bearer(context);
@@ -85,22 +103,58 @@ bool Ue_manager::add_bearer(json context){
     spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meterid); //display the information
   }
 
+  */
+
+  //Bearer already exists. Remove it and then add (Overwrite)
+  if (id != 0) {
+    context_manager->delete_bearer(id);
+    for (auto each:context_manager->get_switch_set()) {
+      fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+      if (of_conn_ == nullptr || !of_conn_->is_alive())
+        continue;
+      this->of_interface.flush_flow(of_conn_, id);
+    }
+    //add bearer's info
+    context_manager->add_bearer(id, context);
+    spdlog::get("ll-mec")->info("Overwrite UE bearer {}: {}", id, context.dump());
+    spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meter_id);
+  }
+  else {
+	//add bearer's info
+	context_manager->add_bearer(context);
+	id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
+    spdlog::get("ll-mec")->info("Add UE bearer {}: {}", id, context.dump());
+    spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meter_id);
+  }
+
+  //install new MT
+  if (meter_id != DEFAULT_MT_ID){
+	  for (auto each:context_manager->get_switch_set()) {
+		  fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
+		  if (of_conn_ == nullptr || !of_conn_->is_alive())
+			  continue;
+		 // this->of_interface.install_default_meter_drop(of_conn_,meter_id);
+		  this->of_interface.install_meter_mod_drop(of_conn_, meter_id, meter_rate, meter_burst_size);
+	  }
+  }
+
   Metadata metadata;
   if (!context["tos"].empty()) {
     metadata.ipdscp = (uint8_t)((context["tos"].get<int>() & 0xFC) >> 2);
     metadata.ipecn = (uint8_t) context["tos"].get<int>() & 0x3;
   }
 
-
+  //associate flow with the created MT
   for (auto each:context_manager->get_switch_set()) {
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
     if (of_conn_ == nullptr || !of_conn_->is_alive())
       continue;
-    this->of_interface.install_default_meter_UE_ul_flow(of_conn_, id, meterid, context["s1_ul_teid"].get<int>(), metadata);
-    this->of_interface.install_default_meter_UE_dl_flow(of_conn_, id, meterid, context["ue_ip"].get<std::string>(), context["s1_dl_teid"].get<int>(), context["enb_ip"].get<std::string>(), metadata);
+    this->of_interface.install_default_meter_UE_ul_flow(of_conn_, id, meter_id, context["s1_ul_teid"].get<int>(), metadata);
+    this->of_interface.install_default_meter_UE_dl_flow(of_conn_, id, meter_id, context["ue_ip"].get<std::string>(), context["s1_dl_teid"].get<int>(), context["enb_ip"].get<std::string>(), metadata);
   }
   return true;
 }
+
 /*
  *
  *

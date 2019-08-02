@@ -38,6 +38,7 @@
 #include <utility>
 
 #include "json.h"
+#define DEFAULT_MT_ID 0xffffffff
 
 using json = nlohmann::json;
 
@@ -53,7 +54,8 @@ class Context_manager {
     bool add_bearer(json context);
 
     /* Store the bearer with the indicated id into database */
-    bool add_bearer(uint64_t id, uint32_t meterid, json context);
+    //bool add_bearer(uint64_t id, uint32_t meter_id, json context);
+    bool add_bearer(uint64_t id, json context);
 
     /* Remove the bearer information from database */
     bool delete_bearer(uint64_t id);
@@ -85,7 +87,7 @@ class Context_manager {
     json get_bearer_context(uint64_t id);
     uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
 
-    uint32_t get_meterid(std::string imsi, uint32_t eps_bearer_id); //meter
+    uint32_t get_meter_id(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id); //meter
 
     json get_slice_group(uint64_t slice_id);
     std::unordered_set<int> get_switch_set();
@@ -94,6 +96,9 @@ class Context_manager {
     void imsi_mapping_dump();
     void bearer_context_dump();
     void slice_group_dump();
+
+    uint32_t next_meter_id();
+
 
   private:
     std::unordered_set<uint64_t> bag_of_occupied_ids;
@@ -118,6 +123,7 @@ class Context_manager {
 
     /* set of switches connected to this ll-mec controller */
     std::unordered_set<int> switch_set;
+    uint32_t current_meter_id = 16;
 
 };
 
