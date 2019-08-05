@@ -34,9 +34,62 @@ void ServicesApi::setupRoutes() {
     using namespace Pistache::Rest;
 
     Routes::Get(*router, base + "/services", Routes::bind(&ServicesApi::services_get_handler, this));
+    /**
+     * @api {Get} /services Service availability query.
+     * @apiName GetServices
+     * @apiGroup MP1Services
+     * @apiExample Example usage:
+     *     curl -X GET -G http://0.0.0.0:8888/mp1/v1/services -d ser_instance_id="rni1"
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     [
+     *     {"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"rni1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
+     *     ]
+     *
+     */
+
     Routes::Post(*router, base + "/services", Routes::bind(&ServicesApi::services_post_handler, this));
+    /**
+     * @api {Post} /services Create a service (new service registration).
+     * @apiName PostServices
+     * @apiGroup MP1Services
+     * @apiExample Example usage:
+     *     curl -X POST http://0.0.0.0:8888/mp1/v1/services -d  '{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     *
+     */
+
     Routes::Get(*router, base + "/services/:serviceId", Routes::bind(&ServicesApi::services_service_id_get_handler, this));
+    /**
+     * @api {Get} /services/:id Retrieve information about a service resource.
+     * @apiName GetServices
+     * @apiGroup MP1Services
+     * @apiExample Example usage:
+     *     curl -X GET -G http://0.0.0.0:8888/mp1/v1/services/rni1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     *     {"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"rni1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
+     *
+     *
+     */
+
     Routes::Put(*router, base + "/services/:serviceId", Routes::bind(&ServicesApi::services_service_id_put_handler, this));
+    /**
+     * @api {Put} /services Update service.
+     * @apiName PutServices
+     * @apiGroup MP1Services
+     * @apiExample Example usage:
+     *     curl -X PUT http://0.0.0.0:8888/mp1/v1/services/rni1 -d  '{"serCategory":{"href":"catTEST","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     *
+     */
    
     // Default handler, called when a route is not found
     //router->addCustomHandler(Routes::bind(&ServicesApi::mp1_api_default_handler, this));

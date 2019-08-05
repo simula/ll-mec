@@ -32,9 +32,65 @@ void SubscriptionsApi::setupRoutes() {
     using namespace Pistache::Rest;
 
     Routes::Delete(*router, base + "/applications/:appInstanceId/subscriptions/:subscriptionType/:subscriptionId", Routes::bind(&SubscriptionsApi::applications_subscription_delete_handler, this));
+    /**
+     * @api {Delete} /applications/:appInstanceId/subscriptions/:subscriptionType/:subscriptionId Delete a subscription for this requestor.
+     * @apiName DeleteApplicationSubscription
+     * @apiGroup Mp1Subscriptions
+     * @apiExample Example usage:
+     *     curl -X DELETE http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/subscriptions/AppTerminationNotificationSubscription/subscriptionappInstanceId1appTermination1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     *
+     */
+
     Routes::Get(*router, base + "/applications/:appInstanceId/subscriptions/:subscriptionType/:subscriptionId", Routes::bind(&SubscriptionsApi::applications_subscription_get_handler, this));
+    /**
+     * @api {Get} /applications/:appInstanceId/subscriptions/:subscriptionType/:subscriptionId Retrieve information about a subscription for this requestor.
+     * @apiName GetApplicationSubscription
+     * @apiGroup Mp1Subscriptions
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/subscriptions/AppTerminationNotificationSubscription/subscriptionappInstanceId1appTermination1
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     *     {"_links":{"self":{"href":"/mp1/v1/applications/appInstanceId1"}},"appInstanceId":"appInstanceId1","callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/","subscriptionType":"AppTerminationNotificationSubscription"}
+     *
+     *
+     */
+
     Routes::Get(*router, base + "/applications/:appInstanceId/subscriptions", Routes::bind(&SubscriptionsApi::applications_subscriptions_get_handler, this));
+    /**
+     * @api {Get} /applications/:appInstanceId/subscriptions Retrieve information about all subscriptions for this requestor.
+     * @apiName GetApplicationSubscriptions
+     * @apiGroup Mp1Subscriptions
+     * @apiExample Example usage:
+     *     curl -X GET http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/subscriptions
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *
+     *     {"_links":{"self":"127.0.0.1:8888/applications/appInstanceId1/subscriptions","subscription":[{"href":"127.0.0.1:8888/applications/appInstanceId1/subscriptions/SerAvailabilityNotificationSubscription/subscriptionappInstanceId1serAvailability1","rel":"SerAvailabilityNotificationSubscription"},{"href":"127.0.0.1:8888/applications/appInstanceId1/subscriptions/AppTerminationNotificationSubscription/subscriptionappInstanceId1appTermination2","rel":"AppTerminationNotificationSubscription"}]}}
+     *
+     *
+     */
     Routes::Post(*router, base + "/applications/:appInstanceId/subscriptions", Routes::bind(&SubscriptionsApi::applications_subscriptions_post_handler, this));
+    /**
+     * @api {post} /applications/:appInstanceId/subscriptions  Create a subscription
+     * @apiName SubscribeApplicationSubscription
+     * @apiGroup Mp1Subscriptions
+     *
+     * @apiParam {SerAvailabilityNotificationSubscription} a subscription to the ME service availability notifications that is to be created.
+     * @apiParam {AppTerminationNotificationSubscription} a subscription to the ME application termination notifications that is to be created
+     *
+     * @apiExample Example usage:
+     *     curl -X POST http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/subscriptions -d '{"subscriptionType":"SerAvailabilityNotificationSubscription", "callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/", "_links":{"self":{"href":"mp1/v1/applications/appInstanceId1"}},"filteringCriteria":{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}}'
+     *     curl -X POST http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/subscriptions -d '{"subscriptionType":"AppTerminationNotificationSubscription", "callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/", "_links":{"self":{"href":"mp1/v1/applications/appInstanceId1"}}, "appInstanceId":"appInstanceId1"}'
+     *
+     * @apiSuccessExample Success-Response:
+     *     HTTP/1.1 200 OK
+     *     {"_links":{"self":{"href":"mp1/v1/applications/appInstanceId1"}},"callbackReference":"http://127.0.0.1:8888/mp1/v1/applications/appInstanceId1/notifications/","filteringCriteria":{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"},"subscriptionType":"SerAvailabilityNotificationSubscription"}
+     *
+     */
 
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&SubscriptionsApi::subscriptions_api_default_handler, this));

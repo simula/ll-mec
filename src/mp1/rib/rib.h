@@ -273,7 +273,6 @@ private:
     //list of SerAvailabilityNotificationSubscriptions/AppTerminationNotificationSubscriptions for MEC ETSI 011
     std::map<std::pair<std::string, meMp1SubscriptionType>, std::map<std::string, nlohmann::json>> meMp1SubscriptionList;
 
-
 };
 
 }
