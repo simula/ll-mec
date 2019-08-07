@@ -347,6 +347,8 @@ namespace north_api {
         * @apiSuccessExample Success-Response:
         *     HTTP/1.1 200 OK
         *
+        *     {"burst_size":5000,"meter_rate":77777}
+        *
         * @apiError ServiceUnavailable Switch connection lost.
         */
 

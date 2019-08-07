@@ -38,7 +38,7 @@
 #include <utility>
 
 #include "json.h"
-#define DEFAULT_MT_ID 0xffffffff
+#define DEFAULT_MT_ID 0xffff0000
 
 using json = nlohmann::json;
 

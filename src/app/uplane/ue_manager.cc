@@ -329,7 +329,7 @@ bool Ue_manager::delete_meter_table(uint32_t meter_id){
  *
  */
 bool Ue_manager::update_meter_table(uint32_t meter_id,  uint32_t meter_rate,  uint32_t meter_burst_size){
-
+	llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
 	llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
 	//update MT info
 	context_manager->add_meter(meter_id, meter_rate, meter_burst_size);
@@ -339,7 +339,7 @@ bool Ue_manager::update_meter_table(uint32_t meter_id,  uint32_t meter_rate,  ui
 		fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
 		if (of_conn_ == nullptr || !of_conn_->is_alive())
 			continue;
-		this->of_interface.install_meter_mod_drop(of_conn_, meter_id, meter_rate, meter_burst_size);
+		this->of_interface.modify_meter_mod_drop(of_conn_, meter_id, meter_rate, meter_burst_size);
 	}
 
 
