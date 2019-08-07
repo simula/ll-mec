@@ -38,12 +38,16 @@ void ServicesApi::setupRoutes() {
      * @api {Get} /services Service availability query.
      * @apiName GetServices
      * @apiGroup MP1Services
+     * @apiDescription  Either \"ser_instance_id\" or \"ser_name\" or \"ser_category_id\" shall be present.
+     * @apiParam {String} ser_instance_id List of ser_instance_ids to query the availability of a list of ME service instances.
+     * @apiParam {String} ser_category_id Category Id to query the availability of ME services.
+     * @apiParam {String} ser_name Names of service to be queried.
      * @apiExample Example usage:
-     *     curl -X GET -G http://0.0.0.0:8888/mp1/v1/services -d ser_instance_id="rni1"
+     *     curl -X GET -G http://127.0.0.1:8888/mp1/v1/services -d ser_instance_id="serviceId1" -d ser_category_id="RNI1" -d ser_name="PLMN Infomation"
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *     [
-     *     {"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"rni1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
+     *     {"serCategory":{"href":"catRNI","id":"RNI1","name":"RNI","version":"version1"},"serInstanceId":"serviceId1","serName":"PLMN Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
      *     ]
      *
      */
@@ -53,42 +57,47 @@ void ServicesApi::setupRoutes() {
      * @api {Post} /services Create a service (new service registration).
      * @apiName PostServices
      * @apiGroup MP1Services
+     * @apiParam {ServiceInfo} ServiceInfo (representing the general information of a ME service).
      * @apiExample Example usage:
-     *     curl -X POST http://0.0.0.0:8888/mp1/v1/services -d  '{"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
+     *     curl -X POST http://127.0.0.1:8888/mp1/v1/services -d  '{"serCategory":{"href":"catRNI","id":"RNI1","name":"RNI","version":"version1"},"serName":"PLMN Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
-     *
+     *     
+     *      {"serCategory":{"href":"catRNI","id":"RNI1","name":"RNI","version":"version1"},"serInstanceId":"serviceId1","serName":"PLMN Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
      *
      */
 
     Routes::Get(*router, base + "/services/:serviceId", Routes::bind(&ServicesApi::services_service_id_get_handler, this));
     /**
-     * @api {Get} /services/:id Retrieve information about a service resource.
-     * @apiName GetServices
+     * @api {Get} /services/:id Get information of a service.
+     * @apiName GetServiceID
      * @apiGroup MP1Services
+     * @apiParam {String} serviceId Service Instance Id.
      * @apiExample Example usage:
-     *     curl -X GET -G http://0.0.0.0:8888/mp1/v1/services/rni1
+     *     curl -X GET -G http://127.0.0.1:8888/mp1/v1/services/serviceId1
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
      *
-     *     {"serCategory":{"href":"catRNI","id":"RNI","name":"RNI","version":"version1"},"serInstanceId":"rni1","serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
+     *     {"serCategory":{"href":"catRNI","id":"RNI1","name":"RNI","version":"version1"},"serInstanceId":"serviceId1","serName":"PLMN Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
      *
      *
      */
 
     Routes::Put(*router, base + "/services/:serviceId", Routes::bind(&ServicesApi::services_service_id_put_handler, this));
     /**
-     * @api {Put} /services Update service.
+     * @api {Put} /services Update a ME service (service availability update).
      * @apiName PutServices
      * @apiGroup MP1Services
+     * @apiParam {ServiceInfo} New ServiceInfo (representing the general information of a ME service).
      * @apiExample Example usage:
-     *     curl -X PUT http://0.0.0.0:8888/mp1/v1/services/rni1 -d  '{"serCategory":{"href":"catTEST","id":"RNI","name":"RNI","version":"version1"},"serName":"PLMN_Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
+     *     curl -X PUT http://127.0.0.1:8888/mp1/v1/services/serviceId1 -d  '{"serCategory":{"href":"New Category","id":"RNI1","name":"RNI","version":"version1"},"serName":"New PLMN Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}'
      *
      * @apiSuccessExample Success-Response:
      *     HTTP/1.1 200 OK
-     *
-     *
+     *     
+     *     {"serCategory":{"href":"New Category","id":"RNI1","name":"RNI","version":"version1"},"serName":"New PLMN Information","serializer":"JSON","state":null,"transportInfo":{"description":"REST API","endpoint":{"addresses":[{"host":"127.0.0.1","port":8888}],"uris":["mp1/v1/queries/plmn_info"]},"id":"TransId1","name":"REST","protocol":"HTTP","security":{"oAuth2Info":{"grantTypes":["OAUTH2_CLIENT_CREDENTIALS"],"tokenEndpoint":"/mp1/v1/security/TokenEndPoint"}},"type":"REST_HTTP","version":"2.0"},"version":"ServiceVersion1"}
+     *     
      */
    
     // Default handler, called when a route is not found
