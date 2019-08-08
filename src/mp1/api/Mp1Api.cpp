@@ -53,9 +53,11 @@ void Mp1Api::setupRoutes() {
     Routes::Delete(*router, base + "/rni/subscriptions/ta/:subscriptionId", Routes::bind(&Mp1Api::meas_ta_subscriptions_subscr_id_delete_handler, this));
     Routes::Get(*router, base + "/rni/queries/plmn_info", Routes::bind(&Mp1Api::plmn_info_get_handler, this));
     /**
-     * @api {get} /rni/queries/plmn_info Get PLMN info.
+     * @api {get} /rni/queries/plmn_info Get PLMN information
      * @apiName GetPLMNInfo
      * @apiGroup RNI
+     * @apiDescription Gets the information on Mobile Network(s) (PLMN info) associated with a specific application instance 
+     * @apiParam {String} app_ins_id ME application instance's ID.
      * @apiExample Example usage:
      *     curl -X GET http://127.0.0.1:8888/mp1/v1/rni/queries/plmn_info?app_ins_id=app01
      * @apiSuccessExample Success-Response:
@@ -70,9 +72,10 @@ void Mp1Api::setupRoutes() {
     Routes::Post(*router, base + "/platform", Routes::bind(&Mp1Api::post_platform_handler, this));
     Routes::Get(*router, base + "/rni/subscriptions/rab_est/:subscriptionId", Routes::bind(&Mp1Api::rab_est_subscription_subscriptions_get_handler, this));
     /**
-     * @api {get} /rni/subscriptions/rab_est/:subscriptionId  Get information of a RabEst subscription.
+     * @api {get} /rni/subscriptions/rab_est/:subscriptionId  Get information of a RabEst subscription
      * @apiName GetRabEstSubscription
      * @apiGroup RNI
+     * @apiParam {String} subscriptionId ID of the RabEstSubscription.
      * @apiExample Example usage:
      *     curl -X GET http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01
      * @apiSuccessExample Success-Response:
@@ -82,10 +85,10 @@ void Mp1Api::setupRoutes() {
      */
     Routes::Post(*router, base + "/rni/subscriptions/rab_est", Routes::bind(&Mp1Api::rab_est_subscription_subscriptions_post_handler, this));
     /**
-     * @api {post} /rni/subscriptions/rab_est  Creates a subscription to RAB establishment notifications from RNI Service
+     * @api {post} /rni/subscriptions/rab_est  Create a subscription to RAB establishment notifications
      * @apiName SubscribeRabEstSubscription
      * @apiGroup RNI
-     *
+     * @apiDescription Create a subscription to RAB establishment notifications from RNI Service
      * @apiParam {URI} callbackReference (required) URL selected by the ME application to receive notifications on the subscribed RNIS information.
      * @apiParam {Structure} filterCriteria (required) (FilterCriteriaAssocQci) List of filtering criteria for the subscription
      * @apiParam {Structure} _links List of hyperlinks related to the resource
@@ -102,10 +105,10 @@ void Mp1Api::setupRoutes() {
 
     Routes::Put(*router, base + "/rni/subscriptions/rab_est/:subscriptionId", Routes::bind(&Mp1Api::rab_est_subscription_subscriptions_put_handler, this));
     /**
-     * @api {put} /rni/subscriptions/rab_est:subscriptionId  Updates a subscription to RAB establishment notifications from RNI Service
+     * @api {put} /rni/subscriptions/rab_est:subscriptionId  Update a subscription to RAB establishment notifications
      * @apiName UpdateRabEstSubscription
      * @apiGroup RNI
-     *
+     * @descripton Update a subscription to RAB establishment notifications from RNI Service
      * @apiParam {URI} callbackReference (required) URL selected by the ME application to receive notifications on the subscribed RNIS information.
      * @apiParam {Structure} filterCriteria (required) (FilterCriteriaAssocQci) List of filtering criteria for the subscription
      * @apiParam {Structure} _links List of hyperlinks related to the resource
@@ -122,9 +125,10 @@ void Mp1Api::setupRoutes() {
      */
     Routes::Delete(*router, base + "/rni/subscriptions/rab_est/:subscriptionId", Routes::bind(&Mp1Api::rab_est_subscriptions_subscr_id_delete_handler, this));
     /**
-     * @api {delete} /rni/subscriptions/rab_est/:subscriptionId  Delete a RabEst subscription.
+     * @api {delete} /rni/subscriptions/rab_est/:subscriptionId  Delete a RabEst subscription
      * @apiName DeleteRabEstSubscription
      * @apiGroup RNI
+     * @apiParam {String} subscriptionId ID of the RabEstSubscription to be deleted.
      * @apiExample Example usage:
      *     curl -X DELETE http://127.0.0.1:8888/mp1/v1/rni/subscriptions/rab_est/app01
      * @apiSuccessExample Success-Response:
