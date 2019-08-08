@@ -41,8 +41,8 @@ cd build
 ## Libraries required
 - [pistache](http://pistache.io/quickstart)
 - [JSON for Modern C++](https://github.com/nlohmann/json/#integration): Please download the `json.hpp` file and
-put it under the model folder
+put it under the model/nlohmann folder
 
 ## Namespaces
-org.openapitools.server.api
-org.openapitools.server.model
+llmec.mp2.api
+llmec.mp2.model

@@ -12,11 +12,15 @@ externalDocs:
 security:
   - OauthSecurity:
       - all
+tags:
+  - name: BwManagement
 paths:
   /bw_allocations:
     get:
       description: This method retrieves information about a list of bandwidthAllocation
         resources
+      tags:
+        - BwManagement
       parameters:
        # - $ref: "#/components/parameters/Query.AppInstanceId"
         - name: app_ins_id #Query.AppInstanceId
@@ -89,6 +93,8 @@ paths:
                     $ref: "#/components/schemas/ProblemDetails"
     post:
       description: This method is used to create a bandwidthAllocation resource.
+      tags:
+        - BwManagement
       requestBody:
         $ref: "#/components/requestBodies/BwInfo"
       responses:
@@ -137,6 +143,8 @@ paths:
                     $ref: "#/components/schemas/ProblemDetails"
   "/bw_allocations/{allocationId}":
     get:
+      tags:
+        - BwManagement
       description: "This method retrieves information about a specific bandwidthAllocation
         resource. "
       parameters:
@@ -193,6 +201,8 @@ paths:
     put:
       description: "This method updates the information about a specific
         bandwidthAllocation resource. "
+      tags:
+        - BwManagement
       parameters:
         - $ref: "#/components/parameters/Path.AllocationId"
       requestBody:
@@ -255,6 +265,8 @@ paths:
     patch:
       description: "This method updates the information about a specific
         bandwidthAllocation resource. "
+      tags:
+        - BwManagement
       parameters:
         - $ref: "#/components/parameters/Path.AllocationId"
       requestBody:
@@ -324,6 +336,8 @@ paths:
       description: Remove a specific bandwidthAllocation resource. DELETE method is
         typically used in "Unregister from Bandwidth Management Service"
         procedure
+      tags:
+        - BwManagement
       parameters:
         - $ref: "#/components/parameters/Path.AllocationId"
       responses:

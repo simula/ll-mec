@@ -21,7 +21,6 @@
 #endif
 
 #include "mp2-api-server.h"
-//#include "DefaultApiImpl.h"
 
 #define PISTACHE_SERVER_THREADS 2
 
@@ -56,30 +55,37 @@ static void setUpUnixSignals(std::vector<int> quitSignals) {
 }
 #endif
 
-using namespace org::llmec::mp2::api;
+using namespace llmec::mp2::api;
 
+void Mp2Manager::init(size_t thr) {
+	auto opts = Pistache::Http::Endpoint::options()
+	.threads(thr);
+	m_httpEndpoint->init(opts);
+	m_bwmApiserver->init();
+}
+void Mp2Manager::start(){
+	m_httpEndpoint->setHandler(m_router->handler());
+	m_httpEndpoint->serve();
+
+}
+void Mp2Manager::shutdown(){
+	m_httpEndpoint->shutdown();
+}
+
+
+/*
 int main() {
 #ifdef __linux__
     std::vector<int> sigs{SIGQUIT, SIGINT, SIGTERM, SIGHUP};
     setUpUnixSignals(sigs);
 #endif
-    Pistache::Address addr(Pistache::Ipv4::any(), Pistache::Port(8080));
 
-    httpEndpoint = new Pistache::Http::Endpoint((addr));
-    auto router = std::make_shared<Pistache::Rest::Router>();
-
-    auto opts = Pistache::Http::Endpoint::options()
-        .threads(PISTACHE_SERVER_THREADS);
-    httpEndpoint->init(opts);
-
-    
-    DefaultApiImpl DefaultApiserver(router);
-    DefaultApiserver.init();
-
-    httpEndpoint->setHandler(router->handler());
-    httpEndpoint->serve();
-
-    httpEndpoint->shutdown();
+    Pistache::Address addr(Pistache::Ipv4::any(), Pistache::Port(8282));
+    Mp2Manager mp2_manager(addr);
+    mp2_manager.init(2);
+    mp2_manager.start();
+    mp2_manager.shutdown();
 
 }
+*/
 

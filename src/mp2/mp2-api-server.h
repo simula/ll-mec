@@ -18,13 +18,13 @@
 #include <signal.h>
 #include <unistd.h>
 #endif
-#include "DefaultApiImpl.h"
-using namespace org::llmec::mp2::api;
+#include "BwManagementApiImpl.h"
+using namespace llmec::mp2::api;
 class Mp2Manager {
 public:
 	Mp2Manager(Pistache::Address address) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
 		m_router = std::make_shared<Pistache::Rest::Router>();
-		DefaultApiserver = std::make_shared<DefaultApiImpl> (m_router);
+		m_bwmApiserver = std::make_shared<BwManagementApiImpl> (m_router);
 
 	}
 	void init(size_t thr = 1);
@@ -35,7 +35,7 @@ public:
 private:
 	std::shared_ptr<Pistache::Http::Endpoint> m_httpEndpoint;
 	std::shared_ptr<Pistache::Rest::Router> m_router;
-	std::shared_ptr<DefaultApiImpl> DefaultApiserver;
+	std::shared_ptr<BwManagementApiImpl> m_bwmApiserver;
 };
 
 
