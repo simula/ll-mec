@@ -1,0 +1,11 @@
+{
+  "name": "LL-MEC",
+  "version": "0.1.0",
+  "description": "LL-MEC MP1 API documentation",
+  "title": "LL-MEC MP1 API documentation",
+  "url" : "http://LLMEC-URL:PORT/mp1/v1",
+  "template": {
+    "withCompare": true,
+    "withGenerator": true
+  }
+}
