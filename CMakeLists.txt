@@ -139,17 +139,18 @@ target_link_libraries(CORE EPS)
 
 
 #APP
-
 set(SGWC_DIR "${APP_DIR}/sgwc")
 set(SWITCH_DIR "${APP_DIR}/switch_manager")
 set(STATS_DIR "${APP_DIR}/stats")
 set(UPLANE_DIR "${APP_DIR}/uplane")
+#set(METER_DIR "${APP_DIR}/meter_manager")
 set(APP_src_files
   ${SGWC_DIR}/sgwc.cc
   ${SWITCH_DIR}/switch_manager.cc
   ${STATS_DIR}/stats_manager.cc
   ${UPLANE_DIR}/ue_manager.cc
-  )
+#  ${METER_DIR}/meter_manager.cc)
+)
 set(APP_include_files
   ${EPS_DIR}
   ${CORE_DIR}
@@ -158,6 +159,7 @@ set(APP_include_files
   ${SWITCH_DIR}
   ${STATS_DIR}
   ${UPLANE_DIR}
+#  ${METER_DIR}
   )
 add_library(APP ${APP_src_files})
 target_link_libraries(APP CORE)

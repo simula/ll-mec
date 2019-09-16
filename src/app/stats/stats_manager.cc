@@ -22,7 +22,7 @@
 
 /*!
   \file stats_manager.cc
-  \brief manages the state of users in terms of flow statistics 
+  \brief manages the state of users in terms of flow statistics
   \author Anta Huang and N. Nikaein
   \company Eurecom
   \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
@@ -86,8 +86,11 @@ void Stats_manager::start() {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     if (of_conn_ != NULL) {
       this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffff0000);
+//      this->of_interface.get_meter_stats(of_conn_);
+//      this->of_interface.get_meter_features_stats(of_conn_);
+//      this->of_interface.get_meter_config_stats(of_conn_, 0xffffffff);
     }
-    std::this_thread::sleep_for(std::chrono::microseconds(2000000));
+    std::this_thread::sleep_for(std::chrono::microseconds(20000000));
   }
 }
 

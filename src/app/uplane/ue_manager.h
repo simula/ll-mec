@@ -21,7 +21,7 @@
  */
 /*!
   \file ue_manager.h
-  \brief managing the users and bearers, and their associations to different slices 
+  \brief managing the users and bearers, and their associations to different slices
   \author Anta Huang and N. Nikaein
   \company Eurecom
   \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
@@ -56,7 +56,7 @@ class Ue_manager : public llmec::app::App {
     bool add_bearer(json context);
 
     /* Redirect one specific bearer from IPv4_A to IPv4_B */
-    bool add_redirect_bearer(uint64_t id, json context);
+    bool add_redirect_bearer(uint64_t id, uint32_t meter_id, json context);
 
     /* Redirect one specific bearer back if any */
     bool delete_redirect_bearer(uint64_t id);
@@ -69,6 +69,12 @@ class Ue_manager : public llmec::app::App {
 
     /* Delete one specific bearer context from the underlying user plane */
     bool delete_bearer(uint64_t id);
+
+    /*Delete an specic meter ID */
+    bool delete_meter_table(uint32_t meter_id);
+
+    /* Update meter table by ID */
+    bool update_meter_table(uint32_t meter_id,  uint32_t meter_rate,  uint32_t meter_burst_size);
 
     /* Delete all bearers context */
     bool delete_bearer_all();
@@ -84,6 +90,9 @@ class Ue_manager : public llmec::app::App {
 
     /* Get the id by IMSI and bearer */
     uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
+
+    /*Get the meterid by IMSI and bearer*/
+//    uint32_t get_meterid(uint32_t meter_id);
 
     /* Check if ID exists in LLMEC context */
     bool id_exist(uint64_t id);

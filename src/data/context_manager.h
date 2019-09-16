@@ -38,6 +38,7 @@
 #include <utility>
 
 #include "json.h"
+#define DEFAULT_MT_ID 0xffff0000
 
 using json = nlohmann::json;
 
@@ -53,6 +54,7 @@ class Context_manager {
     bool add_bearer(json context);
 
     /* Store the bearer with the indicated id into database */
+    //bool add_bearer(uint64_t id, uint32_t meter_id, json context);
     bool add_bearer(uint64_t id, json context);
 
     /* Remove the bearer information from database */
@@ -84,6 +86,9 @@ class Context_manager {
     /* Get the value by key for those 3 tables */
     json get_bearer_context(uint64_t id);
     uint64_t get_id(std::string imsi, uint64_t eps_bearer_id);
+
+    uint32_t get_meter_id(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id); //meter
+
     json get_slice_group(uint64_t slice_id);
     std::unordered_set<int> get_switch_set();
 
@@ -91,6 +96,12 @@ class Context_manager {
     void imsi_mapping_dump();
     void bearer_context_dump();
     void slice_group_dump();
+
+    uint32_t next_meter_id();
+    bool add_meter(uint32_t id,uint32_t meter_rate, uint32_t burst_size);
+    std::pair<uint32_t, uint32_t> get_meter_info(uint32_t id);
+    bool delete_meter(uint32_t id);
+
 
   private:
     std::unordered_set<uint64_t> bag_of_occupied_ids;
@@ -107,11 +118,18 @@ class Context_manager {
     /* pair<imsi, bearer_id> <-> id */
     std::map<std::pair<std::string, uint64_t>, uint64_t> imsi_mapping;
 
+//    std::map< uint32_t> meter_mapping;
+    std::map<std::pair<std::string, uint32_t>, uint32_t> meter_mapping;
+
+    /* id <-> meter info (meter_rate, burst_size) */
+    std::unordered_map<uint64_t, std::pair<uint32_t, uint32_t>> meter_context;
+
     /* slice_id <-> set<id> */
     std::map<uint64_t, std::set<uint64_t>> slice_group;
 
     /* set of switches connected to this ll-mec controller */
     std::unordered_set<int> switch_set;
+    uint32_t current_meter_id = 16;
 
 };
 

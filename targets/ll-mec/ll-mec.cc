@@ -84,6 +84,7 @@ int main(int argc, char **argv){
       spdlog::get("ll-mec")->info("No configuration file specified. Default config path loaded");
     }
   }
+
   //Set log level
   if (input.cmd_option_exists("-l")){
 	  std::string log_level = input.get_cmd_option("-l");
