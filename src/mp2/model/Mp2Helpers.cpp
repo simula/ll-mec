@@ -9,7 +9,7 @@
 * https://openapi-generator.tech
 * Do not edit the class manually.
 */
-#include "Helpers.h"
+#include "Mp2Helpers.h"
 
 namespace llmec {
 namespace mp2 {

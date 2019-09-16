@@ -15,8 +15,8 @@
  * This is the helper class for models and primitives
  */
 
-#ifndef Helpers_H_
-#define Helpers_H_
+#ifndef MP2_Helpers_H_
+#define MP2_Helpers_H_
 
 #include <ctime>
 #include <string>

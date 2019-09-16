@@ -202,7 +202,24 @@ set(MP1_API_include_files
   )
 add_library(MP1_API ${MP1_API_src_files})
 
-
+#MP2_API
+set(MP2_API_DIR "${LL_MEC_SRC}/mp2")
+  
+file(GLOB MP2_API_src_files
+    ${MP2_API_DIR}/mp2-api-server.cpp
+    ${MP2_API_DIR}/model/*.cpp
+    ${MP2_API_DIR}/api/*.cpp
+    ${MP2_API_DIR}/impl/*.cpp
+)
+  
+ 
+set(MP2_API_include_files
+  ${MP2_API_DIR}/api
+  ${MP2_API_DIR}/impl
+  ${MP2_API_DIR}/model
+  ${MP2_API_DIR}
+  )
+add_library(MP2_API ${MP2_API_src_files})
 
 # spdlog header files
 set(SPDLOG_include_dir "${DRIVER_DIR}/spdlog")
@@ -218,6 +235,7 @@ include_directories(
   ${DATA_include_files}
   ${NORTH_API_include_files}
   ${MP1_API_include_files}
+  ${MP2_API_include_files}
   ${PISTACHE_include_files}
   ${SPDLOG_include_dir}
   ${Event_INCLUDE_DIRS}
@@ -243,6 +261,7 @@ target_link_libraries(ll-mec
   DATA
   NORTH_API
   MP1_API
+  MP2_API
   PISTACHE
   curl
   )

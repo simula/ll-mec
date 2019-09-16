@@ -48,7 +48,7 @@
 #include "conf.h"
 #include "spdlog.h"
 #include "mp1-api-server.h"
-//#include "mp2-api-server.h" //Mp2ManagementAPI
+#include "mp2-api-server.h"
 #include "rib.h"
 #include "rib_updater.h"
 #include "ue_event.h"
@@ -163,6 +163,12 @@ int main(int argc, char **argv){
   std::shared_ptr<Mp1ApiImpl> api_server = mp1Manager.getMp1ApiServer();
   ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_S1_BEARER);
   ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
+
+
+  //Mp2
+  Mp2Manager mp2Manager(addr_mp1);
+  mp2Manager.init(2);
+  std::thread mp2_manager_app(&Mp2Manager::start, mp2Manager);
 
   struct itimerspec its;
   its.it_value.tv_sec = 50;
