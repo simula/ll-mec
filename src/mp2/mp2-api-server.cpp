@@ -72,20 +72,3 @@ void Mp2Manager::shutdown(){
 	m_httpEndpoint->shutdown();
 }
 
-
-/*
-int main() {
-#ifdef __linux__
-    std::vector<int> sigs{SIGQUIT, SIGINT, SIGTERM, SIGHUP};
-    setUpUnixSignals(sigs);
-#endif
-
-    Pistache::Address addr(Pistache::Ipv4::any(), Pistache::Port(8282));
-    Mp2Manager mp2_manager(addr);
-    mp2_manager.init(2);
-    mp2_manager.start();
-    mp2_manager.shutdown();
-
-}
-*/
-

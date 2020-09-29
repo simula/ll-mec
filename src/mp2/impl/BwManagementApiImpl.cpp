@@ -23,22 +23,22 @@ BwManagementApiImpl::BwManagementApiImpl(std::shared_ptr<Pistache::Rest::Router>
     { }
 
 void BwManagementApiImpl::bw_allocations_allocation_id_delete(const std::string &allocationId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "This API has not been implemented!\n");
 }
 void BwManagementApiImpl::bw_allocations_allocation_id_get(const std::string &allocationId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "This API has not been implemented!\n");
 }
 void BwManagementApiImpl::bw_allocations_allocation_id_patch(const std::string &allocationId, const BwInfoDeltas &bwInfoDeltas, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "This API has not been implemented!\n");
 }
 void BwManagementApiImpl::bw_allocations_allocation_id_put(const std::string &allocationId, const BwInfo &bwInfo, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "This API has not been implemented!\n");
 }
 void BwManagementApiImpl::bw_allocations_get(const Pistache::Optional<std::string> &appInsId, const Pistache::Optional<std::vector<std::string>> &applicationName, const Pistache::Optional<std::vector<std::string>> &sessionId, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "This API has not been implemented!\n");
 }
 void BwManagementApiImpl::bw_allocations_post(const BwInfo &bwInfo, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    response.send(Pistache::Http::Code::Ok, "This API has not been implemented!\n");
 }
 
 }
