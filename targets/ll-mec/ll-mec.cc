@@ -145,29 +145,31 @@ int main(int argc, char **argv){
 	  std::pair<std::string, int> controller = std::make_pair((flexRAN.at(i))["address"].get<std::string>().c_str(), (flexRAN.at(i))["port"].get<int>());
 	  flexRANControllers.push_back(controller);
   }
+
+  //Pistache::Address addr(((llmec_config->X["mp1_api"])["mode"]).get<std::string>().c_str()) , Pistache::Port(..));
   Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp1_api"]["port"].get<int>()));
+  Pistache::Address addr_mp2(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp2_api"]["port"].get<int>()));
+
   // Create the rib
   llmec::mp1::rib::Rib rib;
-
   rib.set_mp1_server_addr(Pistache::Ipv4::any().toString());
   rib.set_mp1_server_port(llmec_config->X["mp1_api"]["port"].get<int>());
-
-  //init default services
+  //Init default services
   //rib.init_service_info();
+
+  //Mp1
   Mp1Manager mp1Manager(addr_mp1, rib);
   mp1Manager.init(2);
   //mp1Manager.start();
   //mp1Manager.shutdown();
   std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
-
   //register to user events
   std::shared_ptr<Mp1ApiImpl> api_server = mp1Manager.getMp1ApiServer();
   ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_S1_BEARER);
   ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
 
-
   //Mp2
-  Mp2Manager mp2Manager(addr_mp1);
+  Mp2Manager mp2Manager(addr_mp2);
   mp2Manager.init(2);
   std::thread mp2_manager_app(&Mp2Manager::start, mp2Manager);
 
@@ -178,8 +180,6 @@ int main(int argc, char **argv){
   rib_updater ribUpdater(rib, its, flexRANControllers, mp1ApiMode);
   std::thread rib_updater(&rib_updater::run, ribUpdater);
 
-  //start Mp2 API
- 
   //Controller start
   ctrl->start(true);
 

@@ -33,7 +33,7 @@
 #ifndef RIB_UPDATER_H_
 #define RIB_UPDATER_H_
 
-using json = nlohmann::json;
+//using json = nlohmann::json;
 
 namespace llmec {
 namespace mp1 {
@@ -58,14 +58,14 @@ public:
      * @param [port] FlexRAN's port
      * @return RAN statistics
      */
-    json getRANStatistics(std::string addr, int port);
+	nlohmann::json getRANStatistics(std::string addr, int port);
 
     /*
      * Get Json data from a default Json file
      * @param [str] Path to the default Json file
      * @return RAN statistics
      */
-    json getRANStatistics(std::string path);
+	nlohmann::json getRANStatistics(std::string path);
 
     /*
      * Send curl request to FlexRAN controllers in parallel

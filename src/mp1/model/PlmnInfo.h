@@ -23,7 +23,7 @@
 #include "Ecgi.h"
 #include <string>
 #include "TimeStamp.h"
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

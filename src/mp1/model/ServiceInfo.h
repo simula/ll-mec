@@ -25,7 +25,8 @@
 #include "ServiceInfo_State.h"
 #include <string>
 #include "SerializerTypes.h"
-#include <nlohmann/json.hpp>
+#include "json.h"
+
 
 namespace llmec {
 namespace mp1 {

@@ -22,7 +22,7 @@
 #include "Self.h"
 #include "ServiceInfo.h"
 #include <string>
-#include <nlohmann/json.hpp>
+#include "json.h"
 #include "NotificationSubscription.h"
 
 namespace llmec {

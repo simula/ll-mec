@@ -23,7 +23,7 @@
 #include <string>
 #include "SecurityInfo_OAuth2Info_GrantTypes.h"
 #include <vector>
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

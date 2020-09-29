@@ -50,7 +50,7 @@ namespace rib {
 
 typedef struct curl_multi_interface {
   CURL *easy;
-  json *jsonData;
+  nlohmann::json *jsonData;
 }curl_multi_interface_t;
 
 rib_updater::rib_updater (Rib& rib,struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode):
@@ -117,7 +117,7 @@ void rib_updater::run ()
 
 void rib_updater::get_RAN_statistic_from_default_file(){
 
-	json jsonData;
+  nlohmann::json jsonData;
 	//load Json data from Json file to a json object
 	std::ifstream in(DEFAULT_RIB_FILE);
 	//error when loading data.
@@ -125,18 +125,18 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 	{
       //
 	}
-	jsonData = json::parse(in);
+	jsonData = nlohmann::json::parse(in);
 	in.close();
 	spdlog::get("ll-mec")->debug("[RIB UPDATER] Imported json data from the default file:\n {} ", jsonData.dump());
 
 
 	//if success, try to update the DB
 	if (!jsonData.empty()){
-		json eNB_config, eNB, cellConfig, UE, ueConfig;
+	  nlohmann::json eNB_config, eNB, cellConfig, UE, ueConfig;
 		std::string imsi;
 		uint64_t eNBId;
 		try{
-			eNB_config =  json (jsonData["eNB_config"]);
+			eNB_config =  nlohmann::json (jsonData["eNB_config"]);
 			eNB =  (eNB_config.at(0))["eNB"];
 			eNBId = std::stoull(eNB["eNBId"].get<std::string>().c_str());
 			cellConfig = eNB["cellConfig"];
@@ -152,7 +152,7 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 			}
 			m_rib.update_eNB_info(eNBId, cellConfig);
 
-		} catch (json::exception& e){
+		} catch (nlohmann::json::exception& e){
 			std::cout << "message: " << e.what() << '\n'
 					<< "exception id: " << e.id << std::endl;
 
@@ -174,7 +174,7 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 void rib_updater::update_rib()
 {
 	spdlog::get("ll-mec")->info("[RIB UPDATER] update rib");
-	json jsonData;
+	nlohmann::json jsonData;
 	//if flexran mode -> update RIB from FlexRAN Controller
 	if (m_mode.compare("flexran") == 0){
 		spdlog::get("ll-mec")->debug("[RIB UPDATER] Update RIB from FlexRAN controllers");
@@ -191,11 +191,11 @@ void rib_updater::update_rib()
 
 	if (!jsonData.empty()){
 
-		json eNB_config, eNB, cellConfig, UE, ueConfig;
+	  nlohmann::json eNB_config, eNB, cellConfig, UE, ueConfig;
 		std::string imsi;
 		uint64_t eNBId;
 		try{
-			eNB_config =  json (jsonData["eNB_config"]);
+			eNB_config =  nlohmann::json (jsonData["eNB_config"]);
 			eNB =  (eNB_config.at(0))["eNB"];
 			eNBId = std::stoull(eNB["eNBId"].get<std::string>().c_str());
 			cellConfig = eNB["cellConfig"];
@@ -211,7 +211,7 @@ void rib_updater::update_rib()
 			}
 			m_rib.update_eNB_info(eNBId, cellConfig);
 
-		} catch (json::exception& e){
+		} catch (nlohmann::json::exception& e){
 			std::cout << "message: " << e.what() << '\n'
 					<< "exception id: " << e.id << std::endl;
 		}
@@ -223,9 +223,9 @@ void rib_updater::update_rib()
 
 //make in run in parallel as in flexran Elastic search
 
-json rib_updater::getRANStatistics(std::string addr, int port)
+nlohmann::json rib_updater::getRANStatistics(std::string addr, int port)
 {
-	json jsonData;
+  nlohmann::json jsonData;
 	curl_global_init(CURL_GLOBAL_DEFAULT);
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Accept: application/json");
@@ -265,10 +265,10 @@ json rib_updater::getRANStatistics(std::string addr, int port)
 				spdlog::get("ll-mec")->debug("[RIB UPDATER] Got successful response from FlexRAN, URL: {} ", url);
 				spdlog::get("ll-mec")->debug("[RIB UPDATER] RAN statistics from FlexRAN: {} ", *httpData.get());
 				try{
-					jsonData = json::parse(*httpData.get());
+					jsonData = nlohmann::json::parse(*httpData.get());
 					curl_easy_cleanup(curl);
 					return jsonData;
-				} catch (json::exception& e){
+				} catch (nlohmann::json::exception& e){
 					spdlog::get("ll-mec")->warn("[RIB UPDATER] Couldn't Parse json data from FlexRAN, URL: {} ", url);
 					//return json();
 				}
@@ -283,16 +283,16 @@ json rib_updater::getRANStatistics(std::string addr, int port)
 			}
 		}
 		curl_easy_cleanup(curl);
-		return json(); //return an empty json
+		return nlohmann::json(); //return an empty json
 
 
 	}
 
-	return json(); //return an empty json
+	return nlohmann::json(); //return an empty json
 
 }
 
-json rib_updater::getRANStatistics(std::string path)
+nlohmann::json rib_updater::getRANStatistics(std::string path)
 {
 	//load Json data from Json file to a json object
 	std::ifstream in(path);
@@ -301,7 +301,7 @@ json rib_updater::getRANStatistics(std::string path)
 	{
 		return nullptr;
 	}
-	json jsonData = json::parse(in);
+	nlohmann::json jsonData = nlohmann::json::parse(in);
 	in.close();
 	spdlog::get("ll-mec")->debug("[RIB UPDATER] Imported json data from a file:\n {} ", jsonData.dump());
 	return jsonData;
@@ -464,13 +464,13 @@ CURL * rib_updater::curl_create_handle (std::string addr, int port, std::string 
 
 void rib_updater::get_RAN_statistics_from_FlexRAN(std::string addr, int port)
 {
-	json jsonData;
+  nlohmann::json jsonData;
 	std::map<std::pair<std::string, int>, std::string>::iterator it;
 	it = m_flexRANStatistics.find(std::make_pair(addr, port));
 	//parse RAN statistic to json format
 	try{
-		jsonData = json::parse((it)->second);
-	} catch (json::exception& e){
+		jsonData = nlohmann::json::parse((it)->second);
+	} catch (nlohmann::json::exception& e){
 		spdlog::get("ll-mec")->warn("[RIB UPDATER] Couldn't parse json data from FlexRAN {}:{} ", addr, port);
 		//remove the data for the next update cycle
 		it->second = std::string();
@@ -478,11 +478,11 @@ void rib_updater::get_RAN_statistics_from_FlexRAN(std::string addr, int port)
 	}
 	//if success, try to update the DB
 	if (!jsonData.empty()){
-		json eNB_config, eNB, cellConfig, UE, ueConfig;
+	  nlohmann::json eNB_config, eNB, cellConfig, UE, ueConfig;
 		std::string imsi;
 		uint64_t eNBId;
 		try{
-			eNB_config =  json (jsonData["eNB_config"]);
+			eNB_config =  nlohmann::json (jsonData["eNB_config"]);
 			eNB =  (eNB_config.at(0))["eNB"];
 			eNBId = std::stoull(eNB["eNBId"].get<std::string>().c_str());
 			cellConfig = eNB["cellConfig"];
@@ -498,7 +498,7 @@ void rib_updater::get_RAN_statistics_from_FlexRAN(std::string addr, int port)
 			}
 			m_rib.update_eNB_info(eNBId, cellConfig);
 
-		} catch (json::exception& e){
+		} catch (nlohmann::json::exception& e){
 			std::cout << "message: " << e.what() << '\n'
 					<< "exception id: " << e.id << std::endl;
 			//remove the data for the next update cycle

@@ -20,7 +20,7 @@
 #define ErabQosParameters_qci_H_
 
 
-#include "ModelBase.h"
+//#include "ModelBase.h"
 
 #include "QosInformation.h"
 

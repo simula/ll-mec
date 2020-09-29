@@ -19,9 +19,8 @@
 #ifndef Mp1_traffic_H_
 #define Mp1_traffic_H_
 
-
 #include <string>
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

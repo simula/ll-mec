@@ -35,6 +35,7 @@
 #include "NotificationSubscription.h"
 #include <string>
 #include "rib.h"
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

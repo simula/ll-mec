@@ -24,6 +24,7 @@
 #include <curl/curl.h>
 #include "spdlog.h"
 #include "ue_event.h"
+
 #define RNI_CALLBACK_CURL_TIMEOUT_MS 100L
 
 namespace llmec {
@@ -262,7 +263,7 @@ void Mp1ApiImpl::rab_est_subscription_subscriptions_put(const std::string &subsc
 	link.setSelf(m_rib.get_mp1_server_addr() + ":" + std::to_string(m_rib.get_mp1_server_port()) + base + "/" + subscriptionId);
 	rabEstSub->setLinks(link);
 
-	json jsonData;
+	nlohmann::json jsonData;
 	to_json(jsonData, *rabEstSub);
 
 	json subInfo = m_rib.get_app_subscription_info(subscriptionId,llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);

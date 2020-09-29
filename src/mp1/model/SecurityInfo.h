@@ -21,7 +21,7 @@
 
 
 #include "SecurityInfo_OAuth2Info.h"
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

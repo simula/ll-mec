@@ -23,7 +23,7 @@
 #include "Link.h"
 #include <vector>
 #include "Subscription.h"
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

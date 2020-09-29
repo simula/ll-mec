@@ -24,7 +24,7 @@
 #include "TransportTypes.h"
 #include <string>
 #include "SecurityInfo.h"
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

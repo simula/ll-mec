@@ -23,7 +23,7 @@
 #include "FilterCriteriaAssoc.h"
 #include <string>
 #include "TimeStamp.h"
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

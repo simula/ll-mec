@@ -22,7 +22,7 @@
 
 #include <string>
 #include <vector>
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

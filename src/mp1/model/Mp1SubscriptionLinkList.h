@@ -18,9 +18,8 @@
 #ifndef Mp1SubscriptionLinkList_H_
 #define Mp1SubscriptionLinkList_H_
 
-
 #include "Mp1SubscriptionLinkList_Links.h"
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

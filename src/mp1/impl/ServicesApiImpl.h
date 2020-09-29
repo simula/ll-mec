@@ -35,14 +35,16 @@
 #include "rib.h"
 #include <string>
 #include "SubscriptionsApiImpl.h"
+#include "json.h"
 
-using json = nlohmann::json;
 
 namespace llmec {
 namespace mp1 {
 namespace api {
 
 using namespace llmec::mp1::model;
+using json = nlohmann::json;
+
 static std::size_t callback(
         const char* in,
         std::size_t size,

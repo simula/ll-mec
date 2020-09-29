@@ -20,7 +20,7 @@
 #define SecurityInfo_OAuth2Info_GrantTypes_H_
 
 
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp1 {

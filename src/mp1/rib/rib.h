@@ -42,15 +42,12 @@
 #include <utility>
 #include "json.h"
 #include <unistd.h>
-#include "ModelBase.h"
 #include "ue_event.h"
 #include "ServiceInfo.h"
 
 namespace llmec {
 namespace mp1 {
 namespace rib {
-
-
 
 //SubscriptionType of a meMp1Subscription (ETSI MEC 011)
 typedef enum {
