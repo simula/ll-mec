@@ -111,11 +111,10 @@ void rib_updater::run ()
 				get_RAN_statistics_from_FlexRAN((i)->first,(i)->second);
 			}
 		}
-
 	}
 }
 
-void rib_updater::get_RAN_statistic_from_default_file(){
+bool rib_updater::get_RAN_statistic_from_default_file(){
 
   nlohmann::json jsonData;
 	//load Json data from Json file to a json object
@@ -123,12 +122,11 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 	//error when loading data.
 	if(!in.is_open())
 	{
-      //
+    return false;
 	}
 	jsonData = nlohmann::json::parse(in);
 	in.close();
 	spdlog::get("ll-mec")->debug("[RIB UPDATER] Imported json data from the default file:\n {} ", jsonData.dump());
-
 
 	//if success, try to update the DB
 	if (!jsonData.empty()){
@@ -157,7 +155,7 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 					<< "exception id: " << e.id << std::endl;
 
 			//TODO: should we reset the corresponding field in the DB?
-			return;
+			return false;
 		}
 
 		//update DB
@@ -168,7 +166,7 @@ void rib_updater::get_RAN_statistic_from_default_file(){
 		spdlog::get("ll-mec")->warn("[RIB UPDATER] No valid data from the default file {} ",DEFAULT_RIB_FILE);
 	}
 
-
+	return true;
 
 }
 void rib_updater::update_rib()
@@ -221,8 +219,7 @@ void rib_updater::update_rib()
 }
 
 
-//make in run in parallel as in flexran Elastic search
-
+//TODO: make in run in parallel as in flexran Elastic search
 nlohmann::json rib_updater::getRANStatistics(std::string addr, int port)
 {
   nlohmann::json jsonData;
@@ -270,7 +267,6 @@ nlohmann::json rib_updater::getRANStatistics(std::string addr, int port)
 					return jsonData;
 				} catch (nlohmann::json::exception& e){
 					spdlog::get("ll-mec")->warn("[RIB UPDATER] Couldn't Parse json data from FlexRAN, URL: {} ", url);
-					//return json();
 				}
 				numRetries++;
 			}
@@ -279,17 +275,13 @@ nlohmann::json rib_updater::getRANStatistics(std::string addr, int port)
 				spdlog::get("ll-mec")->debug("[RIB UPDATER] Couldn't GET response from FlexRAN, URL: {}, retry ... ", url);
 				//retry
 				numRetries++;
-				//return json(); //return an empty json
 			}
 		}
 		curl_easy_cleanup(curl);
 		return nlohmann::json(); //return an empty json
-
-
 	}
 
 	return nlohmann::json(); //return an empty json
-
 }
 
 nlohmann::json rib_updater::getRANStatistics(std::string path)

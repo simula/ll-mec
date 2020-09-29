@@ -95,7 +95,7 @@ public:
      */
     void get_RAN_statistics_from_FlexRAN(std::string addr, int port);
 
-    void get_RAN_statistic_from_default_file();
+    bool get_RAN_statistic_from_default_file();
 
     /*
      * Get FlexRAN's IP address from its URL

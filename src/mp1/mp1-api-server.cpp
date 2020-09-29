@@ -74,25 +74,8 @@ void Mp1Manager::shutdown(){
 }
 
 std::shared_ptr<Mp1ApiImpl> Mp1Manager::getMp1ApiServer(){
-	std::shared_ptr<Mp1ApiImpl> temp = std::dynamic_pointer_cast<Mp1ApiImpl> (m_mp1Apiserver);
+	std::shared_ptr<Mp1ApiImpl> mp1_instance = std::dynamic_pointer_cast<Mp1ApiImpl> (m_mp1Apiserver);
 	//spdlog::get("ll-mec")->info("[MP1 Manager] number of defaultApiServer's instances:{} ", m_mp1Apiserver.use_count());
 	//return m_mp1Apiserver;
-	return temp;
+	return mp1_instance;
 }
-
-
-/*
-int main() {
-#ifdef __linux__
-    std::vector<int> sigs{SIGQUIT, SIGINT, SIGTERM, SIGHUP};
-    setUpUnixSignals(sigs);
-#endif
-
-    Pistache::Address addr(Pistache::Ipv4::any(), Pistache::Port(8282));
-    Mp1_manager mp1_manager(addr);
-    mp1_manager.init(2);
-    mp1_manager.start();
-    mp1_manager.shutdown();
-
-}
-*/

@@ -53,7 +53,7 @@ bool Rib::update_ue_info(std::string imsi, nlohmann::json ueInfo){
 		ue_info_mutex.lock();
 		ueInfos.insert(std::pair<std::string, nlohmann::json> (imsi, ueInfo));
 		ue_info_mutex.unlock();
-		spdlog::get("ll-mec")->info("[RIB] Added UE IMSI {}", imsi);
+		spdlog::get("ll-mec")->debug("[RIB] Added UE IMSI {}", imsi);
 		spdlog::get("ll-mec")->debug("[RIB] UE's Info:\n {}", ueInfo.dump());
 	}
 	return true;
@@ -70,7 +70,7 @@ bool Rib::update_eNB_info(uint64_t eNBId, nlohmann::json eNBInfo){
 		eNB_info_mutex.lock();
 		eNBInfos.insert(std::pair<uint64_t, nlohmann::json> (eNBId, eNBInfo));
 		eNB_info_mutex.unlock();
-		spdlog::get("ll-mec")->info("[RIB] Added eNB Id {}", eNBId);
+		spdlog::get("ll-mec")->debug("[RIB] Added eNB Id {}", eNBId);
 	}
 	return true;
 }
@@ -81,24 +81,6 @@ nlohmann::json Rib::get_plmn_info(const std::string appInsId){
 	std::map<uint64_t, nlohmann::json>::iterator it;
 
 	for (auto it = ueInfos.begin(); it != ueInfos.end(); ++it){
-		/*
-		int numUEConfig = (it->second).size();
-		for (int i = 0; i < numUEConfig; ++i){
-			std::string imsi = (((it->second).at(i))["imsi"]).get<std::string>().c_str();
-			try{
-				plmnInfo["mcc"] = imsi.substr(0,3);
-				plmnInfo["mnc"] = imsi.substr(3,2);
-			} catch (const std::out_of_range& oor) {
-				spdlog::get("ll-mec")->warn("[RIB] Could not get MCC, MNC from IMSI, use default values");
-				plmnInfo["mcc"] = "294";
-				plmnInfo["mnc"] = "84";
-			}
-
-			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MCC {}", plmnInfo["mcc"].get<std::string>().c_str());
-			spdlog::get("ll-mec")->info("[RIB] Get PLMN info, MNC {}", plmnInfo["mnc"].get<std::string>().c_str());
-		}
-		 */
-
 		std::string imsi = ((it->second)["imsi"]).get<std::string>().c_str();
 		try{
 			plmnInfo["plmn"]["mcc"] = imsi.substr(0,3);
@@ -121,7 +103,6 @@ nlohmann::json Rib::get_plmn_info(const std::string appInsId){
 			spdlog::get("ll-mec")->debug("[RIB] Get PLMN info, CellId {}", cellId);
 			plmnInfo["cellId"].push_back(std::to_string(cellId));
 		}
-
 	}
 	return plmnInfo;
 
