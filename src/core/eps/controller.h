@@ -44,6 +44,7 @@
 #undef UNUSED
 
 #include "app.h"
+#include "subscription.h"
 
 namespace llmec {
 namespace core {
@@ -52,7 +53,7 @@ namespace eps {
 class Controller : public fluid_base::OFServer {
   public:
     static Controller* get_instance();
-    static void create_instance(const char* address, const int port, const int n_workers, bool secure);
+    static void create_instance(llmec::event::subscription& ev, const char* address, const int port, const int n_workers, bool secure);
     std::unordered_map<int, std::vector<std::shared_ptr<llmec::app::App>> > event_listeners_;
     // TODO Need to be refactor for multiple switch
     // Assume only one switch for now
@@ -79,11 +80,14 @@ class Controller : public fluid_base::OFServer {
     }
   private:
     static Controller* instance;
+    llmec::event::subscription& event_sub;
     Controller(
+        llmec::event::subscription& ev,
         const char* address = "0.0.0.0",
         const int port = 6653,
         const int n_workers = 4,
         bool secure = false):
+      event_sub(ev),
       fluid_base::OFServer(
           address,
           port,
