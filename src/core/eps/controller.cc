@@ -68,12 +68,14 @@ void Controller::connection_callback(fluid_base::OFConnection* ofconn, fluid_bas
 
   else if (type == fluid_base::OFConnection::EVENT_CLOSED) {
     spdlog::get("ll-mec")->info("Switch id=%d closed by the user", ofconn->get_id());
-    dispatch_event(new SwitchDownEvent(ofconn));
+    SwitchDownEvent ev(ofconn);
+    this->event_sub.of_switch_down(ev);
   }
 
   else if (type == fluid_base::OFConnection::EVENT_DEAD) {
     spdlog::get("ll-mec")->info("Switch id=%d closed due to inactivity", ofconn->get_id());
-    dispatch_event(new SwitchDownEvent(ofconn));
+    SwitchDownEvent ev(ofconn);
+    this->event_sub.of_switch_down(ev);
   }
 }
 

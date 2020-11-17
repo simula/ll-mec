@@ -37,10 +37,20 @@ namespace bs2 = boost::signals2;
 #include "callbacks.h"
 
 namespace llmec {
+  namespace core {
+    namespace eps {
+      class Controller;
+    }
+  }
+}
+
+namespace llmec {
 namespace event {
 
 class subscription {
   public:
+    // friend classes can access private fields
+    friend class llmec::core::eps::Controller;
 
     subscription() {}
 
