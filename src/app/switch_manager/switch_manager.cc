@@ -43,26 +43,21 @@ namespace switch_manager {
 Switch_manager::Switch_manager(llmec::core::eps::OFInterface &of_interface,
                                llmec::event::subscription &ev)
   : llmec::app::App(of_interface, ev) {
+  event_sub.subscribe_openflow_switch_up(
+      boost::bind(&Switch_manager::handle_switch_up, this, _1));
   event_sub.subscribe_openflow_switch_down(
       boost::bind(&Switch_manager::handle_switch_down, this, _1));
 }
 
-void Switch_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
-  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-  Conf* llmec_config = Conf::getInstance();
-  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
-
-  if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_UP) {
-    this->of_interface.install_default_flow(ev->of_conn_);
-    spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
-    if (support_meter) {
-      //definig a default meter rule of 10GB rate with meterID=DEFAULT_MT_ID
-      //this will be the default generic meter assigned into the first set of flows
-      this->of_interface.install_default_meter_drop(ev->of_conn_, DEFAULT_MT_ID);
-    }
-    //switch_set_.insert(ev->of_conn_->get_id());
-    context_manager->add_switch(ev->of_conn_->get_id());
-  }
+void Switch_manager::handle_switch_up(const llmec::core::eps::SwitchUpEvent& ev) {
+  const bool support_meter = Conf::getInstance()->X["ovs_switch"]["support_meter"].get<bool>();
+  this->of_interface.install_default_flow(ev.of_conn_);
+  spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev.of_conn_->get_id());
+  //define a default meter rule of 10GB rate with meterID=DEFAULT_MT_ID
+  //this will be the default generic meter assigned into the first set of flows
+  if (support_meter)
+    this->of_interface.install_default_meter_drop(ev.of_conn_, DEFAULT_MT_ID);
+  llmec::data::Context_manager::get_instance()->add_switch(ev.of_conn_->get_id());
 }
 
 void Switch_manager::handle_switch_down(const llmec::core::eps::SwitchDownEvent& ev) {
