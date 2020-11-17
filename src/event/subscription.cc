@@ -33,5 +33,10 @@
 namespace llmec {
 namespace event {
 
+bs2::connection subscription::subscribe_openflow_switch_down(
+      const openflow_cb<llmec::core::eps::SwitchDownEvent>::slot_type& cb) {
+  return of_switch_down.connect(cb);
+}
+
 } // namespace event
 } // namespace llmec

@@ -44,7 +44,11 @@ class subscription {
 
     subscription() {}
 
+    bs2::connection subscribe_openflow_switch_down(
+        const openflow_cb<llmec::core::eps::SwitchDownEvent>::slot_type& cb);
+
   private:
+    openflow_cb<llmec::core::eps::SwitchDownEvent> of_switch_down;
 };
 
 } // namespace llmec
