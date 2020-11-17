@@ -33,8 +33,16 @@
 #include <boost/signals2.hpp>
 namespace bs2 = boost::signals2;
 
+#include "controller_event.h"
+
 namespace llmec {
 namespace event {
+
+    /// Single-thread callback for arbitrary OpenFlow message
+    /// Argument is BS ID and the actual message
+    template <typename ControllerEvent>
+    using openflow_cb = typename bs2::signal_type<void(ControllerEvent),
+        bs2::keywords::mutex_type<bs2::dummy_mutex>>::type;
 
 } // namespace event
 } // namespace llmec
