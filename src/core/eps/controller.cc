@@ -37,10 +37,10 @@ namespace eps {
 
 Controller* Controller::instance = 0;
 
-void Controller::create_instance(const char* address, const int port, const int n_workers, bool secure)
+void Controller::create_instance(llmec::event::subscription& ev, const char* address, const int port, const int n_workers, bool secure)
 {
   if (instance == 0) {
-    instance = new Controller(address, port, n_workers, secure);
+    instance = new Controller(ev, address, port, n_workers, secure);
   }
 }
 
