@@ -118,7 +118,6 @@ int main(int argc, char **argv){
 
 
   //Register event for application
-  ctrl->register_for_event(switch_manager, llmec::core::eps::EVENT_SWITCH_UP);
   ctrl->register_for_event(stats_manager, llmec::core::eps::EVENT_MULTIPART_REPLY);
 
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
