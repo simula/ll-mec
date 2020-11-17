@@ -20,6 +20,7 @@ set(LL_MEC_TARGET "${PROJECT_SOURCE_DIR}/targets")
 #3 levels - DRIVER / CORE / APP / UTIL / DATA
 set(APP_DIR "${LL_MEC_SRC}/app")
 set(CORE_DIR "${LL_MEC_SRC}/core")
+set(EVENT_DIR "${LL_MEC_SRC}/event")
 set(DRIVER_DIR "${LL_MEC_SRC}/driver")
 set(UTIL_DIR "${LL_MEC_SRC}/util")
 set(DATA_DIR "${LL_MEC_SRC}/data")
@@ -137,6 +138,11 @@ set(CORE_include_files
 add_library(CORE ${CORE_src_files})
 target_link_libraries(CORE EPS)
 
+# We need boost signals2
+find_package(Boost 1.54.0 REQUIRED COMPONENTS system)
+add_library(EVENT ${EVENT_DIR}/subscription.cc)
+target_link_libraries(EVENT EPS)
+set(EVENT_include_files ${EVENT_DIR})
 
 #APP
 set(SGWC_DIR "${APP_DIR}/sgwc")
@@ -162,7 +168,7 @@ set(APP_include_files
 #  ${METER_DIR}
   )
 add_library(APP ${APP_src_files})
-target_link_libraries(APP CORE)
+target_link_libraries(APP CORE EVENT)
 
 #Pistache
 add_library(PISTACHE STATIC IMPORTED)
@@ -232,6 +238,7 @@ include_directories(
   ${FLUIDMSG_include_files}
   ${JSON_include_files}
   ${EPS_include_files}
+  ${EVENT_include_files}
   ${APP_include_files}
   ${UTIL_include_files}
   ${DATA_include_files}
