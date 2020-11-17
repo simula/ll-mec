@@ -39,9 +39,10 @@ namespace switch_manager {
 
 class Switch_manager : public llmec::app::App {
   public:
-    Switch_manager(llmec::core::eps::OFInterface &of_interface, llmec::event::subscription &ev)
-      : llmec::app::App(of_interface, ev) {}
+    Switch_manager(llmec::core::eps::OFInterface &of_interface,
+                   llmec::event::subscription &ev);
     void event_callback(llmec::core::eps::ControllerEvent* ev);
+    void handle_switch_down(llmec::core::eps::SwitchDownEvent ev);
     void start() override;
 };
 

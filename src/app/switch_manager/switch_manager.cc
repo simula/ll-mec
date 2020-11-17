@@ -40,6 +40,13 @@ namespace llmec {
 namespace app {
 namespace switch_manager {
 
+Switch_manager::Switch_manager(llmec::core::eps::OFInterface &of_interface,
+                               llmec::event::subscription &ev)
+  : llmec::app::App(of_interface, ev) {
+  event_sub.subscribe_openflow_switch_down(
+      boost::bind(&Switch_manager::handle_switch_down, this, _1));
+}
+
 void Switch_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
   Conf* llmec_config = Conf::getInstance();
@@ -56,18 +63,17 @@ void Switch_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
     //switch_set_.insert(ev->of_conn_->get_id());
     context_manager->add_switch(ev->of_conn_->get_id());
   }
-  if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_DOWN) {
-    /* the switch id, mec id are not related together for the moment */
-    if (support_meter) {
-      this->of_interface.flush_meter(ev->of_conn_, DEFAULT_MT_ID);
-    } else {
-      //this->of_interface.flush_flow(ev->of_conn_->get_id());
-    }
-    spdlog::get("ll-mec")->info("Switch id={} flushed flow", ev->of_conn_->get_id());
-    //switch_set_.insert(ev->of_conn_->get_id());
-    context_manager->delete_switch(ev->of_conn_->get_id());
-  }
 }
+
+void Switch_manager::handle_switch_down(llmec::core::eps::SwitchDownEvent ev) {
+  const bool support_meter = Conf::getInstance()->X["ovs_switch"]["support_meter"].get<bool>();
+  /* the switch id, mec id are not related together for the moment */
+  if (support_meter)
+    this->of_interface.flush_meter(ev.of_conn_, DEFAULT_MT_ID);
+  spdlog::get("ll-mec")->info("Switch id={} flushed flow", ev.of_conn_->get_id());
+  llmec::data::Context_manager::get_instance()->delete_switch(ev.of_conn_->get_id());
+}
+
 void Switch_manager::start() {
   while(true){
     //std::cout<<"Switch"<<std::endl;
