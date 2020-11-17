@@ -54,10 +54,13 @@ class subscription {
 
     subscription() {}
 
+    bs2::connection subscribe_openflow_switch_up(
+        const openflow_cb<llmec::core::eps::SwitchUpEvent>::slot_type& cb);
     bs2::connection subscribe_openflow_switch_down(
         const openflow_cb<llmec::core::eps::SwitchDownEvent>::slot_type& cb);
 
   private:
+    openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
     openflow_cb<llmec::core::eps::SwitchDownEvent> of_switch_down;
 };
 
