@@ -82,7 +82,7 @@ void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type
     dispatch_event(new PacketInEvent(ofconn, this, data, len));
   }
   else if (type == 6) { // OFPT_FEATURES_REPLY
-    dispatch_event(new SwitchUpEvent(ofconn, this, data, len));
+    event_sub.of_switch_up(SwitchUpEvent(ofconn, this, data, len));
   }
   else if (type == 19) { //OFPT_MULTIPART_REPLY
     dispatch_event(new MultipartReplyEvent(ofconn, this, data, len));
