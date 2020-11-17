@@ -411,10 +411,11 @@ bool Ue_manager::id_exist(uint64_t id) {
 
 Ue_manager* Ue_manager::instance = 0;
 
-void Ue_manager::create_instance(llmec::core::eps::OFInterface &of_interface)
+void Ue_manager::create_instance(llmec::core::eps::OFInterface &of_interface,
+                                 llmec::event::subscription &ev)
   {
     if (instance == 0) {
-      instance = new Ue_manager(of_interface);
+      instance = new Ue_manager(of_interface, ev);
     }
   }
 

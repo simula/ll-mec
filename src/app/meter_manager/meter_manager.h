@@ -73,7 +73,9 @@ class Meter_manager : public llmec::app::App {
 
   private:
     static Ue_manager* instance;
-    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
+    Ue_manager(llmec::core::eps::OFInterface &of_interface,
+               llmec::event::subscription &ev)
+      : llmec::app::App(of_interface, ev) {}
 };
 
 } // namespace meter_manager
