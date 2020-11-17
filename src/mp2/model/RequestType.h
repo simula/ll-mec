@@ -19,7 +19,7 @@
 #define RequestType_H_
 
 
-#include <nlohmann/json.hpp>
+#include "json.h"
 
 namespace llmec {
 namespace mp2 {
