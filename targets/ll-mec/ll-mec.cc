@@ -98,6 +98,9 @@ int main(int argc, char **argv){
 
   llmec_config->parse_config();
 
+  //Event subsystem
+  llmec::event::subscription ev;
+
   /* Initial the controller based on the config */
   llmec::core::eps::Controller::create_instance(llmec_config->X["llmec"]["address"].get<std::string>().c_str(), llmec_config->X["llmec"]["port"].get<int>(), llmec_config->X["llmec"]["number_of_workers"].get<int>(), llmec_config->X["llmec"]["secure_connection"].get<bool>());
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
@@ -107,9 +110,9 @@ int main(int argc, char **argv){
   llmec::core::eps::OFInterface of_interface;
 
   //Initialize application
-  auto switch_manager = std::make_shared<llmec::app::switch_manager::Switch_manager>(of_interface);
-  auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
-  llmec::app::uplane::Ue_manager::create_instance(of_interface);
+  auto switch_manager = std::make_shared<llmec::app::switch_manager::Switch_manager>(of_interface, ev);
+  auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface, ev);
+  llmec::app::uplane::Ue_manager::create_instance(of_interface, ev);
   llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
   //auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
 

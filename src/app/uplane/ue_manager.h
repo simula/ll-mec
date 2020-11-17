@@ -49,7 +49,8 @@ class Ue_manager : public llmec::app::App {
   public:
     void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
-    static void create_instance(llmec::core::eps::OFInterface &of_interface);
+    static void create_instance(llmec::core::eps::OFInterface &of_interface,
+                                llmec::event::subscription &ev);
     static Ue_manager* get_instance();
 
     /* Add one bearer context to the underlying user plane */
@@ -115,7 +116,9 @@ class Ue_manager : public llmec::app::App {
 
   private:
     static Ue_manager* instance;
-    Ue_manager(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
+    Ue_manager(llmec::core::eps::OFInterface &of_interface,
+               llmec::event::subscription &ev)
+      : llmec::app::App(of_interface, ev) {}
 
     /* Store user's events */
     std::unordered_map<int, std::vector<std::shared_ptr<llmec::mp1::api::Mp1Api>>> ue_event_listeners_;

@@ -156,9 +156,10 @@ bool Meter_manager::get_meter_stats(){
 
 Meter_manager* Meter_manager::instance = 0;
 
-void Meter_manager::create_instance(llmec::core::eps::OFInterface &of_interface){
+void Meter_manager::create_instance(llmec::core::eps::OFInterface &of_interface,
+                                    llmec::event::subscription &ev) {
     if (instance == 0) {
-      instance = new Meter_manager(of_interface);
+      instance = new Meter_manager(of_interface, ev);
     }
   }
 
