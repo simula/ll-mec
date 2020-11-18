@@ -44,6 +44,11 @@ namespace event {
     using openflow_cb = typename bs2::signal_type<void(const ControllerEvent&),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type;
 
+    /// Single-thread callback for BS-IMSI-RAB type event
+    /// Argument is BS IP addr, IMSI of UE, and RAB bearer ID
+    typedef bs2::signal_type<void(const std::string&, const std::string&, int),
+        bs2::keywords::mutex_type<bs2::dummy_mutex>>::type rab_cb;
+
 } // namespace event
 } // namespace llmec
 
