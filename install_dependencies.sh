@@ -1,5 +1,6 @@
 #!/bin/bash
-function install_pistache {
+install_pistache() {
+    pushd $LLMEC_DIR/build/ext
     echo "Installing pistache"
     git clone https://github.com/oktal/pistache.git
     cd pistache || exit
@@ -9,9 +10,22 @@ function install_pistache {
     cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ..
     make
     sudo make install
-    cd -
+    popd
 }
 
+install_nlohmann() {
+    pushd $LLMEC_DIR/build/ext
+    echo "Installing Nlohmann Json"
+    git clone https://github.com/nlohmann/json.git
+    cd json && git checkout master
+    git submodule update --init
+    mkdir build
+    cd build
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DJSON_BuildTests=OFF ..
+    make
+    sudo make install
+    popd
+}
 sudo apt update
 
 unset $DOCS
@@ -31,4 +45,8 @@ if [ -z $DOCS ]; then
 fi
 
 sudo apt install libssl-dev libevent-dev cmake git build-essential g++ -y
+
+LLMEC_DIR="$(pwd)"
+mkdir -p build/ext
 install_pistache
+install_nlohmann
