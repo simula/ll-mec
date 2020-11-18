@@ -43,5 +43,11 @@ bs2::connection subscription::subscribe_openflow_switch_down(
   return of_switch_down.connect(cb);
 }
 
+
+bs2::connection subscription::subscribe_ue_rab_establishment(
+      const ue_cb::slot_type& cb) {
+  return ue_rab_est.connect(cb);
+};
+
 } // namespace event
 } // namespace llmec

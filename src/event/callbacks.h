@@ -44,6 +44,11 @@ namespace event {
     using openflow_cb = typename bs2::signal_type<void(ControllerEvent),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type;
 
+    /// Single-thread callback for UE RAB Establishment event
+    /// Argument is IMSI of phone
+    typedef bs2::signal_type<void(std::string),
+        bs2::keywords::mutex_type<bs2::dummy_mutex>>::type ue_cb;
+
 } // namespace event
 } // namespace llmec
 

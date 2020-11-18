@@ -59,9 +59,13 @@ class subscription {
     bs2::connection subscribe_openflow_switch_down(
         const openflow_cb<llmec::core::eps::SwitchDownEvent>::slot_type& cb);
 
+    bs2::connection subscribe_ue_rab_establishment(const ue_cb::slot_type& cb);
+
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
     openflow_cb<llmec::core::eps::SwitchDownEvent> of_switch_down;
+
+    ue_cb ue_rab_est;
 };
 
 } // namespace llmec
