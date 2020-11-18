@@ -37,7 +37,11 @@ Mp1ApiImpl::Mp1ApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
                        llmec::mp1::rib::Rib& rib,
                        llmec::event::subscription &ev)
 : Mp1Api(rtr), m_rib(rib), m_event_sub(ev)
-{ }
+{
+  m_event_sub.subscribe_ue_rab_establishment(
+      boost::bind(&Mp1ApiImpl::event_callback, this, _1,
+                  llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT));
+}
 
 void Mp1ApiImpl::event_callback (std::string imsi, llmec::app::uplane::ueEventType evType){
 	spdlog::get("ll-mec")->info("[MP1 API] Event Callback, UE IMSI: {}, event {} ", imsi, evType );
