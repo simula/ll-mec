@@ -170,7 +170,6 @@ int main(int argc, char **argv){
   //register to user events
   std::shared_ptr<Mp1ApiImpl> api_server = mp1Manager.getMp1ApiServer();
   ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_S1_BEARER);
-  ue_manager->register_for_event(api_server, llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT);
 
   //Mp2
   Mp2Manager mp2Manager(addr_mp2);

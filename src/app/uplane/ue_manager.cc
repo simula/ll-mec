@@ -141,7 +141,7 @@ bool Ue_manager::add_bearer(json context){
   }
 
   //notify the event for Mp1 API
-  dispatch_event(context["imsi"].get<std::string>(), UE_EVENT_RAB_ESTABLISHMENT);
+  event_sub.ue_rab_est(context["imsi"].get<std::string>());
   dispatch_event(context["imsi"].get<std::string>(), UE_EVENT_S1_BEARER);
   return true;
 }
