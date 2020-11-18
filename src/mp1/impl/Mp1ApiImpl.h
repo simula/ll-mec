@@ -78,12 +78,17 @@ public:
                llmec::mp1::rib::Rib& rib,
                llmec::event::subscription &ev);
     ~Mp1ApiImpl() {}
+    virtual void event_callback (std::string imsi, llmec::app::uplane::ueEventType evType) {}
     /*
-     * Callback function
+     * Callback function for handling UE_EVENT_RAB_ESTABLISHMENT
+     * @param [bs_ip] IP addr of the originating BS
      * @param [imsi] UE's imsi
-     * @param [evType] Type of UE's event
+     * @param [eRAB] UE's bearer
      */
-    void event_callback (std::string imsi, llmec::app::uplane::ueEventType evType);
+    void handle_ue_rab_est(const std::string& bs_ip,
+                           const std::string& imsi,
+                           int erab);
+
     void ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response);
     void ca_re_conf_subscription_subscriptions_post(const CaReConfSubscriptionPost &caReConfSubscriptionPost, Pistache::Http::ResponseWriter &response);
     void ca_re_conf_subscription_subscriptions_put(const std::string &subscriptionId, const CaReConfSubscription &caReConfSubscription, Pistache::Http::ResponseWriter &response);
