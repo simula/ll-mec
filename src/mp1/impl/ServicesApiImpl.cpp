@@ -29,8 +29,10 @@ namespace api {
 
 using namespace llmec::mp1::model;
 
-ServicesApiImpl::ServicesApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, llmec::mp1::rib::Rib& rib)
-: ServicesApi(rtr), m_rib(rib)
+ServicesApiImpl::ServicesApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
+                                 llmec::mp1::rib::Rib& rib,
+                                 llmec::event::subscription& ev)
+: ServicesApi(rtr), m_rib(rib), m_event_sub(ev)
 { }
 
 void ServicesApiImpl::services_get(const Pistache::Optional<std::vector<std::string>> &serInstanceId, const Pistache::Optional<std::vector<std::string>> &serName, const Pistache::Optional<std::string> &serCategoryId, Pistache::Http::ResponseWriter &response) {

@@ -33,8 +33,10 @@ namespace api {
 
 using namespace llmec::mp1::model;
 
-Mp1ApiImpl::Mp1ApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, llmec::mp1::rib::Rib& rib)
-: Mp1Api(rtr), m_rib(rib)
+Mp1ApiImpl::Mp1ApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
+                       llmec::mp1::rib::Rib& rib,
+                       llmec::event::subscription &ev)
+: Mp1Api(rtr), m_rib(rib), m_event_sub(ev)
 { }
 
 void Mp1ApiImpl::event_callback (std::string imsi, llmec::app::uplane::ueEventType evType){

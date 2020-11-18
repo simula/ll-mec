@@ -59,6 +59,7 @@
 #include <string>
 #include "SubscriptionsApiImpl.h"
 #include "json.h"
+#include "subscription.h"
 
 namespace llmec {
 namespace mp1 {
@@ -73,7 +74,9 @@ static std::size_t callback(
         std::string* out);
 class Mp1ApiImpl : public llmec::mp1::api::Mp1Api {
 public:
-    Mp1ApiImpl(std::shared_ptr<Pistache::Rest::Router>, llmec::mp1::rib::Rib& rib);
+    Mp1ApiImpl(std::shared_ptr<Pistache::Rest::Router>,
+               llmec::mp1::rib::Rib& rib,
+               llmec::event::subscription &ev);
     ~Mp1ApiImpl() {}
     /*
      * Callback function
@@ -134,6 +137,7 @@ public:
 
 private:
     llmec::mp1::rib::Rib& m_rib;
+    llmec::event::subscription& m_event_sub;
 
 };
 
