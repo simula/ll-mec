@@ -23,12 +23,17 @@
 #include "ServicesApiImpl.h"
 #include "SubscriptionsApiImpl.h"
 #include "rib.h"
+#include "subscription.h"
+
 using namespace llmec::mp1::api;
 class Mp1Manager {
 public:
-	Mp1Manager(Pistache::Address address, llmec::mp1::rib::Rib& rib) : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address))  {
+	Mp1Manager(Pistache::Address address,
+             llmec::mp1::rib::Rib& rib,
+             llmec::event::subscription &ev)
+      : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
 		m_router = std::make_shared<Pistache::Rest::Router>();
-		m_mp1Apiserver = std::make_shared<Mp1ApiImpl> (m_router, rib);
+		m_mp1Apiserver = std::make_shared<Mp1ApiImpl> (m_router, rib, ev);
 		m_subscriptionsApiserver = std::make_shared<SubscriptionsApiImpl> (m_router, rib);
 		m_servicesApiserver = std::make_shared<ServicesApiImpl> (m_router, rib);
 
@@ -45,7 +50,6 @@ private:
 	std::shared_ptr<Mp1ApiImpl> m_mp1Apiserver;
 	std::shared_ptr <SubscriptionsApiImpl> m_subscriptionsApiserver;
 	std::shared_ptr <ServicesApiImpl> m_servicesApiserver;
-
 };
 
 

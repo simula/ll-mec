@@ -209,6 +209,7 @@ set(MP1_API_include_files
   ${MP1_API_DIR}
   )
 add_library(MP1_API ${MP1_API_src_files})
+target_link_libraries(MP1_API EVENT)
 
 #MP2_API
 set(MP2_API_DIR "${LL_MEC_SRC}/mp2")

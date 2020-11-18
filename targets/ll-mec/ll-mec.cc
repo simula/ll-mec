@@ -163,7 +163,7 @@ int main(int argc, char **argv){
   //rib.init_service_info();
 
   //Mp1
-  Mp1Manager mp1Manager(addr_mp1, rib);
+  Mp1Manager mp1Manager(addr_mp1, rib, ev);
   mp1Manager.init(2);
   //mp1Manager.start();
   //mp1Manager.shutdown();
