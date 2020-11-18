@@ -42,6 +42,11 @@ namespace llmec {
       class Controller;
     }
   }
+  namespace app {
+    namespace uplane {
+      class Ue_manager;
+    }
+  }
 }
 
 namespace llmec {
@@ -51,6 +56,7 @@ class subscription {
   public:
     // friend classes can access private fields
     friend class llmec::core::eps::Controller;
+    friend class llmec::app::uplane::Ue_manager;
 
     subscription() {}
 

@@ -103,6 +103,9 @@ bool Ue_manager::add_bearer(json context){
     spdlog::get("ll-mec")->info("Add UE bearer {}: {}", id, context.dump());
     if (support_meter)
       spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meter_id);
+        event_sub.ue_rab_establishment(context["enb_ip"].get<std::string>(),
+                                       context["imsi"].get<std::string>(),
+                                       context["eps_bearer_id"].get<int>());
   }
 
   if (support_meter) {
@@ -141,7 +144,6 @@ bool Ue_manager::add_bearer(json context){
   }
 
   //notify the event for Mp1 API
-  dispatch_event(context["imsi"].get<std::string>(), UE_EVENT_RAB_ESTABLISHMENT);
   dispatch_event(context["imsi"].get<std::string>(), UE_EVENT_S1_BEARER);
   return true;
 }
