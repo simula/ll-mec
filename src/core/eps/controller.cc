@@ -23,9 +23,9 @@
 /*!
   \file conroller.cc
   \brief OF controller 
-  \author Anta Huang and N. Nikaein
+  \author Anta Huang, N. Nikaein, and Mihai IDU
   \company Eurecom
-  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
+  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr, idumihai16@gmail.com
 */
 
 #include "controller.h"
@@ -87,19 +87,9 @@ void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type
   else if (type == 19) { //OFPT_MULTIPART_REPLY
     dispatch_event(new MultipartReplyEvent(ofconn, this, data, len));
   }
-/* ####################################################
- * The Meters and rate limiters configuration messages.
- * ####################################################
- * author 	Mihai IDU
- * company 	Eurecom
- * email: 	idumihai16@gmail.com
- * ####################################################
- */
+  /* The Meters and rate limiters configuration messages. */
   else if (type == 29) { //OFPT_METER_MOD
-	  dispatch_event(new MeterEvent(ofconn, this, data, len));
- /*
-  * ####################################################
-  */
+    dispatch_event(new MeterEvent(ofconn, this, data, len));
   }
 }
 

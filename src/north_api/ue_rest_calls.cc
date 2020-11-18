@@ -32,6 +32,7 @@
 #include <iostream>
 #include <string>
 #include "ue_rest_calls.h"
+#include "conf.h"
 #include "context_manager.h"
 #include "json.h"
 #include "spdlog.h"
@@ -356,7 +357,14 @@ namespace north_api {
 
   void Ue_rest_calls::add_bearer(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
+    Conf* llmec_config = Conf::getInstance();
+    bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
+    //For Meter
     bool has_meter_info = false;
+    uint32_t meter_rate = 1000000;
+    uint32_t burst_size = 50000;
+
     std::string resp;
     if (request.body().empty()) {
       resp = "Bearer identities required.";
@@ -409,31 +417,37 @@ namespace north_api {
       }
       tos = payload["tos"].get<int>();
     }
-    /*
-     * Optional metering parameters for defining the DefaultMeterTable
-     */
-     uint32_t meter_rate = 1000000;
-     if (!payload["meter_rate"].empty()){
-      if (!payload["meter_rate"].is_number()) {
-        resp = "Meter Rate is not a valid number.";
-        response.send(Pistache::Http::Code::Bad_Request, resp);
-        return;
+
+    if (support_meter) {
+      /*
+       * Optional metering parameters for defining the DefaultMeterTable
+       */
+
+      if (!payload["meter_rate"].empty()){
+        if (!payload["meter_rate"].is_number()) {
+          resp = "Meter Rate is not a valid number.";
+          response.send(Pistache::Http::Code::Bad_Request, resp);
+          return;
+        }
+        meter_rate = payload["meter_rate"].get<int>();
+        has_meter_info = true;
       }
-      meter_rate = payload["meter_rate"].get<int>();
-      has_meter_info = true;
-    }
-    uint32_t burst_size = 50000;
-    if (!payload["burst_size"].empty()){
-      if (!payload["burst_size"].is_number()) {
-        resp = "Meter Burst Size is not a valid number.";
-        response.send(Pistache::Http::Code::Bad_Request, resp);
-        return;
+
+      if (!payload["burst_size"].empty()){
+        if (!payload["burst_size"].is_number()) {
+          resp = "Meter Burst Size is not a valid number.";
+          response.send(Pistache::Http::Code::Bad_Request, resp);
+          return;
+        }
+        burst_size = payload["burst_size"].get<int>();
+        has_meter_info = true;
       }
-      burst_size = payload["burst_size"].get<int>();
-      has_meter_info = true;
     }
 
-    spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}, meter_rate {}, burst_size {}", eps_bearer_id, imsi, meter_rate, burst_size);
+    if (support_meter)
+      spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}, meter_rate {}, burst_size {}", eps_bearer_id, imsi, meter_rate, burst_size);
+    else
+      spdlog::get("ll-mec")->debug("eps_bearer_id {}, imsi {}", eps_bearer_id, imsi);
 
     /* Create a new json to have clean content */
     json context = {
@@ -449,9 +463,11 @@ namespace north_api {
       //{"burst_size", burst_size}
     };
 
-    if (has_meter_info){
-    	context["meter_rate"] =  meter_rate;
-    	context["burst_size"] =  burst_size;
+    if (support_meter) {
+      if (has_meter_info){
+        context["meter_rate"] =  meter_rate;
+        context["burst_size"] =  burst_size;
+      }
     }
 
     if (ue_manager->add_bearer(context) == false) {
@@ -467,6 +483,10 @@ namespace north_api {
   void Ue_rest_calls::add_redirect_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     std::string resp;
+    Conf* llmec_config = Conf::getInstance();
+    bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+    uint32_t meter_id = DEFAULT_MT_ID;
+
     if (request.body().empty()) {
       resp = "Payload is empty. Redirect information required.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
@@ -500,16 +520,19 @@ namespace north_api {
       {"tos", tos}
     };
 
-    //get meter_id
-    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-    json bearer_context = context_manager->get_bearer_context(id);
-    uint32_t meter_id = context_manager->get_meter_id(bearer_context["imsi"].get<std::string>(), bearer_context["eps_bearer_id"].get<int>(), bearer_context["slice_id"].get<int>());
+    if (support_meter) {
+      //get meter_id
+      llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+      json bearer_context = context_manager->get_bearer_context(id);
+      meter_id = context_manager->get_meter_id(bearer_context["imsi"].get<std::string>(), bearer_context["eps_bearer_id"].get<int>(), bearer_context["slice_id"].get<int>());
+    }
 
     if (ue_manager->add_redirect_bearer(id, meter_id, context) == false) {
       resp = "Switch connection lost or no such bearer is found.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
     }
+
     resp = "OK";
     response.send(Pistache::Http::Code::Ok, resp);
     return;
@@ -518,6 +541,10 @@ namespace north_api {
   void Ue_rest_calls::add_redirect_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     std::string resp;
+    Conf* llmec_config = Conf::getInstance();
+    bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+    uint32_t meter_id = DEFAULT_MT_ID;
+
     if (request.body().empty()) {
       resp = "Payload is empty. Redirect information required.";
       response.send(Pistache::Http::Code::Bad_Request, resp);
@@ -574,16 +601,20 @@ namespace north_api {
       {"tos", tos}
     };
 
-    //get meter_id
-    llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-    json bearer_context = context_manager->get_bearer_context(id);
-    uint32_t meter_id = context_manager->get_meter_id(bearer_context["imsi"].get<std::string>(), bearer_context["eps_bearer_id"].get<int>(), bearer_context["slice_id"].get<int>());
+
+    if (support_meter) {
+      //get meter_id
+      llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+      json bearer_context = context_manager->get_bearer_context(id);
+      meter_id = context_manager->get_meter_id(bearer_context["imsi"].get<std::string>(), bearer_context["eps_bearer_id"].get<int>(), bearer_context["slice_id"].get<int>());
+    }
 
     if (ue_manager->add_redirect_bearer(id, meter_id, context) == false) {
       resp = "Switch connection lost or no such bearer is found.";
       response.send(Pistache::Http::Code::Service_Unavailable, resp);
       return;
     }
+
     resp = "OK";
     response.send(Pistache::Http::Code::Ok, resp);
     return;

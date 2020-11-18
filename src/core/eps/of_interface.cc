@@ -23,10 +23,11 @@
 /*!
   \file
   \brief
-  \author
-  \company
-  \email:
+  \author Anta Huang, N. Nikaein, Mihai IDU
+  \company Eurecom
+  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr, idumihai16@gmail.com
 */
+
 
 #include "of_interface.h"
 #include "conf.h"
@@ -128,7 +129,6 @@ void OFInterface::install_default_flow(fluid_base::OFConnection* of_conn) {
 
 
 /*
- * #########################################################################################
  * Default Install Meter Mod
 */
 
@@ -172,13 +172,7 @@ void OFInterface::install_default_meter_dscp(fluid_base::OFConnection* of_conn, 
   fluid_msg::OFMsg::free_buffer(buffer);
 
 }
-/* ######################################################
- * Installing Meter Mod
- * ######################################################
- * author Mihai IDU
- * company Eurecom
- * email: idumihai16@gmail.com
- * ######################################################
+/*
  * Add  a  meter  entry to switch's tables. The meter
  * syntax is described in section Meter Syntax, below.
  * This OpenFlow13 Message it can be transformed into CLI command as below:
@@ -373,7 +367,7 @@ void OFInterface::install_default_meter_UE_dl_flow(fluid_base::OFConnection* of_
 }
 
 /*
- * ######################################################
+ *
  */
 
 void OFInterface::install_default_UE_ul_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id, uint64_t ul_tunnel, Metadata metadata) {
@@ -681,7 +675,7 @@ void OFInterface::get_meter_config_stats(fluid_base::OFConnection* of_conn, uint
 }
 
 /*
- * #################################################################################################
+ *
  */
 void OFInterface::flush_flow(fluid_base::OFConnection* of_conn, uint64_t flow_id) {
   uint8_t* buffer;

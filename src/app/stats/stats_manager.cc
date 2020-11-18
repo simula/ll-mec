@@ -79,6 +79,9 @@ json Stats_manager::get_flow_stats(uint64_t id) {
 
 void Stats_manager::start() {
   spdlog::get("ll-mec")->debug("Stats manager started");
+  Conf* llmec_config = Conf::getInstance();
+  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
   while (true) {
     llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(ctrl->conn_id);
@@ -86,9 +89,11 @@ void Stats_manager::start() {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
     if (of_conn_ != NULL) {
       this->of_interface.get_flow_stats(of_conn_, 43, 0, 1, 0xffffffffffff0000);
-//      this->of_interface.get_meter_stats(of_conn_);
-//      this->of_interface.get_meter_features_stats(of_conn_);
-//      this->of_interface.get_meter_config_stats(of_conn_, 0xffffffff);
+      if (support_meter) {
+        //      this->of_interface.get_meter_stats(of_conn_);
+        //      this->of_interface.get_meter_features_stats(of_conn_);
+        //      this->of_interface.get_meter_config_stats(of_conn_, 0xffffffff);
+      }
     }
     std::this_thread::sleep_for(std::chrono::microseconds(20000000));
   }

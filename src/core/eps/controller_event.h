@@ -23,9 +23,9 @@
 /*!
   \file controller_event.h
   \brief captures the events with the LL-MEC controller
-  \author Anta Huang and N. Nikaein
+  \author Anta Huang, N. Nikaein, Mihai IDU
   \company Eurecom
-  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
+  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr, idumihai16@gmail.com
 */
 
 #ifndef __CONTROLLER_EVENT_H__
@@ -126,13 +126,8 @@ class MultipartReplyEvent : public ControllerEvent {
     size_t len_;
 };
 
-/* ######################################################
+/*
  * This is the MeterEvent Class used in the controller.cc  
- * ######################################################
- * author Mihai IDU
- * company Eurecom
- * email: idumihai16@gmail.com
- * ######################################################
  */
 class MeterEvent : public ControllerEvent {
   public:
@@ -149,10 +144,6 @@ class MeterEvent : public ControllerEvent {
 	  uint8_t* data_;
 	  size_t len_;
 };
-/* ######################################################
- * The MeterEvent class end here.
- * ######################################################
- */
 
 } // namespace eps
 } // namespace core

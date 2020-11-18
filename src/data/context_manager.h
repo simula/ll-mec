@@ -118,7 +118,6 @@ class Context_manager {
     /* pair<imsi, bearer_id> <-> id */
     std::map<std::pair<std::string, uint64_t>, uint64_t> imsi_mapping;
 
-//    std::map< uint32_t> meter_mapping;
     std::map<std::pair<std::string, uint32_t>, uint32_t> meter_mapping;
 
     /* id <-> meter info (meter_rate, burst_size) */

@@ -32,6 +32,7 @@
 #include <string>
 
 #include "context_manager.h"
+#include "conf.h"
 #include "spdlog.h"
 
 
@@ -73,6 +74,9 @@ std::unordered_set<int> Context_manager::get_switch_set()
 }
 bool Context_manager::add_bearer(json context)
 {
+  Conf* llmec_config = Conf::getInstance();
+  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
   if (this->sanitize(context) == false)
     return false;
 
@@ -87,8 +91,10 @@ bool Context_manager::add_bearer(json context)
   }
   context["id"] = id;
   this->imsi_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()), id));
-  if (context.count("meter_id") != 0){
-	  this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+  if (support_meter) {
+    if (context.count("meter_id") != 0){
+      this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+    }
   }
   this->bearer_context[id] = context;
   this->slice_group[context["slice_id"].get<int>()].insert(id);
@@ -131,14 +137,19 @@ bool Context_manager::delete_meter(uint32_t id)
 //bool Context_manager::add_bearer(uint64_t id, uint32_t meter_id, json context)
 bool Context_manager::add_bearer(uint64_t id, json context)
 {
+  Conf* llmec_config = Conf::getInstance();
+  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
   if (this->sanitize(context) == false)
     return false;
 
   this->context_lock.lock();
   context["id"] = id;
   this->imsi_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()), id));
-  if (context.count("meter_id") != 0){
-	  this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+  if (support_meter) {
+    if (context.count("meter_id") != 0){
+      this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+    }
   }
   //this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), meter_id));
   this->bearer_context[id] = context;
@@ -164,6 +175,9 @@ bool Context_manager::sanitize(json bearer_context)
 
 bool Context_manager::delete_bearer(uint64_t id)
 {
+  Conf* llmec_config = Conf::getInstance();
+  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
   this->context_lock.lock();
   if (this->bearer_context.count(id) == 0) {
     this->context_lock.unlock();
@@ -175,7 +189,8 @@ bool Context_manager::delete_bearer(uint64_t id)
   if (slice_group[context["slice_id"].get<int>()].empty()) slice_group.erase(context["slice_id"].get<int>());
   this->bearer_context.erase(id);
   this->bag_of_occupied_ids.erase(id);
-  this->meter_mapping.erase(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()));
+  if (support_meter)
+    this->meter_mapping.erase(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()));
   this->context_lock.unlock();
   return true;
 }
@@ -258,9 +273,7 @@ uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
 }
 
 //meterid mapping
-
 uint32_t Context_manager::get_meter_id(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id){
-//uint32_t meterid = 1; - The meterID=1 is already configured as DefaultMeterTable
 //this table it will be used as referance.
 	uint32_t meter_id = DEFAULT_MT_ID; //default MT
 
