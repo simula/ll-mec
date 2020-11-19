@@ -43,5 +43,20 @@ bs2::connection subscription::subscribe_openflow_switch_down(
   return of_switch_down.connect(cb);
 }
 
+bs2::connection subscription::subscribe_openflow_packet_in(
+    const openflow_cb<llmec::core::eps::PacketInEvent>::slot_type& cb) {
+  return of_packet_in.connect(cb);
+}
+
+bs2::connection subscription::subscribe_openflow_multipart_reply(
+    const openflow_cb<llmec::core::eps::MultipartReplyEvent>::slot_type& cb) {
+  return of_multipart_reply.connect(cb);
+}
+
+bs2::connection subscription::subscribe_openflow_meter_mod(
+    const openflow_cb<llmec::core::eps::MeterEvent>::slot_type& cb) {
+  return of_meter_mod.connect(cb);
+}
+
 } // namespace event
 } // namespace llmec

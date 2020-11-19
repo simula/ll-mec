@@ -42,30 +42,34 @@ namespace llmec {
 namespace app {
 namespace stats {
 
-void Stats_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
-  if (ev->get_type() == llmec::core::eps::EVENT_MULTIPART_REPLY) {
-//    spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
-    fluid_msg::of13::MultipartReplyFlow reply;
-    reply.unpack(((llmec::core::eps::MultipartReplyEvent*)ev)->data_);
-    this->flow_stats_lock.lock();
-    for (auto each:reply.flow_stats()) {
-      json flow_stats;
-      flow_stats["table_id"] = each.table_id();
-      flow_stats["duration_sec"] = each.duration_sec();
-      flow_stats["priority"] = each.priority();
-      flow_stats["packet_count"] = each.packet_count();
-      flow_stats["byte_count"] = each.byte_count();
-      /* Cookie is used as the identities in OVS and filled with MEC id in UE manager */
-      if (each.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_TUNNEL_ID) != NULL)
-        this->flow_stats_[each.cookie()]["ul"] = flow_stats;
-      else
-        this->flow_stats_[each.cookie()]["dl"] = flow_stats;
-      this->flow_stats_[each.cookie()]["switch_id"] = ev->of_conn_->get_id();
-      this->bearers_switch_[each.cookie()] = ev->of_conn_->get_id();
-      this->switch_bearers_[ev->of_conn_->get_id()].insert(each.cookie());
-    }
-    this->flow_stats_lock.unlock();
+Stats_manager::Stats_manager(llmec::core::eps::OFInterface &of_interface,
+                             llmec::event::subscription &ev)
+    : llmec::app::App(of_interface, ev) {
+  event_sub.subscribe_openflow_multipart_reply(
+      boost::bind(&Stats_manager::handle_multipart_reply, this, _1));
+}
+
+void Stats_manager::handle_multipart_reply(const llmec::core::eps::MultipartReplyEvent& ev) {
+  fluid_msg::of13::MultipartReplyFlow reply;
+  reply.unpack(ev.data_);
+  this->flow_stats_lock.lock();
+  for (auto each:reply.flow_stats()) {
+    json flow_stats;
+    flow_stats["table_id"] = each.table_id();
+    flow_stats["duration_sec"] = each.duration_sec();
+    flow_stats["priority"] = each.priority();
+    flow_stats["packet_count"] = each.packet_count();
+    flow_stats["byte_count"] = each.byte_count();
+    /* Cookie is used as the identities in OVS and filled with MEC id in UE manager */
+    if (each.get_oxm_field(fluid_msg::of13::OFPXMT_OFB_TUNNEL_ID) != NULL)
+      this->flow_stats_[each.cookie()]["ul"] = flow_stats;
+    else
+      this->flow_stats_[each.cookie()]["dl"] = flow_stats;
+    this->flow_stats_[each.cookie()]["switch_id"] = ev.of_conn_->get_id();
+    this->bearers_switch_[each.cookie()] = ev.of_conn_->get_id();
+    this->switch_bearers_[ev.of_conn_->get_id()].insert(each.cookie());
   }
+  this->flow_stats_lock.unlock();
 }
 
 json Stats_manager::get_flow_stats(uint64_t id) {

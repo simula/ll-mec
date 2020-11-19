@@ -116,10 +116,6 @@ int main(int argc, char **argv){
   llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
   //auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
 
-
-  //Register event for application
-  ctrl->register_for_event(stats_manager, llmec::core::eps::EVENT_MULTIPART_REPLY);
-
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
    //northbound api initial

@@ -63,21 +63,9 @@ class Controller : public fluid_base::OFServer {
 
     virtual void connection_callback(fluid_base::OFConnection* of_conn, fluid_base::OFConnection::Event type);
     virtual void message_callback(fluid_base::OFConnection* of_conn, uint8_t type, void* data, size_t len);
-    void register_for_event(const std::shared_ptr<llmec::app::App>& app, int event_type);
 
     void stop();
 
-    inline void dispatch_event(ControllerEvent* ev) {
-      if (not this->running_) {
-        delete ev;
-        return;
-      }
-      for (auto app : event_listeners_[ev->get_type()]) {
-        app->event_callback(ev);
-      }
-      delete ev;
-
-    }
   private:
     static Controller* instance;
     llmec::event::subscription& event_sub;
