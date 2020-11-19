@@ -71,9 +71,12 @@ class subscription {
     bs2::connection subscribe_openflow_meter_mod(
         const openflow_cb<llmec::core::eps::MeterEvent>::slot_type& cb);
 
+    bs2::connection subscribe_ue_cell_change(const ue_cb::slot_type& cb);
     bs2::connection subscribe_ue_rab_establishment(const rab_cb::slot_type& cb);
     bs2::connection subscribe_ue_rab_modification(const rab_cb::slot_type& cb);
     bs2::connection subscribe_ue_rab_release(const rab_cb::slot_type& cb);
+    bs2::connection subscribe_ue_meas_report_ue(const ue_cb::slot_type& cb);
+    bs2::connection subscribe_ue_meas_timing_advance(const ue_cb::slot_type& cb);
 
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
@@ -82,9 +85,12 @@ class subscription {
     openflow_cb<llmec::core::eps::MultipartReplyEvent> of_multipart_reply;
     openflow_cb<llmec::core::eps::MeterEvent> of_meter_mod;
 
+    ue_cb ue_cell_change;            // UE_EVENT_CELL_CHANGE
     rab_cb ue_rab_establishment;     // UE_EVENT_RAB_ESTABLISHMENT
     rab_cb ue_rab_modification;      // UE_EVENT_RAB_MODIFICATION
     rab_cb ue_rab_release;           // UE_EVENT_RAB_RELEASE
+    ue_cb ue_meas_report_ue;         // UE_EVENT_MEAS_REPORT_UE
+    ue_cb ue_meas_timing_advance;    // UE_EVENT_MEAS_TIMING_ADVANCE
 };
 
 } // namespace llmec
