@@ -45,7 +45,6 @@ namespace uplane {
 
 class Meter_manager : public llmec::app::App {
   public:
-    void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
     static void create_instance(llmec::core::eps::OFInterface &of_interface);
     static Ue_manager* get_instance();

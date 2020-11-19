@@ -47,7 +47,6 @@ class App : public llmec::core::rt::Task {
         of_interface(of_interface),
         event_sub(ev) {
     }
-    virtual void event_callback(llmec::core::eps::ControllerEvent* ev)=0;
     void run() {
       if (apply_scheduling_policy() < 0) {
         std::cout << "sched_setattr failed" << std::endl;

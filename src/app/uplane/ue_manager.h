@@ -47,7 +47,6 @@ namespace uplane {
 
 class Ue_manager : public llmec::app::App {
   public:
-    void event_callback(llmec::core::eps::ControllerEvent* ev);
     void start() override;
     static void create_instance(llmec::core::eps::OFInterface &of_interface,
                                 llmec::event::subscription &ev);
@@ -97,22 +96,6 @@ class Ue_manager : public llmec::app::App {
 
     /* Check if ID exists in LLMEC context */
     bool id_exist(uint64_t id);
-
-    inline void dispatch_event(std::string imsi, ueEventType evType) {
-    /*	 std::unordered_map<std::string,double>::const_iterator it = ue_event_listeners_.find (evType);
-    	 if (it != ue_event_listeners_.end()){
-    		 (it->second)->event_callback(evType);
-    		 ue_event_listeners_.erase(evType);
-    	 }
-   */
-    for (auto app : ue_event_listeners_[evType]) {
-        app->event_callback(imsi, evType);
-        ue_event_listeners_.erase(evType);
-      }
-    }
-
-    /* Register to a particular user-related event */
-    void register_for_event(const std::shared_ptr<llmec::mp1::api::Mp1Api>& apiApp, int event_type);
 
   private:
     static Ue_manager* instance;
