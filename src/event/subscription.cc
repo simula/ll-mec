@@ -93,5 +93,10 @@ bs2::connection subscription::subscribe_ue_ca_reconf(
   return ue_ca_reconf.connect(cb);
 }
 
+bs2::connection subscription::subscribe_ue_s1_bearer(
+    const s1_cb::slot_type& cb) {
+  return ue_s1_bearer.connect(cb);
+}
+
 } // namespace event
 } // namespace llmec
