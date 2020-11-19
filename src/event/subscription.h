@@ -64,12 +64,21 @@ class subscription {
         const openflow_cb<llmec::core::eps::SwitchUpEvent>::slot_type& cb);
     bs2::connection subscribe_openflow_switch_down(
         const openflow_cb<llmec::core::eps::SwitchDownEvent>::slot_type& cb);
+    bs2::connection subscribe_openflow_packet_in(
+        const openflow_cb<llmec::core::eps::PacketInEvent>::slot_type& cb);
+    bs2::connection subscribe_openflow_multipart_reply(
+        const openflow_cb<llmec::core::eps::MultipartReplyEvent>::slot_type& cb);
+    bs2::connection subscribe_openflow_meter_mod(
+        const openflow_cb<llmec::core::eps::MeterEvent>::slot_type& cb);
 
     bs2::connection subscribe_ue_rab_establishment(const ue_cb::slot_type& cb);
 
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
     openflow_cb<llmec::core::eps::SwitchDownEvent> of_switch_down;
+    openflow_cb<llmec::core::eps::PacketInEvent> of_packet_in;
+    openflow_cb<llmec::core::eps::MultipartReplyEvent> of_multipart_reply;
+    openflow_cb<llmec::core::eps::MeterEvent> of_meter_mod;
 
     ue_cb ue_rab_est;
 };

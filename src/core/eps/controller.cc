@@ -73,28 +73,24 @@ void Controller::connection_callback(fluid_base::OFConnection* ofconn, fluid_bas
 
   else if (type == fluid_base::OFConnection::EVENT_DEAD) {
     spdlog::get("ll-mec")->info("Switch id=%d closed due to inactivity", ofconn->get_id());
-    dispatch_event(new SwitchDownEvent(ofconn));
+    this->event_sub.of_switch_down(SwitchDownEvent(ofconn));
   }
 }
 
 void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type, void* data, size_t len) {
   if (type == 10) { // OFPT_PACKET_IN
-    dispatch_event(new PacketInEvent(ofconn, this, data, len));
+    event_sub.of_packet_in(PacketInEvent(ofconn, this, data, len));
   }
   else if (type == 6) { // OFPT_FEATURES_REPLY
     event_sub.of_switch_up(SwitchUpEvent(ofconn, this, data, len));
   }
   else if (type == 19) { //OFPT_MULTIPART_REPLY
-    dispatch_event(new MultipartReplyEvent(ofconn, this, data, len));
+    event_sub.of_multipart_reply(MultipartReplyEvent(ofconn, this, data, len));
   }
   /* The Meters and rate limiters configuration messages. */
   else if (type == 29) { //OFPT_METER_MOD
-    dispatch_event(new MeterEvent(ofconn, this, data, len));
+    event_sub.of_meter_mod(MeterEvent(ofconn, this, data, len));
   }
-}
-
-void Controller::register_for_event(const std::shared_ptr<llmec::app::App>& app, int event_type) {
-  event_listeners_[event_type].push_back(app);
 }
 
 } // namespace eps
