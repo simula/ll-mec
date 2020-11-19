@@ -88,5 +88,10 @@ bs2::connection subscription::subscribe_ue_meas_timing_advance(
   return ue_meas_timing_advance.connect(cb);
 }
 
+bs2::connection subscription::subscribe_ue_ca_reconf(
+    const cc_cb::slot_type& cb) {
+  return ue_ca_reconf.connect(cb);
+}
+
 } // namespace event
 } // namespace llmec
