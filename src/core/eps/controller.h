@@ -40,6 +40,8 @@
 #include <memory>
 
 #include <fluid/OFServer.hh>
+//undefine macro UNUSED of pistache to avoid warnings
+#undef UNUSED
 
 #include "app.h"
 

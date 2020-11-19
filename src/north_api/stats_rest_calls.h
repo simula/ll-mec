@@ -32,6 +32,8 @@
 #define __STATS_REST_CALLS_H__
 
 #include <pistache/http.h>
+//undefine macro UNUSED of pistache to avoid warnings
+#undef UNUSED
 
 #include "rest_calls.h"
 #include "stats_manager.h"

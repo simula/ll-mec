@@ -34,6 +34,9 @@
 #include <fluid/OFServer.hh>
 #include <fluid/of10msg.hh>
 #include <fluid/of13msg.hh>
+//undefine macro UNUSED, defined in fluid/util.h and brought in through
+//of10msg.hh, to avoid warnings
+#undef UNUSED
 
 #include "metadata.h"
 

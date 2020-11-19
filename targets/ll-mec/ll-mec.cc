@@ -31,6 +31,8 @@
 #include <thread>
 #include <memory>
 #include <pistache/endpoint.h>
+//undefine macro UNUSED of pistache to avoid warnings
+#undef UNUSED
 #include <unistd.h>
 
 #include "controller.h"
