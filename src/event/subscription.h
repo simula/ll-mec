@@ -71,7 +71,7 @@ class subscription {
     bs2::connection subscribe_openflow_meter_mod(
         const openflow_cb<llmec::core::eps::MeterEvent>::slot_type& cb);
 
-    bs2::connection subscribe_ue_rab_establishment(const ue_cb::slot_type& cb);
+    bs2::connection subscribe_ue_rab_establishment(const rab_cb::slot_type& cb);
 
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
@@ -80,7 +80,7 @@ class subscription {
     openflow_cb<llmec::core::eps::MultipartReplyEvent> of_multipart_reply;
     openflow_cb<llmec::core::eps::MeterEvent> of_meter_mod;
 
-    ue_cb ue_rab_est;
+    rab_cb ue_rab_establishment;
 };
 
 } // namespace llmec

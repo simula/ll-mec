@@ -59,8 +59,8 @@ bs2::connection subscription::subscribe_openflow_meter_mod(
 }
 
 bs2::connection subscription::subscribe_ue_rab_establishment(
-      const ue_cb::slot_type& cb) {
-  return ue_rab_est.connect(cb);
+    const rab_cb::slot_type& cb) {
+  return ue_rab_establishment.connect(cb);
 };
 
 } // namespace event

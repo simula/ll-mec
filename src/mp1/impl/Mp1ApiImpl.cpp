@@ -39,15 +39,14 @@ Mp1ApiImpl::Mp1ApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
 : Mp1Api(rtr), m_rib(rib), m_event_sub(ev)
 {
   m_event_sub.subscribe_ue_rab_establishment(
-      boost::bind(&Mp1ApiImpl::event_callback, this, _1,
-                  llmec::app::uplane::UE_EVENT_RAB_ESTABLISHMENT));
+      boost::bind(&Mp1ApiImpl::handle_ue_rab_est, this, _1, _2, _3));
 }
 
-void Mp1ApiImpl::event_callback (std::string imsi, llmec::app::uplane::ueEventType evType){
-	spdlog::get("ll-mec")->info("[MP1 API] Event Callback, UE IMSI: {}, event {} ", imsi, evType );
+void Mp1ApiImpl::handle_ue_rab_est(std::string bs_ip, std::string imsi, int erab) {
+	spdlog::get("ll-mec")->info("[MP1 API] Handle UE_EVENT_RAB_ESTABLISHMENT: BS {}, IMSI {}, eRAB {}", bs_ip, imsi, erab);
 
 	//send notification to the corresponding Apps by using curl lib
-	nlohmann::json notificationInfos = m_rib.get_notification_info(imsi,evType);
+	nlohmann::json notificationInfos = m_rib.get_notification_info(imsi, llmec::app::uplane::ueEventType::UE_EVENT_RAB_ESTABLISHMENT);
 	int numApps = notificationInfos.size();
 	for (int i = 0; i < numApps; i++){
 		spdlog::get("ll-mec")->debug("[MP1 API] Event Callback, App: {}, ref {} ", (notificationInfos.at(i)["appInsId"]).get<std::string>().c_str(), (notificationInfos.at(i)["callbackReference"]).get<std::string>().c_str());
