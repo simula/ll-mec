@@ -95,6 +95,9 @@ bool Ue_manager::add_bearer(json context){
     spdlog::get("ll-mec")->info("Overwrite UE bearer {}: {}", id, context.dump());
     if (support_meter)
       spdlog::get("ll-mec")->info("UE bearer {} is using the meter: {}", id, meter_id);
+    event_sub.ue_rab_modification(context["enb_ip"].get<std::string>(),
+                                  context["imsi"].get<std::string>(),
+                                  context["eps_bearer_id"].get<int>());
   }
   else {
 	//add bearer's info
@@ -256,6 +259,11 @@ json Ue_manager::get_bearer_all() {
 bool Ue_manager::delete_bearer(uint64_t id) {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
+
+  const json context = context_manager->get_bearer_context(id);
+  event_sub.ue_rab_release(context["enb_ip"].get<std::string>(),
+                           context["imsi"].get<std::string>(),
+                           context["eps_bearer_id"].get<int>());
 
   /* Remove the ue context */
   context_manager->delete_bearer(id);
