@@ -78,6 +78,7 @@ class subscription {
     bs2::connection subscribe_ue_meas_report_ue(const ue_cb::slot_type& cb);
     bs2::connection subscribe_ue_meas_timing_advance(const ue_cb::slot_type& cb);
     bs2::connection subscribe_ue_ca_reconf(const cc_cb::slot_type& cb);
+    bs2::connection subscribe_ue_s1_bearer(const s1_cb::slot_type& cb);
 
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
@@ -93,6 +94,7 @@ class subscription {
     ue_cb ue_meas_report_ue;
     ue_cb ue_meas_timing_advance;
     cc_cb ue_ca_reconf;
+    s1_cb ue_s1_bearer;
 };
 
 } // namespace llmec
