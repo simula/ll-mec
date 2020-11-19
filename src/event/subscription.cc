@@ -58,6 +58,11 @@ bs2::connection subscription::subscribe_openflow_meter_mod(
   return of_meter_mod.connect(cb);
 }
 
+bs2::connection subscription::subscribe_ue_cell_change(
+    const ue_cb::slot_type& cb) {
+  return ue_cell_change.connect(cb);
+}
+
 bs2::connection subscription::subscribe_ue_rab_establishment(
     const rab_cb::slot_type& cb) {
   return ue_rab_establishment.connect(cb);
@@ -72,6 +77,16 @@ bs2::connection subscription::subscribe_ue_rab_release(
     const rab_cb::slot_type& cb) {
   return ue_rab_release.connect(cb);
 };
+
+bs2::connection subscription::subscribe_ue_meas_report_ue(
+    const ue_cb::slot_type& cb) {
+  return ue_meas_report_ue.connect(cb);
+}
+
+bs2::connection subscription::subscribe_ue_meas_timing_advance(
+    const ue_cb::slot_type& cb) {
+  return ue_meas_timing_advance.connect(cb);
+}
 
 } // namespace event
 } // namespace llmec
