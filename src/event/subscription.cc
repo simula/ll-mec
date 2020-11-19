@@ -63,5 +63,15 @@ bs2::connection subscription::subscribe_ue_rab_establishment(
   return ue_rab_establishment.connect(cb);
 };
 
+bs2::connection subscription::subscribe_ue_rab_modification(
+    const rab_cb::slot_type& cb) {
+  return ue_rab_modification.connect(cb);
+};
+
+bs2::connection subscription::subscribe_ue_rab_release(
+    const rab_cb::slot_type& cb) {
+  return ue_rab_release.connect(cb);
+};
+
 } // namespace event
 } // namespace llmec
