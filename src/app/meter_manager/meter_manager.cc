@@ -38,10 +38,6 @@ namespace llmec {
 namespace app {
 namespace meter_manager {
 
-void Meter_manager::event_callback(llmec::core::eps::ControllerEvent* ev)
-{
-}
-
 void Meter_manager::start()
 {
 /*  while(true){

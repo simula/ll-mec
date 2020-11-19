@@ -39,10 +39,6 @@ namespace llmec {
 namespace app {
 namespace uplane {
 
-void Ue_manager::event_callback(llmec::core::eps::ControllerEvent* ev)
-{
-}
-
 void Ue_manager::start()
 {
 /*  while(true){
@@ -436,10 +432,6 @@ Ue_manager* Ue_manager::get_instance()
 {
   assert(instance);
   return instance;
-}
-
-void Ue_manager::register_for_event(const std::shared_ptr<llmec::mp1::api::Mp1Api>& apiApp, int event_type) {
-  ue_event_listeners_[event_type].push_back(apiApp);
 }
 
 } // namespace uplane

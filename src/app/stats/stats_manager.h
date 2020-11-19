@@ -47,7 +47,6 @@ class Stats_manager : public llmec::app::App {
   public:
     Stats_manager(llmec::core::eps::OFInterface &of_interface,
                   llmec::event::subscription &ev);
-    void event_callback(llmec::core::eps::ControllerEvent* ev) {};
     void handle_multipart_reply(llmec::core::eps::MultipartReplyEvent ev);
     void start() override;
     json get_flow_stats(uint64_t id);
