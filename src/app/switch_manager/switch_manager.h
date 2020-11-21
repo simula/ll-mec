@@ -41,7 +41,7 @@ class Switch_manager : public llmec::app::App {
   public:
     Switch_manager(llmec::core::eps::OFInterface &of_interface,
                    llmec::event::subscription &ev);
-    void handle_switch_up(llmec::core::eps::SwitchUpEvent ev);
+    void handle_switch_up(const llmec::core::eps::SwitchUpEvent& ev);
     void handle_switch_down(const llmec::core::eps::SwitchDownEvent& ev);
     void start() override;
 };

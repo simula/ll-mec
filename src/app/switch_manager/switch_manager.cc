@@ -49,7 +49,7 @@ Switch_manager::Switch_manager(llmec::core::eps::OFInterface &of_interface,
       boost::bind(&Switch_manager::handle_switch_down, this, _1));
 }
 
-void Switch_manager::handle_switch_up(llmec::core::eps::SwitchUpEvent ev) {
+void Switch_manager::handle_switch_up(const llmec::core::eps::SwitchUpEvent& ev) {
   const bool support_meter = Conf::getInstance()->X["ovs_switch"]["support_meter"].get<bool>();
   this->of_interface.install_default_flow(ev.of_conn_);
   spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev.of_conn_->get_id());
