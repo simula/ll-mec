@@ -87,12 +87,12 @@ class subscription {
     openflow_cb<llmec::core::eps::MultipartReplyEvent> of_multipart_reply;
     openflow_cb<llmec::core::eps::MeterEvent> of_meter_mod;
 
-    ue_cb ue_cell_change;
+    ue_cb ue_cell_change;            // UE_EVENT_CELL_CHANGE
     rab_cb ue_rab_establishment;     // UE_EVENT_RAB_ESTABLISHMENT
     rab_cb ue_rab_modification;      // UE_EVENT_RAB_MODIFICATION
     rab_cb ue_rab_release;           // UE_EVENT_RAB_RELEASE
-    ue_cb ue_meas_report_ue;
-    ue_cb ue_meas_timing_advance;
+    ue_cb ue_meas_report_ue;         // UE_EVENT_MEAS_REPORT_UE
+    ue_cb ue_meas_timing_advance;    // UE_EVENT_MEAS_TIMING_ADVANCE
     cc_cb ue_ca_reconf;
     s1_cb ue_s1_bearer;
 };
