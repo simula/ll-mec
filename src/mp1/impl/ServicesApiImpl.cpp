@@ -123,7 +123,7 @@ void ServicesApiImpl::services_post(const ServiceInfo_Post &serviceInfoPost, Pis
 	response.send(Pistache::Http::Code::Ok, serviceInfoJson.dump());
 
 	//notify the event for ServiceAvailabilityNotification
-	dispatch_event(serviceInfoJson, llmec::mp1::rib::meMp1SubscriptionType::ME_MP1_SUBSCRIPTION_SERVICE_AVAILABILITY);
+	m_event_sub.mp1_service_availability(serviceInfoJson);
 	return;
 
 }
