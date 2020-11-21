@@ -69,7 +69,6 @@ public:
     virtual ~Mp1Api() {}
     void init();
     const std::string base = "/mp1/v1";
-    virtual void event_callback (std::string imsi, llmec::app::uplane::ueEventType evType) = 0;
 
 private:
     void setupRoutes();

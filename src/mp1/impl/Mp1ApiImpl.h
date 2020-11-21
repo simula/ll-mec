@@ -78,7 +78,6 @@ public:
                llmec::mp1::rib::Rib& rib,
                llmec::event::subscription &ev);
     ~Mp1ApiImpl() {}
-    virtual void event_callback (std::string imsi, llmec::app::uplane::ueEventType evType) {}
     /*
      * Callback function for handling UE_EVENT_RAB_ESTABLISHMENT
      * @param [bs_ip] IP addr of the originating BS
