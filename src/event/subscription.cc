@@ -98,5 +98,15 @@ bs2::connection subscription::subscribe_ue_s1_bearer(
   return ue_s1_bearer.connect(cb);
 }
 
+bs2::connection subscription::subscribe_mp1_service_availability(
+    const mp1_sub_cb::slot_type& cb) {
+  return mp1_service_availability.connect(cb);
+}
+
+bs2::connection subscription::subscribe_mp1_application_termination(
+    const mp1_sub_cb::slot_type& cb) {
+  return mp1_application_termination.connect(cb);
+}
+
 } // namespace event
 } // namespace llmec

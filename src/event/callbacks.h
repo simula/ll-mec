@@ -34,6 +34,7 @@
 namespace bs2 = boost::signals2;
 
 #include "controller_event.h"
+#include "json.h"
 
 namespace llmec {
 namespace event {
@@ -63,6 +64,11 @@ namespace event {
     /// Argument is BS IP addr, IMSI of UE, and S1 DL & UL IDs
     typedef bs2::signal_type<void(const std::string&, const std::string&, int, int),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type s1_cb;
+
+    /// Single-thread callback for MP1 subscription type events
+    // Argument is a JSON file describing this MP1 event
+    typedef bs2::signal_type<void(const nlohmann::json&),
+        bs2::keywords::mutex_type<bs2::dummy_mutex>>::type mp1_sub_cb;
 
 } // namespace event
 } // namespace llmec
