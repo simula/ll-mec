@@ -36,6 +36,7 @@
 #include <string>
 #include "rib.h"
 #include "json.h"
+#include "subscription.h"
 
 namespace llmec {
 namespace mp1 {
@@ -46,7 +47,9 @@ using json = nlohmann::json;
 
 class SubscriptionsApiImpl : public llmec::mp1::api::SubscriptionsApi {
 public:
-    SubscriptionsApiImpl(std::shared_ptr<Pistache::Rest::Router>, llmec::mp1::rib::Rib& rib);
+    SubscriptionsApiImpl(std::shared_ptr<Pistache::Rest::Router>,
+                         llmec::mp1::rib::Rib& rib,
+                         llmec::event::subscription& ev);
     ~SubscriptionsApiImpl() {}
     /*
      * Callback function
@@ -62,6 +65,7 @@ public:
     void applications_subscriptions_post(const std::string &appInstanceId, const NotificationSubscription &body, Pistache::Http::ResponseWriter &response);
 private:
         llmec::mp1::rib::Rib& m_rib;
+        llmec::event::subscription& m_event_sub;
 };
 
 }

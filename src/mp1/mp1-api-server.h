@@ -34,8 +34,8 @@ public:
       : m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
 		m_router = std::make_shared<Pistache::Rest::Router>();
 		m_mp1Apiserver = std::make_shared<Mp1ApiImpl> (m_router, rib, ev);
-		m_subscriptionsApiserver = std::make_shared<SubscriptionsApiImpl> (m_router, rib);
-		m_servicesApiserver = std::make_shared<ServicesApiImpl> (m_router, rib);
+		m_subscriptionsApiserver = std::make_shared<SubscriptionsApiImpl> (m_router, rib, ev);
+		m_servicesApiserver = std::make_shared<ServicesApiImpl> (m_router, rib, ev);
 
 	}
 	void init(size_t thr = 1);

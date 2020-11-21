@@ -36,6 +36,7 @@
 #include <string>
 #include "SubscriptionsApiImpl.h"
 #include "json.h"
+#include "subscription.h"
 
 
 namespace llmec {
@@ -52,7 +53,9 @@ static std::size_t callback(
         std::string* out);
 class ServicesApiImpl : public llmec::mp1::api::ServicesApi {
 public:
-	ServicesApiImpl(std::shared_ptr<Pistache::Rest::Router>, llmec::mp1::rib::Rib& rib);
+	ServicesApiImpl(std::shared_ptr<Pistache::Rest::Router>,
+                  llmec::mp1::rib::Rib& rib,
+                  llmec::event::subscription& ev);
     ~ServicesApiImpl() {}
 
     void services_get(const Pistache::Optional<std::vector<std::string>> &serInstanceId, const Pistache::Optional<std::vector<std::string>> &serName, const Pistache::Optional<std::string> &serCategoryId, Pistache::Http::ResponseWriter &response);
@@ -75,6 +78,7 @@ public:
 
 private:
     llmec::mp1::rib::Rib& m_rib;
+    llmec::event::subscription& m_event_sub;
 
     /* Store service's events */
     std::unordered_map<int, std::vector<std::shared_ptr<SubscriptionsApiImpl>>> service_event_listeners_;

@@ -29,8 +29,10 @@ namespace api {
 
 using namespace llmec::mp1::model;
 
-SubscriptionsApiImpl::SubscriptionsApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr, llmec::mp1::rib::Rib& rib)
-: SubscriptionsApi(rtr), m_rib(rib)
+SubscriptionsApiImpl::SubscriptionsApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
+                                           llmec::mp1::rib::Rib& rib,
+                                           llmec::event::subscription &ev)
+: SubscriptionsApi(rtr), m_rib(rib), m_event_sub(ev)
 { }
 
 void SubscriptionsApiImpl::event_callback (json serviceInfo, llmec::mp1::rib::meMp1SubscriptionType evType){
