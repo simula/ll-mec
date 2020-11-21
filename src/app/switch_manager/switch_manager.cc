@@ -60,7 +60,7 @@ void Switch_manager::handle_switch_up(llmec::core::eps::SwitchUpEvent ev) {
   llmec::data::Context_manager::get_instance()->add_switch(ev.of_conn_->get_id());
 }
 
-void Switch_manager::handle_switch_down(llmec::core::eps::SwitchDownEvent ev) {
+void Switch_manager::handle_switch_down(const llmec::core::eps::SwitchDownEvent& ev) {
   const bool support_meter = Conf::getInstance()->X["ovs_switch"]["support_meter"].get<bool>();
   /* the switch id, mec id are not related together for the moment */
   if (support_meter)

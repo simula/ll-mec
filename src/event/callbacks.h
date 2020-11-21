@@ -41,7 +41,7 @@ namespace event {
     /// Single-thread callback for arbitrary OpenFlow message
     /// Argument is BS ID and the actual message
     template <typename ControllerEvent>
-    using openflow_cb = typename bs2::signal_type<void(ControllerEvent),
+    using openflow_cb = typename bs2::signal_type<void(const ControllerEvent&),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type;
 
     /// Single-thread callback for BS-IMSI-RAB type event
