@@ -89,8 +89,8 @@ class subscription {
 
     ue_cb ue_cell_change;
     rab_cb ue_rab_establishment;     // UE_EVENT_RAB_ESTABLISHMENT
-    rab_cb ue_rab_modification;
-    rab_cb ue_rab_release;
+    rab_cb ue_rab_modification;      // UE_EVENT_RAB_MODIFICATION
+    rab_cb ue_rab_release;           // UE_EVENT_RAB_RELEASE
     ue_cb ue_meas_report_ue;
     ue_cb ue_meas_timing_advance;
     cc_cb ue_ca_reconf;
