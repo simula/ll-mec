@@ -85,7 +85,9 @@ public:
      * @param [imsi] UE's imsi
      * @param [eRAB] UE's bearer
      */
-    void handle_ue_rab_est(std::string bs_ip, std::string imsi, int erab);
+    void handle_ue_rab_est(const std::string& bs_ip,
+                           const std::string& imsi,
+                           int erab);
 
     void ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response);
     void ca_re_conf_subscription_subscriptions_post(const CaReConfSubscriptionPost &caReConfSubscriptionPost, Pistache::Http::ResponseWriter &response);

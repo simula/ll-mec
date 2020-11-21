@@ -42,7 +42,9 @@ Mp1ApiImpl::Mp1ApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
       boost::bind(&Mp1ApiImpl::handle_ue_rab_est, this, _1, _2, _3));
 }
 
-void Mp1ApiImpl::handle_ue_rab_est(std::string bs_ip, std::string imsi, int erab) {
+void Mp1ApiImpl::handle_ue_rab_est(const std::string& bs_ip,
+                                   const std::string& imsi,
+                                   int erab) {
 	spdlog::get("ll-mec")->info("[MP1 API] Handle UE_EVENT_RAB_ESTABLISHMENT: BS {}, IMSI {}, eRAB {}", bs_ip, imsi, erab);
 
 	//send notification to the corresponding Apps by using curl lib

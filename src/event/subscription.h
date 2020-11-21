@@ -88,7 +88,7 @@ class subscription {
     openflow_cb<llmec::core::eps::MeterEvent> of_meter_mod;
 
     ue_cb ue_cell_change;
-    rab_cb ue_rab_establishment;
+    rab_cb ue_rab_establishment;     // UE_EVENT_RAB_ESTABLISHMENT
     rab_cb ue_rab_modification;
     rab_cb ue_rab_release;
     ue_cb ue_meas_report_ue;
