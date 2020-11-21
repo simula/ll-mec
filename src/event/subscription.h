@@ -93,7 +93,7 @@ class subscription {
     rab_cb ue_rab_release;           // UE_EVENT_RAB_RELEASE
     ue_cb ue_meas_report_ue;         // UE_EVENT_MEAS_REPORT_UE
     ue_cb ue_meas_timing_advance;    // UE_EVENT_MEAS_TIMING_ADVANCE
-    cc_cb ue_ca_reconf;
+    cc_cb ue_ca_reconf;              // UE_EVENT_CA_RECONF
     s1_cb ue_s1_bearer;
 };
 
