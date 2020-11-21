@@ -56,7 +56,7 @@ namespace event {
 
     /// Single-thread callback for BS-CC-IMSI type event
     /// Argument is BS IP addr, Comp Carrier ID, and IMSI of UE
-    typedef bs2::signal_type<void(std::string, int, std::string),
+    typedef bs2::signal_type<void(const std::string&, int, const std::string&),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type cc_cb;
 
     /// Single-thread callback for BS-IMSI-S1 bearer type event
