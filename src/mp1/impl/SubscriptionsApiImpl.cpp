@@ -32,8 +32,14 @@ using namespace llmec::mp1::model;
 SubscriptionsApiImpl::SubscriptionsApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
                                            llmec::mp1::rib::Rib& rib,
                                            llmec::event::subscription &ev)
-: SubscriptionsApi(rtr), m_rib(rib), m_event_sub(ev)
-{ }
+  : SubscriptionsApi(rtr), m_rib(rib), m_event_sub(ev) {
+  m_event_sub.subscribe_mp1_service_availability(
+      boost::bind(&SubscriptionsApiImpl::event_callback, this, _1,
+                  llmec::mp1::rib::meMp1SubscriptionType::ME_MP1_SUBSCRIPTION_SERVICE_AVAILABILITY));
+  m_event_sub.subscribe_mp1_application_termination(
+      boost::bind(&SubscriptionsApiImpl::event_callback, this, _1,
+                  llmec::mp1::rib::meMp1SubscriptionType::ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION));
+}
 
 void SubscriptionsApiImpl::event_callback (json serviceInfo, llmec::mp1::rib::meMp1SubscriptionType evType){
 	spdlog::get("ll-mec")->info("[MP1 Subscriptions API] call back function: send notification to the subscriber");
