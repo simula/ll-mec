@@ -47,6 +47,11 @@ namespace llmec {
       class Ue_manager;
     }
   }
+  namespace mp1 {
+    namespace api {
+      class ServicesApiImpl;
+    }
+  }
 }
 
 namespace llmec {
@@ -57,6 +62,7 @@ class subscription {
     // friend classes can access private fields
     friend class llmec::core::eps::Controller;
     friend class llmec::app::uplane::Ue_manager;
+    friend class llmec::mp1::api::ServicesApiImpl;
 
     subscription() {}
 
