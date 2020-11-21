@@ -49,7 +49,7 @@ Stats_manager::Stats_manager(llmec::core::eps::OFInterface &of_interface,
       boost::bind(&Stats_manager::handle_multipart_reply, this, _1));
 }
 
-void Stats_manager::handle_multipart_reply(llmec::core::eps::MultipartReplyEvent ev) {
+void Stats_manager::handle_multipart_reply(const llmec::core::eps::MultipartReplyEvent& ev) {
   fluid_msg::of13::MultipartReplyFlow reply;
   reply.unpack(ev.data_);
   this->flow_stats_lock.lock();

@@ -81,18 +81,21 @@ void Controller::connection_callback(fluid_base::OFConnection* ofconn, fluid_bas
 
 void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type, void* data, size_t len) {
   if (type == 10) { // OFPT_PACKET_IN
-    event_sub.of_packet_in(PacketInEvent(ofconn, this, data, len));
+    PacketInEvent ev(ofconn, this, data, len);
+    event_sub.of_packet_in(ev);
   }
   else if (type == 6) { // OFPT_FEATURES_REPLY
     SwitchUpEvent ev(ofconn, this, data, len);
     event_sub.of_switch_up(ev);
   }
   else if (type == 19) { //OFPT_MULTIPART_REPLY
-    event_sub.of_multipart_reply(MultipartReplyEvent(ofconn, this, data, len));
+    MultipartReplyEvent ev(ofconn, this, data, len);
+    event_sub.of_multipart_reply(ev);
   }
   /* The Meters and rate limiters configuration messages. */
   else if (type == 29) { //OFPT_METER_MOD
-    event_sub.of_meter_mod(MeterEvent(ofconn, this, data, len));
+    MeterEvent ev(ofconn, this, data, len);
+    event_sub.of_meter_mod(ev);
   }
 }
 
