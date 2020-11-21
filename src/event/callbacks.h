@@ -61,7 +61,7 @@ namespace event {
 
     /// Single-thread callback for BS-IMSI-S1 bearer type event
     /// Argument is BS IP addr, IMSI of UE, and S1 DL & UL IDs
-    typedef bs2::signal_type<void(std::string, std::string, int, int),
+    typedef bs2::signal_type<void(const std::string&, const std::string&, int, int),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type s1_cb;
 
 } // namespace event
