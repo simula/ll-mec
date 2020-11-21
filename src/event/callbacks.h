@@ -51,7 +51,7 @@ namespace event {
 
     /// Single-thread callback for BS-IMSI type event
     /// Argument is BS IP addr and IMSI of UE
-    typedef bs2::signal_type<void(std::string, std::string),
+    typedef bs2::signal_type<void(const std::string&, const std::string&),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type ue_cb;
 
     /// Single-thread callback for BS-CC-IMSI type event
