@@ -149,12 +149,6 @@ void ServicesApiImpl::services_service_id_put(const std::string &serviceId, cons
 	response.send(Pistache::Http::Code::Ok, serviceInfoJson.dump());
 }
 
-void ServicesApiImpl::register_for_event(const std::shared_ptr<SubscriptionsApiImpl>& subscriptionsApiImpl, int event_type){
-	spdlog::get("ll-mec")->info("[MP1 Services API] Register for Service's event");
-	service_event_listeners_[event_type].push_back(subscriptionsApiImpl);
-}
-
-
 }
 }
 }

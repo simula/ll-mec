@@ -64,18 +64,6 @@ public:
     void services_service_id_put(const std::string &serviceId, const ServiceInfo &serviceInfo, Pistache::Http::ResponseWriter &response);
 
 
-    /* Register to a particular service-related event */
-    void register_for_event(const std::shared_ptr<SubscriptionsApiImpl>& subscriptionsApiImpl, int event_type);
-
-    inline void dispatch_event(json serviceInfo, llmec::mp1::rib::meMp1SubscriptionType evType) {
-
-    	for (auto service : service_event_listeners_[evType]) {
-    		service->event_callback(serviceInfo, evType);
-    		//service_event_listeners_.erase(evType);
-    	}
-    }
-
-
 private:
     llmec::mp1::rib::Rib& m_rib;
     llmec::event::subscription& m_event_sub;
