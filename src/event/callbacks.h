@@ -50,6 +50,11 @@ namespace event {
     typedef bs2::signal_type<void(const std::string&, const std::string&, int),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type rab_cb;
 
+    /// Single-thread callback for BS-IMSI-RAB redir type event
+    /// Argument is BS IP addr, IMSI of UE, RAB bearer ID, from and to gateway IP address
+    typedef bs2::signal_type<void(const std::string&, const std::string&, int, const std::string&, const std::string&),
+        bs2::keywords::mutex_type<bs2::dummy_mutex>>::type rab_redir_cb;
+
     /// Single-thread callback for BS-IMSI type event
     /// Argument is BS IP addr and IMSI of UE
     typedef bs2::signal_type<void(const std::string&, const std::string&),

@@ -194,6 +194,11 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, uint32_t meter_id, json contex
 	  }
 }
   spdlog::get("ll-mec")->info("Redirect bearer id={} from {} to {}", id, context["from"].get<std::string>(), context["to"].get<std::string>());
+  event_sub.ue_rab_redir_add(context["enb_ip"].get<std::string>(),
+                             context["imsi"].get<std::string>(),
+                             id,
+                             context["from"].get<std::string>(),
+                             context["to"].get<std::string>());
   return true;
 }
 
@@ -208,6 +213,10 @@ bool Ue_manager::delete_redirect_bearer(uint64_t id) {
     return false;
 
   json bearer = context_manager->get_bearer_context(id);
+  event_sub.ue_rab_redir_del(bearer["enb_ip"].get<std::string>(),
+                             bearer["imsi"].get<std::string>(),
+                             id);
+
   for (auto each:context_manager->get_switch_set()) {
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
     if (of_conn_ == nullptr || !of_conn_->is_alive())

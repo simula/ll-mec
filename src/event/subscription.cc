@@ -108,5 +108,21 @@ bs2::connection subscription::subscribe_mp1_application_termination(
   return mp1_application_termination.connect(cb);
 }
 
+bs2::connection subscription::subscribe_ue_rab_redirect_add(
+    const rab_redir_cb::slot_type& cb) {
+  return ue_rab_redir_add.connect(cb);
+}
+
+bs2::connection subscription::subscribe_ue_rab_redirect_modify(
+    const rab_redir_cb::slot_type& cb) {
+  return ue_rab_redir_modif.connect(cb);
+}
+
+bs2::connection subscription::subscribe_ue_rab_redirect_delete(
+    const rab_cb::slot_type& cb) {
+  return ue_rab_redir_del.connect(cb);
+}
+
+
 } // namespace event
 } // namespace llmec

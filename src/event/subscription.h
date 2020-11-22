@@ -89,6 +89,10 @@ class subscription {
     bs2::connection subscribe_mp1_service_availability(const mp1_sub_cb::slot_type& cb);
     bs2::connection subscribe_mp1_application_termination(const mp1_sub_cb::slot_type& cb);
 
+    bs2::connection subscribe_ue_rab_redirect_add(const rab_redir_cb::slot_type& cb);
+    bs2::connection subscribe_ue_rab_redirect_modify(const rab_redir_cb::slot_type& cb);
+    bs2::connection subscribe_ue_rab_redirect_delete(const rab_cb::slot_type& cb);
+
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
     openflow_cb<llmec::core::eps::SwitchDownEvent> of_switch_down;
@@ -108,6 +112,9 @@ class subscription {
     mp1_sub_cb mp1_service_availability;    // ME_MP1_SUBSCRIPTION_SERVICE_AVAILABILITY
     mp1_sub_cb mp1_application_termination; // ME_MP1_SUBSCRIPTION_APPLICATION_TERMINATION
 
+    rab_redir_cb ue_rab_redir_add;
+    rab_redir_cb ue_rab_redir_modif;
+    rab_cb       ue_rab_redir_del;
 };
 
 } // namespace llmec
