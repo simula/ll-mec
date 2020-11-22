@@ -380,6 +380,10 @@ bool Ue_manager::delete_bearer_all() {
   /* flush flow for each ue and clear the map */
   std::vector<uint64_t> id_list = context_manager->get_id_list();
   for (auto id:id_list) {
+    const json context = context_manager->get_bearer_context(id);
+    event_sub.ue_rab_release(context["enb_ip"].get<std::string>(),
+                             context["imsi"].get<std::string>(),
+                             context["eps_bearer_id"].get<int>());
     for (auto switch_id:context_manager->get_switch_set()) {
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(switch_id);
     if (of_conn_ == nullptr || !of_conn_->is_alive())
