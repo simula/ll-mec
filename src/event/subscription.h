@@ -93,6 +93,9 @@ class subscription {
     bs2::connection subscribe_ue_rab_redirect_modify(const rab_redir_cb::slot_type& cb);
     bs2::connection subscribe_ue_rab_redirect_delete(const rab_cb::slot_type& cb);
 
+    bs2::connection subscribe_meter_update(const meter_cb::slot_type& cb);
+    bs2::connection subscribe_meter_delete(const meter_cb::slot_type& cb);
+
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
     openflow_cb<llmec::core::eps::SwitchDownEvent> of_switch_down;
@@ -115,6 +118,9 @@ class subscription {
     rab_redir_cb ue_rab_redir_add;
     rab_redir_cb ue_rab_redir_modif;
     rab_cb       ue_rab_redir_del;
+
+    meter_cb meter_update;
+    meter_cb meter_delete;
 };
 
 } // namespace llmec

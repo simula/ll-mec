@@ -123,6 +123,15 @@ bs2::connection subscription::subscribe_ue_rab_redirect_delete(
   return ue_rab_redir_del.connect(cb);
 }
 
+bs2::connection subscription::subscribe_meter_update(
+    const meter_cb::slot_type& cb) {
+  return meter_update.connect(cb);
+}
+
+bs2::connection subscription::subscribe_meter_delete(
+    const meter_cb::slot_type& cb) {
+  return meter_delete.connect(cb);
+}
 
 } // namespace event
 } // namespace llmec

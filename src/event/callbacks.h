@@ -75,6 +75,11 @@ namespace event {
     typedef bs2::signal_type<void(const nlohmann::json&),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type mp1_sub_cb;
 
+    /// Single-thread callback for metering table events
+    /// Argument is the meter ID for the metering table for which this events occurs
+    typedef bs2::signal_type<void(int),
+        bs2::keywords::mutex_type<bs2::dummy_mutex>>::type meter_cb;
+
 } // namespace event
 } // namespace llmec
 

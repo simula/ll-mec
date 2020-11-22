@@ -147,6 +147,10 @@ bool Ue_manager::add_bearer(json context){
                          context["imsi"].get<std::string>(),
                          context["s1_dl_teid"].get<int>(),
                          context["s1_ul_teid"].get<int>());
+
+  if (support_meter)
+    event_sub.meter_update(context["slice_id"].get<int>());
+
   return true;
 }
 
@@ -307,6 +311,8 @@ bool Ue_manager::delete_meter_table(uint32_t meter_id){
 	  }
   }
 
+  event_sub.meter_delete(meter_id);
+
   //context_manager->clean();
   //remove meter table from context manager
   context_manager->delete_meter(meter_id);
@@ -360,6 +366,7 @@ bool Ue_manager::update_meter_table(uint32_t meter_id,  uint32_t meter_rate,  ui
 
 
 	spdlog::get("ll-mec")->info("Updated Meter id {}!", meter_id);
+  event_sub.meter_update(meter_id);
 	return true;
 }
 
