@@ -50,7 +50,6 @@ class rib_updater {
 public:
 	rib_updater (Rib& rib, llmec::event::subscription& ev, struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode);
 
-	void run();
 	void update_rib();
 
     /*
@@ -115,7 +114,6 @@ public:
 private:
      Rib& m_rib;
      llmec::event::subscription& m_event_sub;
-     struct itimerspec m_its;
      //uint64_t m_duration;
      std::vector<std::pair<std::string, int>> m_flexRANControllers;
 	 std::map<std::pair<std::string, int>, std::string> m_flexRANStatistics;

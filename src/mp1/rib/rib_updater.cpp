@@ -71,61 +71,23 @@ rib_updater::rib_updater(Rib& rib,
         interval,
         0 /* start at time 0 */);
   } else {
-    /* TODO */
+    auto f = [this](uint64_t ms) {
+      (void) ms; // mark as unused
+      //put flexRAN info into the map
+      for (const auto& i : this->m_flexRANControllers){
+        this->m_flexRANStatistics.insert(
+            make_pair(make_pair(i.first, i.second), std::string()));
+      }
+      this->send_curl_multi();
+      this->process_curl_multi();
+      //process statistics data and store in to a DB
+      for (const auto& i : this->m_flexRANControllers) {
+        this->get_RAN_statistics_from_FlexRAN(i.first, i.second);
+      }
+    };
+    m_event_sub.subscribe_task_tick(
+        boost::bind<void>(f, _1), interval, 0 /* start at time 0 */);
   }
-}
-
-void rib_updater::run ()
-{
-
-	struct itimerspec its;
-	int fd;
-	struct timespec now;
-	uint64_t exp;
-	ssize_t s;
-
-	spdlog::get("ll-mec")->debug("[RIB UPDATER] start timer");
-	// Create a CLOCK_REALTIME absolute timer with expiration and interval
-	if (clock_gettime(CLOCK_REALTIME, &now) == -1)
-		spdlog::get("ll-mec")->error("[RIB UPDATER] clock_gettime");
-
-	its.it_value.tv_sec = now.tv_sec;
-	its.it_value.tv_nsec = now.tv_nsec + m_its.it_value.tv_nsec;
-	its.it_interval.tv_sec = m_its.it_value.tv_sec;
-	its.it_interval.tv_nsec = m_its.it_value.tv_nsec;
-
-
-	fd = timerfd_create( CLOCK_REALTIME , 0);
-	if (fd == -1)
-		spdlog::get("ll-mec")->error("[RIB UPDATER] timerfd_create");
-
-	if (timerfd_settime(fd, TFD_TIMER_ABSTIME, &its, NULL) == -1)
-		spdlog::get("ll-mec")->error("[RIB UPDATER] timerfd_settime");
-
-	spdlog::get("ll-mec")->debug("[RIB UPDATER] timer started");
-
-	while(1) // keep checking
-	{
-		s = read(fd, &exp, sizeof(uint64_t));
-		if (s != sizeof(uint64_t))
-			spdlog::get("ll-mec")->error("[RIB UPDATER] read");
-		//in case of an easy-single curl request
-		//update_rib();
-
-		//for curl multi interface
-		if (m_mode.compare("flexran") == 0){
-			//put flexRAN info into the map
-			for (auto i = m_flexRANControllers.begin(); i != m_flexRANControllers.end(); i++){
-				m_flexRANStatistics.insert(make_pair(make_pair((i)->first,(i)->second),std::string()));
-			}
-			send_curl_multi();
-			process_curl_multi();
-			//process statistics data and store in to a DB
-			for (auto i = m_flexRANControllers.begin(); i != m_flexRANControllers.end(); i++){
-				get_RAN_statistics_from_FlexRAN((i)->first,(i)->second);
-			}
-		}
-	}
 }
 
 bool rib_updater::get_RAN_statistic_from_default_file(uint64_t ms) {
