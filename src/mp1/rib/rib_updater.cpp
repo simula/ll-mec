@@ -53,10 +53,26 @@ typedef struct curl_multi_interface {
   nlohmann::json *jsonData;
 }curl_multi_interface_t;
 
-rib_updater::rib_updater (Rib& rib, llmec::event::subscription& ev, struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode):
-	m_rib(rib), m_event_sub(ev), m_its(its), m_flexRANControllers (flexRANControllers), m_mode(mode){
-	  curl_global_init(CURL_GLOBAL_ALL);
-	  m_curl_multi = curl_multi_init();
+rib_updater::rib_updater(Rib& rib,
+                         llmec::event::subscription& ev,
+                         struct itimerspec its,
+                         std::vector<std::pair<std::string, int>> flexRANControllers,
+                         std::string mode)
+  : m_rib(rib),
+    m_event_sub(ev),
+    m_flexRANControllers (flexRANControllers),
+    m_mode(mode) {
+  curl_global_init(CURL_GLOBAL_ALL);
+  m_curl_multi = curl_multi_init();
+  const uint64_t interval = its.it_value.tv_sec * 1000 + its.it_value.tv_nsec / 1000000; // convert sec, nsec to msec
+  if (m_mode.compare("flexran") != 0) {
+    m_event_sub.subscribe_task_tick(
+        boost::bind(&rib_updater::get_RAN_statistic_from_default_file, this, _1),
+        interval,
+        0 /* start at time 0 */);
+  } else {
+    /* TODO */
+  }
 }
 
 void rib_updater::run ()
@@ -97,9 +113,7 @@ void rib_updater::run ()
 		//update_rib();
 
 		//for curl multi interface
-		if (m_mode.compare("flexran") != 0){
-			get_RAN_statistic_from_default_file();
-		} else {
+		if (m_mode.compare("flexran") == 0){
 			//put flexRAN info into the map
 			for (auto i = m_flexRANControllers.begin(); i != m_flexRANControllers.end(); i++){
 				m_flexRANStatistics.insert(make_pair(make_pair((i)->first,(i)->second),std::string()));
@@ -114,7 +128,8 @@ void rib_updater::run ()
 	}
 }
 
-bool rib_updater::get_RAN_statistic_from_default_file(){
+bool rib_updater::get_RAN_statistic_from_default_file(uint64_t ms) {
+  (void)ms; // mark ms as unused
 
   nlohmann::json jsonData;
 	//load Json data from Json file to a json object
