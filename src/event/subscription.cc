@@ -133,5 +133,19 @@ bs2::connection subscription::subscribe_meter_delete(
   return meter_delete.connect(cb);
 }
 
+bs2::connection subscription::subscribe_task_tick(
+    const task_cb::slot_type& cb, uint64_t period, uint64_t start) {
+  /* Wrap the actual callback in a lambda. The latter checks whether the
+   * current time is after start time, and ensures that the callback is only
+   * called every X ms with X being the period time. This way, it is possible
+   * to register to be notified every X ms instead of every ms, which provides
+   * greater freedom to implementations. */
+  auto f = [period,start,cb] (uint64_t t)
+           {
+             if (t >= start && (t - start) % period == 0) cb(t);
+           };
+  return task_tick.connect(f);
+}
+
 } // namespace event
 } // namespace llmec

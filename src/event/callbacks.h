@@ -80,6 +80,12 @@ namespace event {
     typedef bs2::signal_type<void(int),
         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type meter_cb;
 
+    /// Single-thread callback for Task events (tick)
+    /// Argument is current task iteration (on a ms basis, but might be
+    /// inaccurate due to skipped milliseconds)
+    typedef bs2::signal_type<void(uint64_t),
+        bs2::keywords::mutex_type<bs2::dummy_mutex>>::type task_cb;
+
 } // namespace event
 } // namespace llmec
 

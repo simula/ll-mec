@@ -64,7 +64,7 @@ class subscription {
     friend class llmec::app::uplane::Ue_manager;
     friend class llmec::mp1::api::ServicesApiImpl;
 
-    subscription() {}
+    subscription() : last_tick(0) {}
 
     bs2::connection subscribe_openflow_switch_up(
         const openflow_cb<llmec::core::eps::SwitchUpEvent>::slot_type& cb);
@@ -96,6 +96,10 @@ class subscription {
     bs2::connection subscribe_meter_update(const meter_cb::slot_type& cb);
     bs2::connection subscribe_meter_delete(const meter_cb::slot_type& cb);
 
+    uint64_t last_tic() const { return last_tick; }
+    bs2::connection subscribe_task_tick(const task_cb::slot_type& cb,
+        uint64_t period, uint64_t start = 0);
+
   private:
     openflow_cb<llmec::core::eps::SwitchUpEvent> of_switch_up;
     openflow_cb<llmec::core::eps::SwitchDownEvent> of_switch_down;
@@ -121,6 +125,9 @@ class subscription {
 
     meter_cb meter_update;
     meter_cb meter_delete;
+
+    task_cb task_tick;
+    std::atomic<uint64_t> last_tick; // used to calculate offsets
 };
 
 } // namespace llmec
