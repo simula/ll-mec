@@ -53,8 +53,8 @@ typedef struct curl_multi_interface {
   nlohmann::json *jsonData;
 }curl_multi_interface_t;
 
-rib_updater::rib_updater (Rib& rib,struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode):
-	m_rib(rib), m_its(its), m_flexRANControllers (flexRANControllers), m_mode(mode){
+rib_updater::rib_updater (Rib& rib, llmec::event::subscription& ev, struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode):
+	m_rib(rib), m_event_sub(ev), m_its(its), m_flexRANControllers (flexRANControllers), m_mode(mode){
 	  curl_global_init(CURL_GLOBAL_ALL);
 	  m_curl_multi = curl_multi_init();
 }

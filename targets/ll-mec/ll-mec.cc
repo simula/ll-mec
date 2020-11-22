@@ -173,7 +173,7 @@ int main(int argc, char **argv){
   its.it_value.tv_sec = 50;
   its.it_value.tv_nsec = 0;//100 * 1000 * 1000; //100ms
 
-  rib_updater ribUpdater(rib, its, flexRANControllers, mp1ApiMode);
+  rib_updater ribUpdater(rib, ev, its, flexRANControllers, mp1ApiMode);
   std::thread rib_updater(&rib_updater::run, ribUpdater);
 
   //Controller start

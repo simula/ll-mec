@@ -30,6 +30,7 @@
 
 #include <unistd.h>
 #include "rib.h"
+#include "subscription.h"
 #ifndef RIB_UPDATER_H_
 #define RIB_UPDATER_H_
 
@@ -47,7 +48,7 @@ static std::size_t callback(
 
 class rib_updater {
 public:
-	rib_updater (Rib& rib,struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode);
+	rib_updater (Rib& rib, llmec::event::subscription& ev, struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode);
 
 	void run();
 	void update_rib();
@@ -113,6 +114,7 @@ public:
 
 private:
      Rib& m_rib;
+     llmec::event::subscription& m_event_sub;
      struct itimerspec m_its;
      //uint64_t m_duration;
      std::vector<std::pair<std::string, int>> m_flexRANControllers;
