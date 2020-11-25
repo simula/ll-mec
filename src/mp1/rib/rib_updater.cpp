@@ -40,7 +40,7 @@
 #define DEFAULT_RIB_FILE  "src/mp1/inputs/mp1.json"
 #define FLEXRAN_CURL_TIMEOUT_MS 100L
 #define FLEXRAN_NUMBER_RETRIES 3
-#define MAX_WAIT_MSECS 1000 //1second
+#define MAX_WAIT_MSECS 1000 //1 second
 #define DEFAULT_FLEXRAN_PORT  9999
 #define DEFAULT_FLEXRAN_ADDR  "127.0.0.1"
 #define HTTP_STATUS_OK 200
@@ -51,7 +51,7 @@ namespace rib {
 typedef struct curl_multi_interface {
   CURL *easy;
   nlohmann::json *jsonData;
-}curl_multi_interface_t;
+} curl_multi_interface_t;
 
 rib_updater::rib_updater(Rib& rib,
                          llmec::event::subscription& ev,

@@ -177,7 +177,6 @@ void Rib::delete_app_subscription_info(std::string appId, llmec::app::uplane::ue
 	app_subscription_mutex.lock();
 	appSubscriptionList.erase(std::make_pair(appId,appType));
 	app_subscription_mutex.unlock();
-	//appSubscriptionList.erase(it);
 }
 
 void Rib::set_mp1_server_addr(std::string addr){

@@ -40,15 +40,9 @@ namespace meter_manager {
 
 void Meter_manager::start()
 {
-/*  while(true){
-  }*/
+  //TODO:
 }
 
-/*
- * Adds meter table rules
- *Description: It define a meter table based on the rules applied on the Mp2-API
- *
- */
 bool Meter_manager::add_meter_drop(json context){
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
@@ -66,25 +60,17 @@ bool Meter_manager::add_meter_drop(json context){
       fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
       if (of_conn_ == nullptr || !of_conn_->is_alive())
         continue;
-// the line 74 is defining a new meter in advance. The meterTable will be configured
-//as default and every time when you want to modify the values you just call the MeterTable by ID and modify it
       this->of_interface.install_default_meter_drop(of_conn_,meterid);
-// the line 77 is modifing a meter.
       this->of_interface.modify_meter_mod_drop(of_conn_, meterid, meterrate, meterburstsize);
     }
   }
   else {
-// if the meterID value is 0 in the future operations it will be used the default meterTable
+    // if the meterID value is 0 in the future operations it will be used the default meterTable
     meterid = 1;
   }
   return true;
 }
 
-/*
- * Adds meter table rules
- *Description: It define a meter table based on the rules applied on the Mp2-API
- *
- */
 bool Meter_manager::add_meter_dscp(json context){
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
@@ -102,10 +88,7 @@ bool Meter_manager::add_meter_dscp(json context){
       fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(each);
       if (of_conn_ == nullptr || !of_conn_->is_alive())
         continue;
-// the line 74 is defining a new meter in advance. The meterTable will be configured
-//as default and every time when you want to modify the values you just call the MeterTable by ID and modify it
       this->of_interface.install_default_meter_dscp(of_conn_,meterid);
-// the line 77 is modifing a meter.
       this->of_interface.modify_meter_mod_dscp(of_conn_, meterid, meterrate, meterburstsize);
     }
   }
@@ -116,10 +99,6 @@ bool Meter_manager::add_meter_dscp(json context){
   return true;
 }
 
-/*
- * Remove the meter tables
- * Description: It removes all the meter rules
- */
 bool Meter_manager::delete_meter_all() {
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
@@ -131,7 +110,7 @@ bool Meter_manager::delete_meter_all() {
     fluid_base::OFConnection *of_conn_ = ctrl->get_ofconnection(switch_id);
     if (of_conn_ == nullptr || !of_conn_->is_alive())
       continue;
-//      this->of_interface.flush_flow(of_conn_, id);
+      // this->of_interface.flush_flow(of_conn_, id);
       this->of_interface.flush_meter(of_conn_,meterid);
     }
   }

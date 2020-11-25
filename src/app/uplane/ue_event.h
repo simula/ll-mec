@@ -30,8 +30,6 @@
 #ifndef __UE_EVENT_H__
 #define __UE_EVENT_H__
 
-
-
 namespace llmec {
 namespace app {
 namespace uplane {
@@ -50,8 +48,6 @@ typedef enum {
   UE_QUERY_RAB_INFO             = 9,
   UE_QUERY_S1_BEARER_INFO       = 10,
 } ueEventType;
-
-
 
 } // namespace uplane
 } // namespace app

@@ -39,6 +39,9 @@
 
 #include "json.h"
 #define DEFAULT_MT_ID 0xffff0000
+#define DEFAULT_MT_RATE 1000000
+#define DEFAULT_MT_BURST_SIZE 50000
+#define MT_FOR_SLICE_ID_MAX 16
 
 using json = nlohmann::json;
 

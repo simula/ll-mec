@@ -53,13 +53,13 @@ bool Ue_manager::add_bearer(json context){
   bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
 
   uint64_t id = context_manager->get_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());
-  uint32_t meter_id = DEFAULT_MT_ID ;//default MT id
-  uint32_t meter_rate = 1000000; //default meter rate
-  uint32_t meter_burst_size = 50000; //default burst_size
+  uint32_t meter_id = DEFAULT_MT_ID;
+  uint32_t meter_rate = DEFAULT_MT_RATE;
+  uint32_t meter_burst_size = DEFAULT_MT_BURST_SIZE;
 
   if (support_meter) {
     uint64_t slice_id = context["slice_id"].get<int>();
-    if ((slice_id > 0) && (slice_id <= 16)){ //MT for slice (id = 1-16)
+    if ((slice_id > 0) && (slice_id <= MT_FOR_SLICE_ID_MAX)){ //MT for slice (id = 1-16)
       meter_id = (uint32_t) (slice_id);
       if (context.count("meter_rate") != 0) meter_rate = context["meter_rate"].get<int>();
       if (context.count("burst_size") != 0) meter_burst_size = context["burst_size"].get<int>();
@@ -155,8 +155,6 @@ bool Ue_manager::add_bearer(json context){
 }
 
 /*
- *
- *
 bool Ue_manager::modify_meter(json context){
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
@@ -226,7 +224,9 @@ bool Ue_manager::delete_redirect_bearer(uint64_t id) {
     if (of_conn_ == nullptr || !of_conn_->is_alive())
       continue;
     this->of_interface.flush_flow(of_conn_, id);
-//    this->of_interface.flush_meter(of_conn_, meterid); //meterid
+    if (support_meter){
+      // this->of_interface.flush_meter(of_conn_, meterid); //meterid
+    }
   }
   Metadata metadata;
   if (!bearer["tos"].empty()) {
@@ -389,7 +389,7 @@ bool Ue_manager::delete_bearer_all() {
     if (of_conn_ == nullptr || !of_conn_->is_alive())
       continue;
       this->of_interface.flush_flow(of_conn_, id);
-//      this->of_interface.flush_meter(of_conn_,meterid);
+      // this->of_interface.flush_meter(of_conn_,meterid);
     }
   }
   context_manager->clean();

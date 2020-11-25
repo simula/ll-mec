@@ -14,7 +14,7 @@
   "ovs_switch": {
     "s1u_port": 2,
     "external_port": 1,
-    "support_meter": true    
+    "support_meter": false    
   },
   "mp1_api": {
     "port": 8888,

@@ -146,7 +146,7 @@ int main(int argc, char **argv){
 	  flexRANControllers.push_back(controller);
   }
 
-  //Pistache::Address addr(((llmec_config->X["mp1_api"])["mode"]).get<std::string>().c_str()) , Pistache::Port(..));
+  //Mp1 and MP2 API server
   Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp1_api"]["port"].get<int>()));
   Pistache::Address addr_mp2(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp2_api"]["port"].get<int>()));
 
@@ -160,8 +160,6 @@ int main(int argc, char **argv){
   //Mp1
   Mp1Manager mp1Manager(addr_mp1, rib, ev);
   mp1Manager.init(2);
-  //mp1Manager.start();
-  //mp1Manager.shutdown();
   std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
 
   //Mp2
