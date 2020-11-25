@@ -119,8 +119,6 @@ bool Meter_manager::delete_meter_all() {
   return true;
 }
 
-
-//retrive the meter stats
 bool Meter_manager::get_meter_stats(){
   llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
   uint32_t meterid = context_manager->get_meter_id(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>());

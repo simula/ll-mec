@@ -214,7 +214,6 @@ nlohmann::json rib_updater::getRANStatistics(std::string addr, int port)
 		CURLcode res;
 
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-		//curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:9999/stats" );
 		curl_easy_setopt(curl, CURLOPT_URL, url.c_str() );
 		curl_easy_setopt(curl, CURLOPT_HTTPGET,1);
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, FLEXRAN_CURL_TIMEOUT_MS);
@@ -226,7 +225,6 @@ nlohmann::json rib_updater::getRANStatistics(std::string addr, int port)
 		// Hook up data handling function.
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-		//curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData);
 		bool isFlexRANReady = false;
 		int numRetries = 0;
 		while (numRetries < FLEXRAN_NUMBER_RETRIES){

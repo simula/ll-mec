@@ -191,7 +191,6 @@ add_library(NORTH_API ${NORTH_API_src_files})
 
 #MP1_API
 set(MP1_API_DIR "${LL_MEC_SRC}/mp1")
-  
 file(GLOB MP1_API_src_files
     ${MP1_API_DIR}/mp1-api-server.cpp
     ${MP1_API_DIR}/model/*.cpp
@@ -199,8 +198,6 @@ file(GLOB MP1_API_src_files
     ${MP1_API_DIR}/impl/*.cpp
     ${MP1_API_DIR}/rib/*.cpp
 )
-  
- 
 set(MP1_API_include_files
   ${MP1_API_DIR}/api
   ${MP1_API_DIR}/impl
@@ -212,16 +209,13 @@ add_library(MP1_API ${MP1_API_src_files})
 target_link_libraries(MP1_API EVENT)
 
 #MP2_API
-set(MP2_API_DIR "${LL_MEC_SRC}/mp2")
-  
+set(MP2_API_DIR "${LL_MEC_SRC}/mp2")  
 file(GLOB MP2_API_src_files
     ${MP2_API_DIR}/mp2-api-server.cpp
     ${MP2_API_DIR}/model/*.cpp
     ${MP2_API_DIR}/api/*.cpp
     ${MP2_API_DIR}/impl/*.cpp
-)
-  
- 
+) 
 set(MP2_API_include_files
   ${MP2_API_DIR}/api
   ${MP2_API_DIR}/impl
@@ -250,7 +244,6 @@ include_directories(
   ${SPDLOG_include_dir}
   ${Event_INCLUDE_DIRS}
   )
-
 
 #targets
 # Uncomment ll-mecsim when needed
