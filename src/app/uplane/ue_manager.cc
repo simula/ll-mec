@@ -196,8 +196,8 @@ bool Ue_manager::add_redirect_bearer(uint64_t id, uint32_t meter_id, json contex
 	  }
 }
   spdlog::get("ll-mec")->info("Redirect bearer id={} from {} to {}", id, context["from"].get<std::string>(), context["to"].get<std::string>());
-  event_sub.ue_rab_redir_add(context["enb_ip"].get<std::string>(),
-                             context["imsi"].get<std::string>(),
+  event_sub.ue_rab_redir_add(bearer["enb_ip"].get<std::string>(),
+                             bearer["imsi"].get<std::string>(),
                              id,
                              context["from"].get<std::string>(),
                              context["to"].get<std::string>());
