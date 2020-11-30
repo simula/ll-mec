@@ -42,6 +42,11 @@ namespace llmec {
       class Controller;
     }
   }
+  namespace core {
+    namespace rt {
+      class Task_manager;
+    }
+  }
   namespace app {
     namespace uplane {
       class Ue_manager;
@@ -61,8 +66,10 @@ class subscription {
   public:
     // friend classes can access private fields
     friend class llmec::core::eps::Controller;
+    friend class llmec::core::rt::Task_manager;
     friend class llmec::app::uplane::Ue_manager;
     friend class llmec::mp1::api::ServicesApiImpl;
+
 
     subscription() : last_tick(0) {}
 

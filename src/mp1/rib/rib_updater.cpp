@@ -64,7 +64,7 @@ rib_updater::rib_updater(Rib& rib,
     m_mode(mode) {
   curl_global_init(CURL_GLOBAL_ALL);
   m_curl_multi = curl_multi_init();
-  const uint64_t interval = its.it_value.tv_sec * 1000 + its.it_value.tv_nsec / 1000000; // convert sec, nsec to msec
+  const uint64_t interval = its.it_value.tv_sec*1000 + its.it_value.tv_nsec / 1000000; // convert sec, nsec to msec
   if (m_mode.compare("flexran") != 0) {
     m_event_sub.subscribe_task_tick(
         boost::bind(&rib_updater::get_RAN_statistic_from_default_file, this, _1),
@@ -87,6 +87,25 @@ rib_updater::rib_updater(Rib& rib,
     };
     m_event_sub.subscribe_task_tick(
         boost::bind<void>(f, _1), interval, 0 /* start at time 0 */);
+  }
+}
+
+void rib_updater::run()
+ {
+ if (m_mode.compare("flexran") != 0) {
+    this->get_RAN_statistic_from_default_file(0);
+  } else {
+      //put flexRAN info into the map
+      for (const auto& i : this->m_flexRANControllers){
+        this->m_flexRANStatistics.insert(
+            make_pair(make_pair(i.first, i.second), std::string()));
+      }
+      this->send_curl_multi();
+      this->process_curl_multi();
+      //process statistics data and store in to a DB
+      for (const auto& i : this->m_flexRANControllers) {
+        this->get_RAN_statistics_from_FlexRAN(i.first, i.second);
+      }
   }
 }
 

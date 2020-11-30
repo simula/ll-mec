@@ -35,6 +35,7 @@
 #include <unistd.h> 
 #include <linux/types.h>
 #include <sys/syscall.h>
+#include <thread>
 
 namespace llmec {
   namespace core {
@@ -77,6 +78,8 @@ namespace llmec {
       int sched_setattr(pid_t pid, const struct sched_attr *attr, unsigned int flags);
 
       int sched_getattr(pid_t pid,struct sched_attr *attr,unsigned int size, unsigned int flags);
+
+      enum class Policy {RR = SCHED_RR, DEADLINE = SCHED_DEADLINE, FIFO = SCHED_FIFO};
     }
   }
 }

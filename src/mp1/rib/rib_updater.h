@@ -29,6 +29,7 @@
 */
 
 #include <unistd.h>
+#include <curl/curl.h>
 #include "rib.h"
 #include "subscription.h"
 #ifndef RIB_UPDATER_H_
@@ -51,6 +52,7 @@ public:
 	rib_updater (Rib& rib, llmec::event::subscription& ev, struct itimerspec its,std::vector<std::pair<std::string, int>> flexRANControllers,std::string mode);
 
 	void update_rib();
+	void run();
 
     /*
      * Get RAN statistics from a FlexRAN controller

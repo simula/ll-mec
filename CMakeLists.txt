@@ -128,15 +128,16 @@ add_library(EPS ${EPS_src_files})
 target_link_libraries(EPS FLUIDBASE FLUIDMSG)
 
 #CORE
-set(CORE_src_files
+set(CORE_src_files  
   ${CORE_DIR}/task.cc
   ${CORE_DIR}/rt_wrapper.cc
+  ${CORE_DIR}/task_manager.cc
   )
 set(CORE_include_files
   ${CORE_DIR}
   )
 add_library(CORE ${CORE_src_files})
-target_link_libraries(CORE EPS)
+target_link_libraries(CORE EPS MP1_API EVENT)
 
 # We need boost signals2
 find_package(Boost 1.54.0 REQUIRED COMPONENTS system)

@@ -54,6 +54,7 @@
 #include "rib.h"
 #include "rib_updater.h"
 #include "ue_event.h"
+#include "task_manager.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
@@ -115,7 +116,6 @@ int main(int argc, char **argv){
   llmec::app::uplane::Ue_manager::create_instance(of_interface, ev);
   llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
   //auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
-
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
    //northbound api initial
@@ -168,10 +168,14 @@ int main(int argc, char **argv){
   std::thread mp2_manager_app(&Mp2Manager::start, mp2Manager);
 
   struct itimerspec its;
-  its.it_value.tv_sec = 50;
+  its.it_value.tv_sec = 10; //seconds
   its.it_value.tv_nsec = 0;//100 * 1000 * 1000; //100ms
 
   rib_updater ribUpdater(rib, ev, its, flexRANControllers, mp1ApiMode);
+
+  //Task Manager
+  llmec::core::rt::Task_manager tm(ribUpdater, ev);
+  std::thread task_manager_thread(&llmec::core::rt::Task_manager::execute_task, &tm);
 
   //Controller start
   ctrl->start(true);
