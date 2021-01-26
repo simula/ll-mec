@@ -22,7 +22,7 @@
 /*!
   \file ue_manager.cc
   \brief managing the users and bearers, and their associations to different slices
-  \author Anta Huang and N. Nikaein
+  \author Anta Huang, N. Nikaein, Tien-Thinh Nguyen
   \company Eurecom
   \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
 */
@@ -425,6 +425,7 @@ uint64_t Ue_manager::get_id(std::string imsi, uint64_t eps_bearer_id) {
   uint64_t id = context_manager->get_id(imsi, eps_bearer_id);
   return id;
 }
+
 /*
 //retrive the meterid
 uint32_t Ue_manager::get_meterid( uint32_t eps_meter_id){

@@ -134,7 +134,6 @@ bool Context_manager::delete_meter(uint32_t id)
   return true;
 }
 
-//bool Context_manager::add_bearer(uint64_t id, uint32_t meter_id, json context)
 bool Context_manager::add_bearer(uint64_t id, json context)
 {
   Conf* llmec_config = Conf::getInstance();
@@ -272,9 +271,7 @@ uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
   return id;
 }
 
-//meterid mapping
 uint32_t Context_manager::get_meter_id(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id){
-//this table it will be used as referance.
 	uint32_t meter_id = DEFAULT_MT_ID; //default MT
 
 	if ((slice_id > 0) && (slice_id <= 16)) { //MT for slice (id = 1-16)

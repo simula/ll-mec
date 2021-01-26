@@ -38,7 +38,6 @@ namespace sgwc {
 
 void SGWC::start() {
   while(true){
-    //std::cout<<"SGWC"<<std::endl;
   }
 }
 

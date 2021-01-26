@@ -795,7 +795,6 @@ namespace north_api {
   /* Delete meter-table by ID*/
   void Ue_rest_calls::delete_meter_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response) {
     llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-    //std::string resp;
 
     /* the expected format is "imsi,meter_id" */
     auto meter_id = request.param(":id").as<int>();

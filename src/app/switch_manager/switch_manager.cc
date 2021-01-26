@@ -71,7 +71,6 @@ void Switch_manager::handle_switch_down(const llmec::core::eps::SwitchDownEvent&
 
 void Switch_manager::start() {
   while(true){
-    //std::cout<<"Switch"<<std::endl;
   }
 }
 

@@ -78,7 +78,6 @@ void ServicesApiImpl::services_get(const Pistache::Optional<std::vector<std::str
 	if (!serCategoryId.isEmpty()){
 		serCategoryIdStr = serCategoryId.get();
 		//spdlog::get("ll-mec")->debug("[MP1 Services API] serCategoryId {}", serCategoryIdStr);
-
 		std::vector<ServiceInfo> serviceInfos = m_rib.get_service_info_by_category(serCategoryIdStr);
 
 		for (int i=0; i< serviceInfos.size(); i++){
@@ -97,7 +96,6 @@ void ServicesApiImpl::services_get(const Pistache::Optional<std::vector<std::str
 	}
 	response.send(Pistache::Http::Code::Ok, "Query parameters should be provided");
 	return;
-
 }
 
 void ServicesApiImpl::services_post(const ServiceInfo_Post &serviceInfoPost, Pistache::Http::ResponseWriter &response) {

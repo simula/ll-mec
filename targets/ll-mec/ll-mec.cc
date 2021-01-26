@@ -65,7 +65,6 @@ int main(int argc, char **argv){
   auto console = spdlog::stdout_color_mt(LOG_NAME);
   spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%l] %v");
 
-
   /* initialize command arguments parser*/
   Input_parser input(argc, argv);
   Conf* llmec_config = Conf::getInstance();
@@ -118,16 +117,16 @@ int main(int argc, char **argv){
   //auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
-   //northbound api initial
+   //Initialize Northbound API
   Pistache::Port port(llmec_config->X["northbound_api"]["port"].get<int>());
   Pistache::Address addr(Pistache::Ipv4::any(), port);
   llmec::north_api::Rest_manager rest_manager(addr);
 
-  //rest calls setup
+  //Rest calls setup
   llmec::north_api::Stats_rest_calls stats_rest_calls(std::dynamic_pointer_cast<llmec::app::stats::Stats_manager>(stats_manager));
   llmec::north_api::Ue_rest_calls ue_rest_calls;
 
-  //calls register
+  //Calls register
   rest_manager.register_calls(stats_rest_calls);
   rest_manager.register_calls(ue_rest_calls);
 
@@ -154,7 +153,7 @@ int main(int argc, char **argv){
   llmec::mp1::rib::Rib rib;
   rib.set_mp1_server_addr(Pistache::Ipv4::any().toString());
   rib.set_mp1_server_port(llmec_config->X["mp1_api"]["port"].get<int>());
-  //Init default services
+  //Initialize default services
   //rib.init_service_info();
 
   //Mp1

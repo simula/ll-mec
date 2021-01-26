@@ -81,9 +81,7 @@ void Mp1ApiImpl::handle_ue_rab_est(const std::string& bs_ip,
 			curl_easy_cleanup(curl);
 		}
 	}
-
 }
-
 
 void Mp1ApiImpl::ca_re_conf_subscription_subscriptions_get(const std::string &subscriptionId, Pistache::Http::ResponseWriter &response) {
 	response.send(Pistache::Http::Code::Ok, "This API has not been implemented!\n");
@@ -202,9 +200,6 @@ void Mp1ApiImpl::plmn_info_get(const Pistache::Optional<std::vector<std::string>
 			response.send(Pistache::Http::Code::Unauthorized, "[PLMN info] not authorized to get this information!\n");
 		}
 	}
-
-
-
 }
 
 void Mp1ApiImpl::post_mp1_traffic_all(const Mp1Traffic &mp1Traffic, Pistache::Http::ResponseWriter &response) {
@@ -331,7 +326,6 @@ void Mp1ApiImpl::rab_info_get(const Pistache::Optional<std::string> &appInsId, c
 
 	//TimeStamp
 
-
 	auto mime = Pistache::Http::Mime::MediaType::fromString("application/json");
 	auto m1 = MIME(Application, Json);
 */
@@ -434,7 +428,6 @@ void Mp1ApiImpl::subscription_link_list_subscriptions_re_get(Pistache::Http::Res
 		std::string resBody = "No subscription for RabEstSubscription";
 		response.send(Pistache::Http::Code::Not_Found, resBody);
 	}
-
 }
 
 void Mp1ApiImpl::subscription_link_list_subscriptions_rm_get(Pistache::Http::ResponseWriter &response) {

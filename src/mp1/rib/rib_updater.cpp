@@ -37,13 +37,14 @@
 #include "rib_updater.h"
 #include "spdlog.h"
 
-#define DEFAULT_RIB_FILE  "src/mp1/inputs/mp1.json"
-#define FLEXRAN_CURL_TIMEOUT_MS 100L
-#define FLEXRAN_NUMBER_RETRIES 3
-#define MAX_WAIT_MSECS 1000 //1 second
-#define DEFAULT_FLEXRAN_PORT  9999
-#define DEFAULT_FLEXRAN_ADDR  "127.0.0.1"
-#define HTTP_STATUS_OK 200
+#define DEFAULT_RIB_FILE            "src/mp1/inputs/mp1.json"
+#define FLEXRAN_CURL_TIMEOUT_MS     100L
+#define FLEXRAN_NUMBER_RETRIES      3
+#define MAX_WAIT_MSECS              1000 //1 second
+#define DEFAULT_FLEXRAN_PORT        9999
+#define DEFAULT_FLEXRAN_ADDR        "127.0.0.1"
+#define HTTP_STATUS_OK              200
+
 namespace llmec {
 namespace mp1 {
 namespace rib {
@@ -110,15 +111,15 @@ void rib_updater::run()
 }
 
 bool rib_updater::get_RAN_statistic_from_default_file(uint64_t ms) {
-  (void)ms; // mark ms as unused
+	(void)ms; // mark ms as unused
 
-  nlohmann::json jsonData;
+	nlohmann::json jsonData;
 	//load Json data from Json file to a json object
 	std::ifstream in(DEFAULT_RIB_FILE);
 	//error when loading data.
 	if(!in.is_open())
 	{
-    return false;
+		return false;
 	}
 	jsonData = nlohmann::json::parse(in);
 	in.close();
@@ -126,7 +127,7 @@ bool rib_updater::get_RAN_statistic_from_default_file(uint64_t ms) {
 
 	//if success, try to update the DB
 	if (!jsonData.empty()){
-	  nlohmann::json eNB_config, eNB, cellConfig, UE, ueConfig;
+		nlohmann::json eNB_config, eNB, cellConfig, UE, ueConfig;
 		std::string imsi;
 		uint64_t eNBId;
 		try{
@@ -142,7 +143,7 @@ bool rib_updater::get_RAN_statistic_from_default_file(uint64_t ms) {
 				imsi = ((ueConfig.at(i))["imsi"]).get<std::string>().c_str();
 				//should add timestamp to the DB
 				//update DB
-			    m_rib.update_ue_info(imsi, ueConfig.at(i));
+				m_rib.update_ue_info(imsi, ueConfig.at(i));
 			}
 			m_rib.update_eNB_info(eNBId, cellConfig);
 
@@ -274,7 +275,6 @@ nlohmann::json rib_updater::getRANStatistics(std::string addr, int port)
 		curl_easy_cleanup(curl);
 		return nlohmann::json(); //return an empty json
 	}
-
 	return nlohmann::json(); //return an empty json
 }
 
