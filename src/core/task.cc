@@ -59,3 +59,11 @@ void llmec::core::rt::Task::set_scheduling_policy(Policy pol) {
   sched_attr_.sched_deadline = DEFAULT_PERIOD_NS-30000;
   sched_attr_.sched_period   = DEFAULT_PERIOD_NS;
 }
+
+
+void llmec::core::rt::Task::execute_task(){
+  if (sched_setattr(0, &sched_attr_, 0) < 0 ) {
+    return;
+  }
+  run();
+}

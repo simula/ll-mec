@@ -23,9 +23,9 @@
 /*!
   \file controller_event.h
   \brief captures the events with the LL-MEC controller
-  \author Anta Huang and N. Nikaein
+  \author Anta Huang, N. Nikaein, Mihai IDU
   \company Eurecom
-  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
+  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr, idumihai16@gmail.com
 */
 
 #ifndef __CONTROLLER_EVENT_H__
@@ -42,6 +42,10 @@ typedef enum {
   EVENT_SWITCH_DOWN = 1,
   EVENT_SWITCH_UP = 2,
   EVENT_MULTIPART_REPLY = 3,
+  /*
+   * Check if the EVENT value is right!
+   */
+  EVENT_METER = 4,
 } EventType;
 
 class ControllerEvent {
@@ -120,6 +124,25 @@ class MultipartReplyEvent : public ControllerEvent {
     fluid_base::OFHandler* of_handler_;
     uint8_t* data_;
     size_t len_;
+};
+
+/*
+ * This is the MeterEvent Class used in the controller.cc  
+ */
+class MeterEvent : public ControllerEvent {
+  public:
+	  MeterEvent(fluid_base::OFConnection* of_conn, fluid_base::OFHandler* of_handler, void* data, size_t len) :
+		  ControllerEvent(of_conn, EVENT_METER) {
+			  this->data_ = (uint8_t*) data;
+			  this->len_ = len;
+			  this->of_handler_ = of_handler;
+		  }
+	  virtual ~MeterEvent(){
+		  this->of_handler_->free_data(this->data_);
+	  }
+	  fluid_base::OFHandler* of_handler_;
+	  uint8_t* data_;
+	  size_t len_;
 };
 
 } // namespace eps

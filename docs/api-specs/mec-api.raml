@@ -1,0 +1,316 @@
+#%RAML 1.0
+---
+title: MEC Platform
+baseUri: http://localhost/api
+
+################################################
+################################################
+
+/platform:
+  post:
+    description: |
+      Reset the virtual switch.
+
+      First deletes all flows and then adds the default ones. In particular:
+      * Default low priority rule for traffic originating from the LOCAL port of the switch, which is directed towards the Internet (or external networks)
+      * Rules for communication (IP+ARP) between the local OVS host and the SGi
+      * Rule for rewriting the dst MAC for packets coming from the UEs so that they reach the SGi (NAT box).
+    responses:
+      200:
+        body:
+          application/json:
+            example: {'result': 200, 'description': 'Virtual switch reset', 'code': 0}
+      400:
+        body:
+          application/json:
+            example: {'result': 400, 'description': 'Error adding default rule for Internet/external traffic', 'code': 5}
+
+################################################
+################################################
+
+/mp1:
+  /traffic:
+    /imsi:
+      post:
+        description: |
+          Mp1 interface for activating traffic redirection by traffic type for a specific list of UEs.
+
+          This API endpoint allows a MEC application to request traffic redirection 
+          for a list of UEs (identified by their IMSIs). The caller of this function needs
+          to specify the IP address-port-protocol tuple that characterizes the service, 
+          and the IP-MAC addresses of the MEC server (also the type of the service and
+          the UE list). 
+
+          If a UE is not already connected, the openflow rules will not be added at the
+          time this function is called. Rather, they will be recorded in the database and
+          when the SPGW will notify the MEC platform that the UE is attached, they will be 
+          pushed to the OVS. If the UE is already connected, however, the redirection rules will be directly installed by this function.
+        responses:
+          200:
+            body:
+              application/json:
+                example: {'result': 200, 'description': 'Added IMSI list', 'type': 2, 'ue_list': ['208930100001114'], 'port': 5000, 'transport': 1, 'service_ip': '195.251.255.142', 'mec_ipaddr': '192.168.0.100', 'mec_macaddr': '52:54:00:12:34:cc'}
+          400:
+            body:
+              application/json:
+                example: {'result': 400, 'description': 'Not implemented service type', 'type': 5}
+        body:
+          application/json:
+            type: object
+            properties:
+              ue_list: 
+                displayName: List of UEs
+                type: list of strings
+                description: The list of UE identifiers (IMSI numbers) represented as strings for which traffic redirection for this specific service will be applied.
+                example: ['208930100001114']
+                required: true
+              service_ip: 
+                displayName: Service IP address
+                type: string
+                description: The original IP address of the service for which traffic will be redirected to the MEC server. 
+                example: "195.251.255.142"
+                required: true
+              port:
+                displayName: Port
+                type: integer
+                description: The transport protocol destination port for the flow to be redirected to the MEC server.
+                example: 5000
+                required: true
+              transport:
+                displayName: Transport protocol
+                description: "The transport protocol of the traffic flows to redirect (1: TCP, 2: UDP, 0: any)"
+                type: integer
+                example: 1
+                required: true
+              mec_ipaddr: 
+                displayName: MEC application instance IP address
+                type: string
+                description: The IP address of the MEC application instance to which traffic will be redirected.  
+                example: "192.168.0.100"
+                required: true
+              mec_macaddr: 
+                displayName: MEC application instance MAC address
+                type: string
+                description: The MAC address of the MEC application instance's network interface. (This is necessary due to the redirection mechanism's internal workings and might be become optional in future versions.)  
+                example: "52:54:00:12:34:cc"
+                required: true
+              type:
+                displayName: Redirection type
+                type: integer
+                description: The type of redirection. Should have the values *2* or *3*. (This field is reserved and is not used in this version. However, it has to have a valid value.)
+                example: 2
+                required: true
+
+################################################
+################################################
+
+      delete:
+        description: |
+          Mp1 interface for uninstalling traffic redirection by type.
+
+          Disable redirection by traffic type for the specified list of UEs. For now, the request body needs to carry
+          the full information about the redirection rule. (Support for deleting a redirection rule by id is to be added.)
+        responses:
+          200:
+            body:
+              application/json:
+                example: {'result': 200, 'description': 'Removed redirection by service type', 'type': 2, 'ue_list': ['208930100001114'], 'port': 5000, 'transport': 1, 'service_ip': '195.251.255.142', 'mec_ipaddr': '192.168.0.100', 'mec_macaddr': '52:54:00:12:34:cc'}
+          400:
+            body:
+              application/json:
+                example: {'result': 400, 'description': 'Not implemented service type', 'type': 5}
+        body:
+          application/json:
+            type: object
+            properties:
+              ue_list: 
+                displayName: List of UEs
+                type: list of strings
+                description: The list of UE identifiers (IMSI numbers) represented as strings for which traffic redirection for this specific service will be applied.
+                example: ['208930100001114']
+                required: true
+              service_ip: 
+                displayName: Service IP address
+                type: string
+                description: The original IP address of the service for which traffic will be redirected to the MEC server. 
+                example: '195.251.255.142'
+                required: true
+              port:
+                displayName: Port
+                type: integer
+                description: The transport protocol destination port for the flow to be redirected to the MEC server.
+                example: 80
+                required: true
+              transport:
+                displayName: Transport protocol
+                description: The transport protocol of the traffic flows to redirect (1: TCP, 2: UDP, 0: any)
+                type: integer
+                example: 1
+                required: true
+              mec_ipaddr: 
+                displayName: MEC application instance IP address
+                type: string
+                description: The IP address of the MEC application instance to which traffic will be redirected.  
+                example: '192.168.0.100'
+                required: true
+              mec_macaddr: 
+                displayName: MEC application instance MAC address
+                type: string
+                description: The MAC address of the MEC application instance's network interface. (This is necessary due to the redirection mechanism's internal workings and might be become optional in future versions.)  
+                example: '52:54:00:12:34:cc'
+                required: true
+              type:
+                displayName: Redirection type
+                type: integer
+                description: The type of redirection. Should have the values *2* or *3*. (This field is reserved and is not used in this version. However, it has to have a valid value.)
+                example: 2
+                required: true
+
+################################################
+################################################
+
+    /all:
+      post:
+        description: |
+          Mp1 interface for installing traffic redirection by name.
+
+          This function reconfigures the DNS server operated by the MEC platform
+          so that it resolves the given name to the IP address of a MEC server.
+          Also, the necessary openflow rules for redirection will be installed. 
+          Redirection applies to all UEs.
+        responses:
+          200:
+            body:
+              application/json:
+                example: {'result': 200, 'description': 'Redirection URL added successfully', 'url': 'sfr.fr'}
+          400:
+            body:
+              application/json:
+                example: {'result': 400, 'description': 'Failed to re-configure DNS server (-2)', 'url': 'sfr.fr'}
+        body:
+          application/json:
+            type: object
+            properties:
+              url: 
+                displayName: Service URL
+                type: string
+                description: All DNS requests from UEs for this name will be resolved to the IP address of a specific MEC application instance.
+                example: "sfr.fr"
+                required: true
+              mec-ipaddr: 
+                displayName: MEC application instance IP address
+                type: string
+                description: The IP address of the MEC application instance to which traffic will be redirected.  
+                example: "192.168.0.200"
+                required: true
+              mec-macaddr: 
+                displayName: MEC application instance MAC address
+                type: string
+                description: The MAC address of the MEC application instance's network interface. (This is necessary due to the redirection mechanism's internal workings and might be become optional in future versions.)  
+                example: "52:54:00:12:34:bb"
+                required: true
+              type:
+                displayName: Redirection type
+                type: integer
+                description: The type of redirection. Should have the value of *1*. (This field is reserved and is not used in this version. However, it has to have a valid value.)
+                example: 1
+                required: true
+
+################################################
+################################################
+
+      delete:
+        description: |
+          Mp1 interface for deactivating traffic redirection by name.
+
+          This function removes the respective entries by the MEC platform database,
+          reconfigures the DNS server to stop resolving requests for the given
+          name to the MEC application instance, and removes the related openflow rules.
+        responses:
+          200:
+            body:
+              application/json:
+                example: {'result': 200, 'description': 'Redirection URL deleted successfully', 'url': 'sfr.fr'}
+          400:
+            body:
+              application/json:
+                example: {'result': 400, 'description': 'Wrong service type for URL-based redirection', 'url': 'sfr.fr'}
+        body:
+          application/json:
+            type: object
+            properties:
+              url: 
+                displayName: Service URL
+                type: string
+                description: All DNS requests from UEs for this name will be resolved to the IP address of a specific MEC application instance.
+                example: 'sfr.fr'
+                required: true
+              mec-ipaddr: 
+                displayName: MEC application instance IP address
+                type: string
+                description: The IP address of the MEC application instance to which traffic will be redirected.  
+                example: "192.168.0.200"
+                required: true
+              mec-macaddr: 
+                displayName: MEC application instance MAC address
+                type: string
+                description: The MAC address of the MEC application instance's network interface. (This is necessary due to the redirection mechanism's internal workings and might be become optional in future versions.)  
+                example: "52:54:00:12:34:bb"
+                required: true
+              type:
+                displayName: Redirection type
+                type: integer
+                description: The type of redirection. Should have the value of *1*. (This field is reserved and is not used in this version. However, it has to have a valid value.)
+                example: 1
+                required: true
+
+################################################
+################################################
+
+/mp2:
+  /spgw:
+    post:
+      description: |
+        Mp2 interface for SPGW-MEC platform communication.
+
+        This API endpoint receives the SPGW message when a UE session is established.
+        This function remotely configures the SGW-U with the appropriate traffic management rules
+        and adds entries to the UE database table, where we maintain 
+        information on the UE IP, tunnel endpoint id, eNodeB IP address, IMSI. 
+      responses:
+        200:
+          body:
+            application/json:
+              example: {'result': 200, 'description': 'IMSI added', 'imsi': '208930100001114', 'ue_ip': '172.16.0.2', 'enb_s1u_ip': '10.10.10.1', 'enb_s1u_teid': '0xca6fe0dd'}
+        400:
+          body:
+            application/json:
+              example: {'result': 400, 'description': 'Some error occured', 'imsi': '208930100001114', 'ue_ip': '172.16.0.2', 'enb_s1u_ip': '10.10.10.1', 'enb_s1u_teid': '0xca6fe0dd'}
+      body:
+        application/json:
+          type: object
+          properties:
+            imsi: 
+              displayName: IMSI
+              type: string
+              description: The IMSI of the UE which established a session. 
+              example: '208930100001114'
+              required: true
+            enb_s1u_teid: 
+              displayName: eNodeB TEID 
+              type: hex string
+              description: eNodeB GTP tunnel endpoint identifier.
+              example: '0xca6fe0dd'
+              required: true
+            enb_s1u_ip: 
+              displayName: eNodeB IP address
+              type: string
+              description: The IP address of the S1-U interface of the eNodeB.
+              example: '10.10.10.1'
+              required: true
+            ue_ip:
+              displayName: UE IP address
+              type: string
+              description: The IP address of the UE.
+              example: '172.16.0.2'
+              required: true

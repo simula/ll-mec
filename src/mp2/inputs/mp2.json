@@ -1,0 +1,24 @@
+{
+  "timeStamp": {
+    "seconds": 0,
+    "nanoSeconds": 0
+  },
+  "appInsId": "string",
+  "requestType": "APPLICATION_SPECIFIC_BW_ALLOCATION",
+  "sessionFilter": [
+    {
+      "sourceIp": "string",
+      "sourcePort": [
+        "string"
+      ],
+      "dstAddress": "string",
+      "dstPort": [
+        "string"
+      ],
+      "protocol": "string"
+    }
+  ],
+  "fixedBWPriority": "not defined in the present document",
+  "fixedAllocation": "string",
+  "allocationDirection": "00 = Downlink (towards the UE)"
+}

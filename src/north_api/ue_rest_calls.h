@@ -32,6 +32,8 @@
 #define __UE_REST_CALLS_H__
 
 #include <pistache/http.h>
+//undefine macro UNUSED of pistache to avoid warnings
+#undef UNUSED
 
 #include "rest_calls.h"
 #include "ue_manager.h"
@@ -52,6 +54,9 @@ class Ue_rest_calls : public Rest_calls {
     void delete_redirect_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_redirect_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_bearer_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void delete_meter_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void update_meter_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
+    void get_meter_info(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_bearer_by_imsi_epsbearerid(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void delete_bearer_all(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
     void get_slice_by_id(const Pistache::Rest::Request& request, Pistache::Http::ResponseWriter response);
@@ -63,4 +68,3 @@ class Ue_rest_calls : public Rest_calls {
 
 
 #endif
-

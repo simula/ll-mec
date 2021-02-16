@@ -26,11 +26,14 @@
   \company
   \email:
 */
-
+#include <chrono>
 #include <iostream>
 #include <thread>
 #include <memory>
 #include <pistache/endpoint.h>
+//undefine macro UNUSED of pistache to avoid warnings
+#undef UNUSED
+#include <unistd.h>
 
 #include "controller.h"
 #include "sgwc.h"
@@ -46,10 +49,17 @@
 #include "input_parser.h"
 #include "conf.h"
 #include "spdlog.h"
+#include "mp1-api-server.h"
+#include "mp2-api-server.h"
+#include "rib.h"
+#include "rib_updater.h"
+#include "ue_event.h"
+#include "task_manager.h"
 
 #define DEFAULT_CONFIG "llmec_config.json"
 #define LOG_NAME "ll-mec"
-
+using namespace llmec::mp1::api;
+using namespace llmec::mp1::rib;
 int main(int argc, char **argv){
   /* Initialize logger*/
   auto console = spdlog::stdout_color_mt(LOG_NAME);
@@ -76,10 +86,23 @@ int main(int argc, char **argv){
       spdlog::get("ll-mec")->info("No configuration file specified. Default config path loaded");
     }
   }
+
+  //Set log level
+  if (input.cmd_option_exists("-l")){
+	  std::string log_level = input.get_cmd_option("-l");
+	  spdlog::set_level(spdlog::level::info);
+	  if (log_level.compare("debug") == 0) spdlog::set_level(spdlog::level::debug);
+	  if (log_level.compare("warn") == 0) spdlog::set_level(spdlog::level::warn);
+	  if (log_level.compare("trace") == 0) spdlog::set_level(spdlog::level::trace);
+  }
+
   llmec_config->parse_config();
 
+  //Event subsystem
+  llmec::event::subscription ev;
+
   /* Initial the controller based on the config */
-  llmec::core::eps::Controller::create_instance(llmec_config->X["llmec"]["address"].get<std::string>().c_str(), llmec_config->X["llmec"]["port"].get<int>(), llmec_config->X["llmec"]["number_of_workers"].get<int>(), llmec_config->X["llmec"]["secure_connection"].get<bool>());
+  llmec::core::eps::Controller::create_instance(ev, llmec_config->X["llmec"]["address"].get<std::string>().c_str(), llmec_config->X["llmec"]["port"].get<int>(), llmec_config->X["llmec"]["number_of_workers"].get<int>(), llmec_config->X["llmec"]["secure_connection"].get<bool>());
   llmec::core::eps::Controller* ctrl = llmec::core::eps::Controller::get_instance();
   llmec::data::Context_manager::create_instance();
 
@@ -87,33 +110,71 @@ int main(int argc, char **argv){
   llmec::core::eps::OFInterface of_interface;
 
   //Initialize application
-  auto switch_manager = std::make_shared<llmec::app::switch_manager::Switch_manager>(of_interface);
-  auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface);
-  llmec::app::uplane::Ue_manager::create_instance(of_interface);
+  auto switch_manager = std::make_shared<llmec::app::switch_manager::Switch_manager>(of_interface, ev);
+  auto stats_manager = std::make_shared<llmec::app::stats::Stats_manager>(of_interface, ev);
+  llmec::app::uplane::Ue_manager::create_instance(of_interface, ev);
   llmec::app::uplane::Ue_manager* ue_manager = llmec::app::uplane::Ue_manager::get_instance();
-//  auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
-
-  //Register event for application
-  ctrl->register_for_event(switch_manager, llmec::core::eps::EVENT_SWITCH_UP);
-  ctrl->register_for_event(stats_manager, llmec::core::eps::EVENT_MULTIPART_REPLY);
-
+  //auto ue_manager = std::make_shared<llmec::app::uplane::Ue_manager>(of_interface);
   std::thread stats_manager_app(&llmec::app::stats::Stats_manager::run, stats_manager);
 
-   //northbound api initial
+   //Initialize Northbound API
   Pistache::Port port(llmec_config->X["northbound_api"]["port"].get<int>());
   Pistache::Address addr(Pistache::Ipv4::any(), port);
   llmec::north_api::Rest_manager rest_manager(addr);
 
-  //rest calls setup
+  //Rest calls setup
   llmec::north_api::Stats_rest_calls stats_rest_calls(std::dynamic_pointer_cast<llmec::app::stats::Stats_manager>(stats_manager));
   llmec::north_api::Ue_rest_calls ue_rest_calls;
 
-  //calls register
+  //Calls register
   rest_manager.register_calls(stats_rest_calls);
   rest_manager.register_calls(ue_rest_calls);
 
   rest_manager.init(1);
   std::thread rest_manager_app(&llmec::north_api::Rest_manager::start, rest_manager);
+
+  //Mp1 API
+  //get list of FlexRAN controllers
+  nlohmann::json flexRAN =  llmec_config->X["flexran"];
+  std::string mp1ApiMode = ((llmec_config->X["mp1_api"])["mode"]).get<std::string>().c_str();
+
+  int numControllers = flexRAN.size();
+  std::vector<std::pair<std::string, int>> flexRANControllers;
+  for (int i=0; i <numControllers; i++ ){
+	  std::pair<std::string, int> controller = std::make_pair((flexRAN.at(i))["address"].get<std::string>().c_str(), (flexRAN.at(i))["port"].get<int>());
+	  flexRANControllers.push_back(controller);
+  }
+
+  //Mp1 and MP2 API server
+  Pistache::Address addr_mp1(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp1_api"]["port"].get<int>()));
+  Pistache::Address addr_mp2(Pistache::Ipv4::any(), Pistache::Port(llmec_config->X["mp2_api"]["port"].get<int>()));
+
+  // Create the rib
+  llmec::mp1::rib::Rib rib;
+  rib.set_mp1_server_addr(Pistache::Ipv4::any().toString());
+  rib.set_mp1_server_port(llmec_config->X["mp1_api"]["port"].get<int>());
+  //Initialize default services
+  //rib.init_service_info();
+
+  //Mp1
+  Mp1Manager mp1Manager(addr_mp1, rib, ev);
+  mp1Manager.init(2);
+  std::thread mp1_manager_app(&Mp1Manager::start, mp1Manager);
+
+  //Mp2
+  Mp2Manager mp2Manager(addr_mp2);
+  mp2Manager.init(2);
+  std::thread mp2_manager_app(&Mp2Manager::start, mp2Manager);
+
+  struct itimerspec its;
+  its.it_value.tv_sec = 10; //seconds
+  its.it_value.tv_nsec = 0;//100 * 1000 * 1000; //100ms
+
+  rib_updater ribUpdater(rib, ev, its, flexRANControllers, mp1ApiMode);
+
+  //Task Manager
+  llmec::core::rt::Task_manager tm(ribUpdater, ev);
+  std::thread task_manager_thread(&llmec::core::rt::Task_manager::execute_task, &tm);
 
   //Controller start
   ctrl->start(true);

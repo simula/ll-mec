@@ -1,0 +1,308 @@
+openapi: 3.0.0
+info:
+  title: MEC Platform
+  version: 1.0
+servers:
+- url: http://localhost/api/v1
+paths:
+  '/platform':
+    post:
+      description: |
+        Reset the virtual switch.
+        First deletes all flows and then adds the default ones. In particular:
+        * Default low priority rule for traffic originating from the LOCAL port of the switch, which is directed towards the Internet (or external networks)
+        * Rules for communication (IP+ARP) between the local OVS host and the SGi
+        * Rule for rewriting the dst MAC for packets coming from the UEs so that they reach the SGi (NAT box).
+      operationId: post_platform
+      responses:
+        '200':
+          description: Virtual switch reset
+        '400':
+          description: Error adding default rule for Internet/external traffic
+  
+  '/mp1/traffic/imsi':
+    post:
+      description: "Mp1 interface for activating traffic redirection by traffic type
+        for a specific list of UEs.\n\nThis API endpoint allows a MEC application
+        to request traffic redirection \nfor a list of UEs (identified by their IMSIs).
+        The caller of this function needs\nto specify the IP address-port-protocol
+        tuple that characterizes the service, \nand the IP-MAC addresses of the MEC
+        server (also the type of the service and\nthe UE list). \n\nIf a UE is not
+        already connected, the openflow rules will not be added at the\ntime this
+        function is called. Rather, they will be recorded in the database and\nwhen
+        the SPGW will notify the MEC platform that the UE is attached, they will be
+        \npushed to the OVS. If the UE is already connected, however, the redirection
+        rules will be directly installed by this function.\n"
+      operationId: post_mp1_traffic_imsi
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/mp1_traffic_imsi"           
+              required: true    
+      responses:
+        '200':
+          description: Added IMSI list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/imsi_list"   
+        '400':
+          description: Not implemented service type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/x-type"        
+        
+    delete:
+      description: |
+        Mp1 interface for uninstalling traffic redirection by type.
+        Disable redirection by traffic type for the specified list of UEs. For now, the request body needs to carry
+        the full information about the redirection rule. (Support for deleting a redirection rule by id is to be added.)
+      operationId: delete_mp1_traffic_imsi
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/mp1_traffic_imsi"           
+              required: true 
+      responses:
+        '200':
+          description: Removed redirection by service type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/imsi_list"  
+                example:
+                  result: 200
+                  ue_list: '[208930100001114]'
+                  port: 5000
+                  transport: 1
+                  service_ip: 195.251.255.142
+                  mec_ipaddr: 192.168.0.100
+                  mec_macaddr: 52:54:00:12:34:cc
+                  x-type: 2
+        '400':
+          description: Not implemented service type
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/x-type"
+             
+ 
+  "/mp1/traffic/all":
+    post:
+      description: "Mp1 interface for installing traffic redirection by name.\n\nThis
+        function reconfigures the DNS server operated by the MEC platform\nso that
+        it resolves the given name to the IP address of a MEC server.\nAlso, the necessary
+        openflow rules for redirection will be installed. \nRedirection applies to
+        all UEs.\n"
+      operationId: post_mp1_traffic_all
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+                - mec_ipaddr
+                - mec-macaddr
+                - type
+              properties:
+                url:
+                  $ref: "#/components/schemas/url"           
+                mec_ipaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"        
+                mec_macaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"                
+                type:
+                  $ref: "#/components/schemas/type"
+
+              example:
+                url: sfr.fr
+                mec_ipaddr: 192.168.0.100
+                mec_macaddr: 52:54:00:12:34:bb
+                type: 1
+        required: true        
+      responses:
+        '200':
+          description: Redirection URL added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/url"
+        '400':
+          description: Failed to re-configure DNS server (-2)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/url"     
+    delete:
+      description: |
+        Mp1 interface for deactivating traffic redirection by name.
+
+        This function removes the respective entries by the MEC platform database,
+        reconfigures the DNS server to stop resolving requests for the given
+        name to the MEC application instance, and removes the related openflow rules.
+      operationId: delete_mp1_traffic_all
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+                - mec_ipaddr
+                - mec-macaddr
+                - type
+              properties:
+                url:
+                  $ref: "#/components/schemas/url"           
+                mec_ipaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"        
+                mec_macaddr:
+                  $ref: "#/components/schemas/mec_ipaddr"                
+                type:
+                  $ref: "#/components/schemas/type"
+
+              example:
+                url: sfr.fr
+                mec_ipaddr: 192.168.0.200
+                mec_macaddr: 52:54:00:12:34:bb
+                type: 1
+        required: true
+      responses:
+        '200':
+          description: Redirection URL deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/url"
+
+        '400':
+          description: Wrong service type for URL-based redirection
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/url"
+  
+components:
+  schemas:             
+                  
+    ue_list:
+      title: List of UEs
+      description: The list of UE identifiers (IMSI numbers) represented
+                   as strings for which traffic redirection for this specific service
+                    will be applied.
+      type: array
+      items: 
+        type: string             
+      example: ['208930100001114', '208930100001115']
+                     
+    service_ip:
+      title: Service IP address
+      description: The original IP address of the service for which traffic
+                   will be redirected to the MEC server.
+      type: string
+      example: 195.251.255.142
+           
+    port:
+      title: Port
+      description: The transport protocol destination port for the flow
+                    to be redirected to the MEC server.
+      type: integer
+      example: 5000
+                      
+    transport:
+      title: Transport protocol
+      description: 'The transport protocol of the traffic flows to redirect
+                    (1: TCP, 2: UDP, 0: any)'
+      example: 1
+      type: integer                 
+    
+    mec_ipaddr:
+      title: MEC application instance IP address
+      description: The IP address of the MEC application instance to which
+                   traffic will be redirected.      
+      type: string
+      example: 192.168.0.100
+               
+    mec_macaddr:
+      title: MEC application instance MAC address
+      description: The MAC address of the MEC application instance's network
+                    interface. (This is necessary due to the redirection mechanism's
+                    internal workings and might be become optional in future versions.)
+      type: string
+      example: 52:54:00:12:34:cc         
+                             
+    type:
+      title: Redirection type
+      description: The type of redirection. Should have the values *2*
+                    or *3*. (This field is reserved and is not used in this version.
+                    However, it has to have a valid value.)
+      type: integer
+      example: 2
+    url:
+      title: Service URL
+      description: All DNS requests from UEs for this name will be resolved
+                    to the IP address of a specific MEC application instance.
+      type: string
+      example: sfr.fr
+                     
+    mp1_traffic_imsi: 
+      type: object
+      required:
+        - ue_list
+        - service_ip
+        - port
+        - transport
+        - mec_ipaddr
+        - mec_macaddr
+        - type
+      properties:
+        ue_list:
+          $ref: "#/components/schemas/ue_list" 
+        service_ip:
+          $ref: "#/components/schemas/service_ip"
+        port:
+          $ref: "#/components/schemas/port"           
+        transport:
+          $ref: "#/components/schemas/transport"  
+        mec_ipaddr:
+          $ref: "#/components/schemas/mec_ipaddr"                     
+        mec_macaddr:
+          $ref: "#/components/schemas/mec_macaddr"   
+        type:
+          $ref: "#/components/schemas/type"
+    x-type:
+      type: integer      
+    imsi_list:
+      type: object
+      properties:  
+        result:
+          type: integer 
+        ue_list:
+          $ref: "#/components/schemas/ue_list" 
+        port:
+          $ref: "#/components/schemas/port"
+        transport:
+          $ref: "#/components/schemas/transport" 
+        service_ip:
+          $ref: "#/components/schemas/service_ip"    
+        mec_ipaddr:
+          $ref: "#/components/schemas/mec_ipaddr"                     
+        mec_macaddr:
+          $ref: "#/components/schemas/mec_macaddr"   
+        x-type: 
+          $ref: "#/components/schemas/x-type"  
+      example:
+        result: 200
+        ue_list: '[208930100001114]'
+        port: 5000
+        transport: 1
+        service_ip: 195.251.255.142
+        mec_ipaddr: 192.168.0.100
+        mec_macaddr: 52:54:00:12:34:cc
+        x-type: 2
+
+  

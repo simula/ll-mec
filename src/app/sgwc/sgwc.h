@@ -39,8 +39,9 @@ namespace sgwc {
 
 class SGWC : public llmec::app::App {
   public:
-    SGWC(llmec::core::eps::OFInterface &of_interface) : llmec::app::App(of_interface) {}
-    void event_callback(llmec::core::eps::ControllerEvent* ev);
+    SGWC(llmec::core::eps::OFInterface &of_interface,
+         llmec::event::subscription &ev)
+      : llmec::app::App(of_interface, ev) {}
     void start() override;
 };
 

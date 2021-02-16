@@ -9,10 +9,29 @@
     "port": 9999
   },
   "gateway": {
-    "mac": "00:24:9b:23:33:a6"
+    "mac": "ec:21:e5:bc:45:32"
   },
   "ovs_switch": {
     "s1u_port": 2,
-    "external_port": 1
-  }
+    "external_port": 1,
+    "support_meter": false    
+  },
+  "mp1_api": {
+    "port": 8888,
+    "mode": "test"    
+  },
+  "mp2_api": {
+    "port": 8889,
+    "mode": "test"    
+  },
+  "flexran": [
+    {    
+      "address": "10.0.0.2",
+      "port": 9999
+    },
+    {   
+      "address": "127.0.0.1",
+      "port": 9999
+    }
+  ]
 }

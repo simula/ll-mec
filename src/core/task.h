@@ -38,7 +38,6 @@
 namespace llmec {
   namespace core {
     namespace rt {
-      enum class Policy {RR = SCHED_RR, DEADLINE = SCHED_DEADLINE, FIFO = SCHED_FIFO};
       class Task {
         public:
           Task(Policy pol) {
@@ -46,6 +45,7 @@ namespace llmec {
           }
           virtual void run()=0;
           int apply_scheduling_policy();
+          void execute_task();
         protected:
           struct sched_attr sched_attr_;
         private:

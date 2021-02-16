@@ -32,6 +32,7 @@
 #include <string>
 
 #include "context_manager.h"
+#include "conf.h"
 #include "spdlog.h"
 
 
@@ -73,11 +74,16 @@ std::unordered_set<int> Context_manager::get_switch_set()
 }
 bool Context_manager::add_bearer(json context)
 {
+  Conf* llmec_config = Conf::getInstance();
+  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
   if (this->sanitize(context) == false)
     return false;
 
   this->context_lock.lock();
   uint64_t id = this->next_id();
+  spdlog::get("ll-mec")->info("next_id {}",id );
+
   if (id == 0) {
     spdlog::get("ll-mec")->error("Running out of IDs.");
     this->context_lock.unlock();
@@ -85,20 +91,66 @@ bool Context_manager::add_bearer(json context)
   }
   context["id"] = id;
   this->imsi_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()), id));
+  if (support_meter) {
+    if (context.count("meter_id") != 0){
+      this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+    }
+  }
   this->bearer_context[id] = context;
   this->slice_group[context["slice_id"].get<int>()].insert(id);
   this->context_lock.unlock();
   return true;
 }
 
+bool Context_manager::add_meter(uint32_t id, uint32_t meter_rate, uint32_t burst_size)
+{
+	spdlog::get("ll-mec")->debug("Context_manager add meter, id {}, rate {}, burst_size {}", id, meter_rate, burst_size);
+	this->context_lock.lock();
+	std::unordered_map<uint64_t, std::pair<uint32_t, uint32_t>>::iterator it;
+	it = meter_context.find(id);
+	if (it != meter_context.end()){
+		it->second = std::make_pair(meter_rate, burst_size);
+	}
+	else this->meter_context.insert(std::make_pair(id, std::make_pair(meter_rate, burst_size)));
+	this->context_lock.unlock();
+	return true;
+}
+
+std::pair<uint32_t, uint32_t> Context_manager::get_meter_info(uint32_t id)
+{
+	this->context_lock.lock();
+	std::pair<uint32_t, uint32_t> meter_info;
+	if (this->meter_context.count(id) != 0)
+		meter_info = this->meter_context.at(id);
+	this->context_lock.unlock();
+	return meter_info;
+}
+
+bool Context_manager::delete_meter(uint32_t id)
+{
+  this->context_lock.lock();
+  this->meter_context.erase(id);
+  this->context_lock.unlock();
+  return true;
+}
+
 bool Context_manager::add_bearer(uint64_t id, json context)
 {
+  Conf* llmec_config = Conf::getInstance();
+  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
   if (this->sanitize(context) == false)
     return false;
 
   this->context_lock.lock();
   context["id"] = id;
   this->imsi_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()), id));
+  if (support_meter) {
+    if (context.count("meter_id") != 0){
+      this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), context["meter_id"].get<int>()));
+    }
+  }
+  //this->meter_mapping.insert(std::make_pair(std::make_pair(context["imsi"].get<std::string>(),context["eps_bearer_id"].get<int>()), meter_id));
   this->bearer_context[id] = context;
   this->slice_group[context["slice_id"].get<int>()].insert(id);
   this->context_lock.unlock();
@@ -122,6 +174,9 @@ bool Context_manager::sanitize(json bearer_context)
 
 bool Context_manager::delete_bearer(uint64_t id)
 {
+  Conf* llmec_config = Conf::getInstance();
+  bool support_meter = llmec_config->X["ovs_switch"]["support_meter"].get<bool>();
+
   this->context_lock.lock();
   if (this->bearer_context.count(id) == 0) {
     this->context_lock.unlock();
@@ -133,9 +188,12 @@ bool Context_manager::delete_bearer(uint64_t id)
   if (slice_group[context["slice_id"].get<int>()].empty()) slice_group.erase(context["slice_id"].get<int>());
   this->bearer_context.erase(id);
   this->bag_of_occupied_ids.erase(id);
+  if (support_meter)
+    this->meter_mapping.erase(std::make_pair(context["imsi"].get<std::string>(), context["eps_bearer_id"].get<int>()));
   this->context_lock.unlock();
   return true;
 }
+
 
 bool Context_manager::add_redirect_bearer(uint64_t id, json context)
 {
@@ -212,6 +270,43 @@ uint64_t Context_manager::get_id(std::string imsi, uint64_t eps_bearer_id)
   this->context_lock.unlock();
   return id;
 }
+
+uint32_t Context_manager::get_meter_id(std::string imsi, uint32_t eps_bearer_id, uint64_t slice_id){
+	uint32_t meter_id = DEFAULT_MT_ID; //default MT
+
+	if ((slice_id > 0) && (slice_id <= 16)) { //MT for slice (id = 1-16)
+		meter_id = (uint32_t) (slice_id);
+	} else { // if MT exists in the meter_mapping -> UE-specified MT, if not use default MT (id = 1)
+		this->context_lock.lock();
+		if (this->meter_mapping.count(std::make_pair(imsi, eps_bearer_id)) != 0)
+			meter_id = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
+		else meter_id = DEFAULT_MT_ID ;
+		this->context_lock.unlock();
+
+	}
+	return meter_id;
+
+/*
+
+  this->context_lock.lock();
+  if (this->meter_mapping.count(std::make_pair(imsi, eps_bearer_id)) != 0)
+    //meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
+    if ( slice_id == 0 ){
+      meterid = this->meter_mapping.at(std::make_pair(imsi, eps_bearer_id));
+	}else if ( slice_id > 0 && slice_id <= 16){
+      meterid = uint64_t slice_id & DEFAULT_MT_ID;
+	     //The actual logic wont be affected in case the slice_id is bigger than 32bits
+	}
+  this->context_lock.unlock();
+  return meterid;
+  */
+}
+
+uint32_t Context_manager::next_meter_id(){
+	current_meter_id = current_meter_id + 1;
+	return current_meter_id;
+}
+
 
 json Context_manager::get_slice_group(uint64_t slice_id)
 {

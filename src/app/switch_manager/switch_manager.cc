@@ -23,7 +23,7 @@
 
 /*!
   \file switch_manager.cc
-  \brief managing the status of the OVS switch based on its ID 
+  \brief managing the status of the OVS switch based on its ID
   \author Anta Huang and N. Nikaein
   \company Eurecom
   \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
@@ -32,6 +32,7 @@
 
 #include <iostream>
 #include "switch_manager.h"
+#include "conf.h"
 #include "spdlog.h"
 #include "context_manager.h"
 
@@ -39,25 +40,37 @@ namespace llmec {
 namespace app {
 namespace switch_manager {
 
-void Switch_manager::event_callback(llmec::core::eps::ControllerEvent* ev) {
-  llmec::data::Context_manager* context_manager = llmec::data::Context_manager::get_instance();
-  if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_UP) {
-    this->of_interface.install_default_flow(ev->of_conn_);
-    spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev->of_conn_->get_id());
-    //switch_set_.insert(ev->of_conn_->get_id());
-    context_manager->add_switch(ev->of_conn_->get_id());
-  }
-  if (ev->get_type() == llmec::core::eps::EVENT_SWITCH_DOWN) {
-    /* the switch id, mec id are not related together for the moment */
-    //this->of_interface.flush_flow(ev->of_conn_->get_id());
-    spdlog::get("ll-mec")->info("Switch id={} flushed flow", ev->of_conn_->get_id());
-    //switch_set_.insert(ev->of_conn_->get_id());
-    context_manager->delete_switch(ev->of_conn_->get_id());
-  }
+Switch_manager::Switch_manager(llmec::core::eps::OFInterface &of_interface,
+                               llmec::event::subscription &ev)
+  : llmec::app::App(of_interface, ev) {
+  event_sub.subscribe_openflow_switch_up(
+      boost::bind(&Switch_manager::handle_switch_up, this, _1));
+  event_sub.subscribe_openflow_switch_down(
+      boost::bind(&Switch_manager::handle_switch_down, this, _1));
 }
+
+void Switch_manager::handle_switch_up(const llmec::core::eps::SwitchUpEvent& ev) {
+  const bool support_meter = Conf::getInstance()->X["ovs_switch"]["support_meter"].get<bool>();
+  this->of_interface.install_default_flow(ev.of_conn_);
+  spdlog::get("ll-mec")->info("Switch id={} installed default flow", ev.of_conn_->get_id());
+  //define a default meter rule of 10GB rate with meterID=DEFAULT_MT_ID
+  //this will be the default generic meter assigned into the first set of flows
+  if (support_meter)
+    this->of_interface.install_default_meter_drop(ev.of_conn_, DEFAULT_MT_ID);
+  llmec::data::Context_manager::get_instance()->add_switch(ev.of_conn_->get_id());
+}
+
+void Switch_manager::handle_switch_down(const llmec::core::eps::SwitchDownEvent& ev) {
+  const bool support_meter = Conf::getInstance()->X["ovs_switch"]["support_meter"].get<bool>();
+  /* the switch id, mec id are not related together for the moment */
+  if (support_meter)
+    this->of_interface.flush_meter(ev.of_conn_, DEFAULT_MT_ID);
+  spdlog::get("ll-mec")->info("Switch id={} flushed flow", ev.of_conn_->get_id());
+  llmec::data::Context_manager::get_instance()->delete_switch(ev.of_conn_->get_id());
+}
+
 void Switch_manager::start() {
   while(true){
-    //std::cout<<"Switch"<<std::endl;
   }
 }
 

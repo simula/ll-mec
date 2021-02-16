@@ -1,0 +1,4 @@
+{
+	"modelPackage"   : "llmec.mp1.model",
+   	"apiPackage"     : "llmec.mp1.api" 
+}

@@ -23,9 +23,9 @@
 /*!
   \file conroller.cc
   \brief OF controller 
-  \author Anta Huang and N. Nikaein
+  \author Anta Huang, N. Nikaein, and Mihai IDU
   \company Eurecom
-  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr
+  \email: anta.huang@gmail.com, navid.nikaein@eurecom.fr, idumihai16@gmail.com
 */
 
 #include "controller.h"
@@ -37,10 +37,10 @@ namespace eps {
 
 Controller* Controller::instance = 0;
 
-void Controller::create_instance(const char* address, const int port, const int n_workers, bool secure)
+void Controller::create_instance(llmec::event::subscription& ev, const char* address, const int port, const int n_workers, bool secure)
 {
   if (instance == 0) {
-    instance = new Controller(address, port, n_workers, secure);
+    instance = new Controller(ev, address, port, n_workers, secure);
   }
 }
 
@@ -68,29 +68,35 @@ void Controller::connection_callback(fluid_base::OFConnection* ofconn, fluid_bas
 
   else if (type == fluid_base::OFConnection::EVENT_CLOSED) {
     spdlog::get("ll-mec")->info("Switch id=%d closed by the user", ofconn->get_id());
-    dispatch_event(new SwitchDownEvent(ofconn));
+    SwitchDownEvent ev(ofconn);
+    this->event_sub.of_switch_down(ev);
   }
 
   else if (type == fluid_base::OFConnection::EVENT_DEAD) {
     spdlog::get("ll-mec")->info("Switch id=%d closed due to inactivity", ofconn->get_id());
-    dispatch_event(new SwitchDownEvent(ofconn));
+    SwitchDownEvent ev(ofconn);
+    this->event_sub.of_switch_down(ev);
   }
 }
 
 void Controller::message_callback(fluid_base::OFConnection* ofconn, uint8_t type, void* data, size_t len) {
   if (type == 10) { // OFPT_PACKET_IN
-    dispatch_event(new PacketInEvent(ofconn, this, data, len));
+    PacketInEvent ev(ofconn, this, data, len);
+    event_sub.of_packet_in(ev);
   }
   else if (type == 6) { // OFPT_FEATURES_REPLY
-    dispatch_event(new SwitchUpEvent(ofconn, this, data, len));
+    SwitchUpEvent ev(ofconn, this, data, len);
+    event_sub.of_switch_up(ev);
   }
   else if (type == 19) { //OFPT_MULTIPART_REPLY
-    dispatch_event(new MultipartReplyEvent(ofconn, this, data, len));
+    MultipartReplyEvent ev(ofconn, this, data, len);
+    event_sub.of_multipart_reply(ev);
   }
-}
-
-void Controller::register_for_event(const std::shared_ptr<llmec::app::App>& app, int event_type) {
-  event_listeners_[event_type].push_back(app);
+  /* The Meters and rate limiters configuration messages. */
+  else if (type == 29) { //OFPT_METER_MOD
+    MeterEvent ev(ofconn, this, data, len);
+    event_sub.of_meter_mod(ev);
+  }
 }
 
 } // namespace eps

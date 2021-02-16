@@ -4,9 +4,9 @@ cmake_minimum_required(VERSION 2.8)
 
 macro(use_cxx11)
   if (CMAKE_VERSION VERSION_LESS "3.1")
-    set (CMAKE_CXX_FLAGS "--std=c++11 ${CMAKE_CXX_FLAGS}")
+    set (CMAKE_CXX_FLAGS "--std=c++14 ${CMAKE_CXX_FLAGS}")
   else ()
-    set (CMAKE_CXX_STANDARD 11)
+    set (CMAKE_CXX_STANDARD 14)
   endif ()
 endmacro(use_cxx11)
 
@@ -20,6 +20,7 @@ set(LL_MEC_TARGET "${PROJECT_SOURCE_DIR}/targets")
 #3 levels - DRIVER / CORE / APP / UTIL / DATA
 set(APP_DIR "${LL_MEC_SRC}/app")
 set(CORE_DIR "${LL_MEC_SRC}/core")
+set(EVENT_DIR "${LL_MEC_SRC}/event")
 set(DRIVER_DIR "${LL_MEC_SRC}/driver")
 set(UTIL_DIR "${LL_MEC_SRC}/util")
 set(DATA_DIR "${LL_MEC_SRC}/data")
@@ -127,29 +128,36 @@ add_library(EPS ${EPS_src_files})
 target_link_libraries(EPS FLUIDBASE FLUIDMSG)
 
 #CORE
-set(CORE_src_files
+set(CORE_src_files  
   ${CORE_DIR}/task.cc
   ${CORE_DIR}/rt_wrapper.cc
+  ${CORE_DIR}/task_manager.cc
   )
 set(CORE_include_files
   ${CORE_DIR}
   )
 add_library(CORE ${CORE_src_files})
-target_link_libraries(CORE EPS)
+target_link_libraries(CORE EPS MP1_API EVENT)
 
+# We need boost signals2
+find_package(Boost 1.54.0 REQUIRED COMPONENTS system)
+add_library(EVENT ${EVENT_DIR}/subscription.cc)
+target_link_libraries(EVENT EPS)
+set(EVENT_include_files ${EVENT_DIR})
 
 #APP
-
 set(SGWC_DIR "${APP_DIR}/sgwc")
 set(SWITCH_DIR "${APP_DIR}/switch_manager")
 set(STATS_DIR "${APP_DIR}/stats")
 set(UPLANE_DIR "${APP_DIR}/uplane")
+#set(METER_DIR "${APP_DIR}/meter_manager")
 set(APP_src_files
   ${SGWC_DIR}/sgwc.cc
   ${SWITCH_DIR}/switch_manager.cc
   ${STATS_DIR}/stats_manager.cc
   ${UPLANE_DIR}/ue_manager.cc
-  )
+#  ${METER_DIR}/meter_manager.cc)
+)
 set(APP_include_files
   ${EPS_DIR}
   ${CORE_DIR}
@@ -158,9 +166,10 @@ set(APP_include_files
   ${SWITCH_DIR}
   ${STATS_DIR}
   ${UPLANE_DIR}
+#  ${METER_DIR}
   )
 add_library(APP ${APP_src_files})
-target_link_libraries(APP CORE)
+target_link_libraries(APP CORE EVENT)
 
 #Pistache
 add_library(PISTACHE STATIC IMPORTED)
@@ -180,6 +189,42 @@ set(NORTH_API_include_files
   )
 add_library(NORTH_API ${NORTH_API_src_files})
 
+
+#MP1_API
+set(MP1_API_DIR "${LL_MEC_SRC}/mp1")
+file(GLOB MP1_API_src_files
+    ${MP1_API_DIR}/mp1-api-server.cpp
+    ${MP1_API_DIR}/model/*.cpp
+    ${MP1_API_DIR}/api/*.cpp
+    ${MP1_API_DIR}/impl/*.cpp
+    ${MP1_API_DIR}/rib/*.cpp
+)
+set(MP1_API_include_files
+  ${MP1_API_DIR}/api
+  ${MP1_API_DIR}/impl
+  ${MP1_API_DIR}/model
+  ${MP1_API_DIR}/rib
+  ${MP1_API_DIR}
+  )
+add_library(MP1_API ${MP1_API_src_files})
+target_link_libraries(MP1_API EVENT)
+
+#MP2_API
+set(MP2_API_DIR "${LL_MEC_SRC}/mp2")  
+file(GLOB MP2_API_src_files
+    ${MP2_API_DIR}/mp2-api-server.cpp
+    ${MP2_API_DIR}/model/*.cpp
+    ${MP2_API_DIR}/api/*.cpp
+    ${MP2_API_DIR}/impl/*.cpp
+) 
+set(MP2_API_include_files
+  ${MP2_API_DIR}/api
+  ${MP2_API_DIR}/impl
+  ${MP2_API_DIR}/model
+  ${MP2_API_DIR}
+  )
+add_library(MP2_API ${MP2_API_src_files})
+
 # spdlog header files
 set(SPDLOG_include_dir "${DRIVER_DIR}/spdlog")
 
@@ -189,15 +234,17 @@ include_directories(
   ${FLUIDMSG_include_files}
   ${JSON_include_files}
   ${EPS_include_files}
+  ${EVENT_include_files}
   ${APP_include_files}
   ${UTIL_include_files}
   ${DATA_include_files}
   ${NORTH_API_include_files}
+  ${MP1_API_include_files}
+  ${MP2_API_include_files}
   ${PISTACHE_include_files}
   ${SPDLOG_include_dir}
   ${Event_INCLUDE_DIRS}
   )
-
 
 #targets
 # Uncomment ll-mecsim when needed
@@ -217,6 +264,9 @@ target_link_libraries(ll-mec
   UTIL
   DATA
   NORTH_API
+  MP1_API
+  MP2_API
   PISTACHE
+  curl
   )
 #target_link_libraries(ll-mecsim FLUIDBASE FLUIDMSG)

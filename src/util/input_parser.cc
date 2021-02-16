@@ -53,10 +53,11 @@ bool Input_parser::cmd_option_exists(const std::string &option) const
 void Input_parser::print_help() {
   spdlog::get("ll-mec")->info("Low Latency MEC platform");
   spdlog::get("ll-mec")->info("-h");
-  spdlog::get("ll-mec")->info("");
   spdlog::get("ll-mec")->info("\tThis help");
   spdlog::get("ll-mec")->info("");
-  spdlog::get("ll-mec")->info("-c [CONFIG_PATH]");
+  spdlog::get("ll-mec")->info("-l [Log_level]");
+  spdlog::get("ll-mec")->info("\tSet the log level: debug, info (default), warn, trace ");
   spdlog::get("ll-mec")->info("");
+  spdlog::get("ll-mec")->info("-c [CONFIG_PATH]");
   spdlog::get("ll-mec")->info("\tLoad config file from [CONFIG_PATH]. Default config will loaded if not specified");
 }
